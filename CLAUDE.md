@@ -54,17 +54,18 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 |---|---|---|
 | 0. Set up ✅ | Vite, structure, CLAUDE.md, Vitest, v1 code moved into modules with no behaviour change | App runs as before from `npm run dev` |
 | 1. Core ✅ | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth | Metronome stays in time over 5 min; migration test passes |
-| 2. Chord engine | Shapes, generator, fingering, validation tests (§5.4) | All tests pass incl. C and F regressions; every chord has ≥ 5 voicings |
+| 2. Chord engine ✅ | Shapes, generator, fingering, validation tests (§5.4) | All tests pass incl. C and F regressions; every chord has ≥ 5 voicings |
 | 3. Design system | Tokens, fonts, components, art placeholders | One component page shows every component in its states |
 | 4. Pages | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
 | 5. Ear training | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
 | 6. Theory scaffold | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
 
 ## Known v1 issues still in the code (fixed in later phases)
-Wrong C and F shapes, G tip/fingering mismatch, unverified song lists, self-rated mastery
+Unverified song lists, self-rated mastery
 (`src/state/legacy-ratings.js`, still on its v1 key), fake radar values, Mon→Sun weekly labels,
 streak showing 0 before today's practice, clickable `div`s and small text. See plan §2.
 Fixed in Phase 1: drifting metronome, hard-coded greeting name, minutes-only v1 storage.
+Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now come from the engine).
 
 ## Notes from Phase 1
 - Storage: `getState()` / `updateState(fn)` in `src/state/storage.js`. v1 keys are migrated once and kept as a safety copy.
@@ -73,3 +74,11 @@ Fixed in Phase 1: drifting metronome, hard-coded greeting name, minutes-only v1 
   Clicks are booked on the audio clock from a fixed anchor, with a Web Worker ticker.
 - Guitar sound: `playChord(frets)` / `playNote(midi)` in `src/audio/guitar-synth.js` (Karplus-Strong, tuned within 5 cents).
 - Backup export/import functions exist (`downloadBackup`, `importBackupFile`); their buttons come with the Settings page in Phase 4.
+
+## Notes from Phase 2
+- Chord library entry point: `getVoicings(root, quality)` / `getVoicingsForSymbol('F#m7')` in `src/chords/voicings.js`.
+  Returns standard shapes first, then the best "found" shapes, each ordered from the nut up.
+  `position` 0 means open position. Results are cached per chord.
+- Curated shapes live in `src/chords/shapes.js`; tests/chords.test.js checks every voicing against plan §5.4.
+- Found shapes need 4+ strings (triads are standard shapes) and may only use open strings up to fret 7.
+- The v1 Guitar page shows each chord's first standard voicing until Phase 4 builds the real Chords page.
