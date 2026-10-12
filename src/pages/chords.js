@@ -1,11 +1,12 @@
 // The Guitar page (becomes "Chords" in Phase 4): chord grid by category and a detail
-// panel with diagram, notes, tip, songs and the v1 "+10% / −10%" mastery buttons.
+// panel with diagram, a play button, notes, tip, songs and the v1 "+10% / −10%" mastery buttons.
 // The +10% model and song lists are removed in later phases (TEMPO_PLAN.md sections 5–6).
 
 import { CHORDS_V1, STRING_NAMES, STRING_COLOURS } from '../data/chords-v1.js';
 import { loadChordProgress, saveChordProgress } from '../state/legacy-ratings.js';
 import { renderGreeting } from '../components/header.js';
 import { renderChordDiagram } from '../components/chord-diagram.js';
+import { playChord } from '../audio/guitar-synth.js';
 
 let selectedChord = 'C';
 
@@ -72,6 +73,7 @@ function renderChordDetail() {
       ${renderChordDiagram(selectedChord, 240)}
       <div class="sdots" style="margin-top:12px">${renderFretPerString(chord)}</div>
       <div style="font-size:10px;color:var(--tx3);margin-top:6px;font-family:var(--mono)">fret per string</div>
+      <button class="btn play-chord" id="playChord">▶ Play</button>
     </div>
     <div class="info-p">
       <div class="irow"><span class="k">Notes</span><span class="v" style="font-family:var(--mono)">${chord.notes}</span></div>
@@ -87,6 +89,7 @@ function renderChordDetail() {
       </div>
     </div>`;
 
+  panel.querySelector('#playChord').addEventListener('click', () => playChord(chord.frets));
   panel.querySelectorAll('[data-change]').forEach((button) => {
     button.addEventListener('click', () => changeMastery(selectedChord, Number(button.dataset.change)));
   });

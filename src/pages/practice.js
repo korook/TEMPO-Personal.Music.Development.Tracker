@@ -1,20 +1,18 @@
 // The Practice page: metronome, practice timer (logs minutes when stopped),
-// chord transition drills and finger exercises. Same behaviour as v1.
+// chord transition drills (run with the metronome's chord-change mode) and finger exercises.
+// Phase 4 rebuilds this page around measured practice (TEMPO_PLAN.md section 6).
 
 import { TRANSITION_DRILLS } from '../data/progressions.js';
 import { FINGER_EXERCISES } from '../data/exercises.js';
 import { updateState, makeId } from '../state/storage.js';
 import { renderGreeting } from '../components/header.js';
-import { formatClock } from '../utils/time.js';
 import {
-  getBpm,
-  getBeat,
-  isRunning,
-  toggleMetronome,
-  setBpm,
-  adjustBpm,
-  setBeatListener,
-} from '../audio/metronome.js';
+  renderMetronomePanel,
+  bindMetronomePanel,
+  startChordDrill,
+  handleMetronomeKey,
+} from '../components/metronome-panel.js';
+import { formatClock } from '../utils/time.js';
 
 // Practice timer state. Kept outside the page so it keeps counting on other pages.
 const timer = {
@@ -22,7 +20,9 @@ const timer = {
   intervalId: null,
 };
 
-setBeatListener(showBeat);
+document.addEventListener('keydown', (event) => {
+  if (isPracticePageOpen()) handleMetronomeKey(event);
+});
 
 // ─── Rendering ───
 
@@ -31,25 +31,16 @@ export function renderPracticePage() {
   renderGreeting();
   const page = document.getElementById('pg-practice');
   page.innerHTML = `
-    ${renderMetronomeCard()}
+    ${renderMetronomePanel()}
     ${renderTimerCard()}
     ${renderDrillsCard()}
     ${renderExercisesCard()}`;
   bindEvents(page);
 }
 
-// Returns the metronome card: BPM buttons, slider, 4 beat dots and start/stop.
-function renderMetronomeCard() {
-  const running = isRunning();
-  const beatDots = [0, 1, 2, 3]
-    .map((beat) => `<div class="bd${getBeat() === beat && running ? ' on' : ''}"></div>`)
-    .join('');
-  return `
-    <div class="card"><div class="card-t"><span class="dot"></span>Metronome</div>
-      <div class="bpm-row"><button class="bpm-btn" data-bpm-step="-5">−</button><div class="bpm-d"><div class="bpm-n" id="bN">${getBpm()}</div><div class="bpm-l">BPM</div></div><button class="bpm-btn" data-bpm-step="5">+</button><input type="range" class="bpm-s" id="bpmSlider" min="40" max="200" value="${getBpm()}" step="5"></div>
-      <div class="bdots" id="bDots">${beatDots}</div>
-      <button class="btn${running ? ' run' : ''}" id="metronomeToggle">${running ? 'Stop' : 'Start metronome'}</button>
-    </div>`;
+// Returns true while the Practice page is the one on screen.
+function isPracticePageOpen() {
+  return document.getElementById('pg-practice').classList.contains('on');
 }
 
 // Returns the practice timer card.
@@ -62,10 +53,10 @@ function renderTimerCard() {
     </div>`;
 }
 
-// Returns the chord transition drills card.
+// Returns the chord transition drills card. Each drill can run with the metronome.
 function renderDrillsCard() {
   const drills = TRANSITION_DRILLS
-    .map((drill) => `<div class="drill"><div class="dn">${drill.chords}</div><div class="ds">${drill.style}</div></div>`)
+    .map((drill, index) => `<div class="drill"><div class="dn">${drill.chords}</div><div class="ds">${drill.style}</div><button class="metro-small-btn drill-run" data-drill="${index}">Run with metronome</button></div>`)
     .join('');
   return `
     <div class="card"><div class="card-t"><span class="dot" style="background:var(--amber)"></span>Chord transition drills</div>
@@ -85,39 +76,16 @@ function renderExercisesCard() {
     </div>`;
 }
 
-// ─── Live updates ───
-
-// Lights up the dot for the beat that just sounded (beat 1 gets the stronger style).
-function showBeat(beat) {
-  document.querySelectorAll('.bd').forEach((dot, index) => {
-    dot.classList.remove('on', 'down');
-    if (index === beat) dot.classList.add(beat === 0 ? 'down' : 'on');
-  });
-}
-
-// Writes the current BPM into the big number.
-function showBpm() {
-  const display = document.getElementById('bN');
-  if (display) display.textContent = getBpm();
-}
-
 // ─── Events ───
 
-// Connects the metronome controls and the timer button.
+// Connects the metronome, the drill buttons and the timer button.
 function bindEvents(page) {
-  page.querySelectorAll('[data-bpm-step]').forEach((button) => {
+  bindMetronomePanel(page, renderPracticePage);
+  page.querySelectorAll('[data-drill]').forEach((button) => {
     button.addEventListener('click', () => {
-      adjustBpm(Number(button.dataset.bpmStep));
-      showBpm();
+      const drill = TRANSITION_DRILLS[Number(button.dataset.drill)];
+      startChordDrill(drill.chords.split('→').map((chord) => chord.trim()), 4);
     });
-  });
-  page.querySelector('#bpmSlider').addEventListener('input', (event) => {
-    setBpm(Number(event.target.value));
-    showBpm();
-  });
-  page.querySelector('#metronomeToggle').addEventListener('click', () => {
-    toggleMetronome();
-    renderPracticePage();
   });
   page.querySelector('#timerToggle').addEventListener('click', toggleTimer);
 }

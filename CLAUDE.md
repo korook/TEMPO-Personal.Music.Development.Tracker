@@ -53,7 +53,7 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 | Phase | Work | Done when |
 |---|---|---|
 | 0. Set up ✅ | Vite, structure, CLAUDE.md, Vitest, v1 code moved into modules with no behaviour change | App runs as before from `npm run dev` |
-| 1. Core | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth | Metronome stays in time over 5 min; migration test passes |
+| 1. Core ✅ | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth | Metronome stays in time over 5 min; migration test passes |
 | 2. Chord engine | Shapes, generator, fingering, validation tests (§5.4) | All tests pass incl. C and F regressions; every chord has ≥ 5 voicings |
 | 3. Design system | Tokens, fonts, components, art placeholders | One component page shows every component in its states |
 | 4. Pages | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
@@ -61,6 +61,15 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 | 6. Theory scaffold | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
 
 ## Known v1 issues still in the code (fixed in later phases)
-Wrong C and F shapes, G tip/fingering mismatch, unverified song lists, self-rated mastery, fake radar values,
-Mon→Sun weekly labels, streak showing 0 before today's practice, drifting `setInterval` metronome,
-hard-coded greeting name, clickable `div`s and small text. See plan §2.
+Wrong C and F shapes, G tip/fingering mismatch, unverified song lists, self-rated mastery
+(`src/state/legacy-ratings.js`, still on its v1 key), fake radar values, Mon→Sun weekly labels,
+streak showing 0 before today's practice, clickable `div`s and small text. See plan §2.
+Fixed in Phase 1: drifting metronome, hard-coded greeting name, minutes-only v1 storage.
+
+## Notes from Phase 1
+- Storage: `getState()` / `updateState(fn)` in `src/state/storage.js`. v1 keys are migrated once and kept as a safety copy.
+  The `chordRatingsDropped` notice is waiting to be shown when Phase 4 removes the +10% UI.
+- Metronome: `createMetronome()` is the pure timing core (tested on a fake clock); the app uses `getMetronome()`.
+  Clicks are booked on the audio clock from a fixed anchor, with a Web Worker ticker.
+- Guitar sound: `playChord(frets)` / `playNote(midi)` in `src/audio/guitar-synth.js` (Karplus-Strong, tuned within 5 cents).
+- Backup export/import functions exist (`downloadBackup`, `importBackupFile`); their buttons come with the Settings page in Phase 4.
