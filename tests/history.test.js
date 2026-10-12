@@ -2,7 +2,7 @@
 // Sessions use the v2 shape ({ end, minutes }).
 
 import { describe, it, expect } from 'vitest';
-import { totalMinutes, weeklyMinutes, minutesOnDay, countStreak } from '../src/practice/history.js';
+import { totalMinutes, weeklyMinutes, minutesOnDay, countStreak, lastDayLabels } from '../src/practice/history.js';
 import { formatClock, daysBefore } from '../src/utils/time.js';
 
 const NOW = new Date('2026-10-12T18:00:00');
@@ -45,11 +45,33 @@ describe('session totals', () => {
 
 describe('countStreak', () => {
   it('counts consecutive days ending today', () => {
-    const sessions = [sessionDaysAgo(0, 10), sessionDaysAgo(1, 10), sessionDaysAgo(2, 10), sessionDaysAgo(4, 10)];
-    expect(countStreak(sessions, NOW)).toBe(3);
+    const sessions = [sessionDaysAgo(0, 10), sessionDaysAgo(1, 10), sessionDaysAgo(2, 10), sessionDaysAgo(5, 10)];
+    expect(countStreak(sessions, NOW, 0)).toEqual({ days: 3, practicedToday: true });
+  });
+
+  it('counts from yesterday when today has no session yet', () => {
+    const sessions = [sessionDaysAgo(1, 10), sessionDaysAgo(2, 10)];
+    expect(countStreak(sessions, NOW)).toEqual({ days: 2, practicedToday: false });
+  });
+
+  it('lets one rest day a week pass without breaking the streak', () => {
+    const sessions = [sessionDaysAgo(0, 10), sessionDaysAgo(2, 10), sessionDaysAgo(3, 10)];
+    expect(countStreak(sessions, NOW, 1).days).toBe(3);
+    expect(countStreak(sessions, NOW, 0).days).toBe(1);
+  });
+
+  it('stops at two missed days in a row', () => {
+    const sessions = [sessionDaysAgo(0, 10), sessionDaysAgo(3, 10)];
+    expect(countStreak(sessions, NOW, 1).days).toBe(1);
   });
 
   it('is 0 with no sessions', () => {
-    expect(countStreak([], NOW)).toBe(0);
+    expect(countStreak([], NOW).days).toBe(0);
+  });
+});
+
+describe('lastDayLabels', () => {
+  it('names the real days, ending with Today', () => {
+    expect(lastDayLabels(3, new Date('2026-10-12T18:00:00'))).toEqual(['Sat', 'Sun', 'Today']);
   });
 });

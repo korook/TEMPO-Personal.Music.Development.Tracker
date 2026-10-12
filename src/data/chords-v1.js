@@ -113,17 +113,3 @@ export const STRING_NAMES = ['E', 'A', 'D', 'G', 'B', 'e'];
 
 // One dot colour per string, low E to high e (design-system accents).
 export const STRING_COLOURS = ['var(--bronze)', 'var(--sonic)', 'var(--verdigris)', 'var(--shell)', 'var(--bronze)', 'var(--sonic)'];
-
-// ─── Chord groups used by the v1 charts ───
-
-// Open major chords, for the radar chart's "Open chords" axis.
-export const OPEN_CHORD_KEYS = ['C', 'Am', 'G', 'Em', 'D', 'A', 'E'];
-
-// Seventh chords, for the radar and doughnut charts.
-export const SEVENTH_CHORD_KEYS = ['B7', 'E7', 'A7', 'C7', 'G7', 'D7', 'Am7'];
-
-// Major chords, for the doughnut chart.
-export const MAJOR_CHORD_KEYS = ['C', 'G', 'D', 'A', 'E'];
-
-// Minor chords, for the doughnut chart.
-export const MINOR_CHORD_KEYS = ['Am', 'Em', 'Dm'];

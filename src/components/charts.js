@@ -1,17 +1,9 @@
-// Chart.js charts for the Dashboard and Progress pages, moved from v1 unchanged.
-// Known v1 problems kept for Phase 0 (see TEMPO_PLAN.md section 2):
-//   - The weekly chart is always labelled Mon→Sun, but shows the last 7 days ending today.
-//   - The skill radar's Strumming / Rhythm / Ear values are made up from the open-chord score.
+// Chart.js charts for the Today and Progress pages: minutes over the last 7 days (labelled
+// with the real days) and total minutes over the last 14 days. Colours follow the theme.
 
 import Chart from 'chart.js/auto';
-import { minutesOnDay, totalMinutes } from '../practice/history.js';
+import { minutesOnDay, totalMinutes, lastDayLabels } from '../practice/history.js';
 import { daysBefore } from '../utils/time.js';
-import {
-  OPEN_CHORD_KEYS,
-  SEVENTH_CHORD_KEYS,
-  MAJOR_CHORD_KEYS,
-  MINOR_CHORD_KEYS,
-} from '../data/chords-v1.js';
 
 // Live chart instances, so a chart can be destroyed before it is drawn again.
 const charts = {};
@@ -52,12 +44,6 @@ function destroyChart(name) {
   if (charts[name]) charts[name].destroy();
 }
 
-// Returns the average self-rated % for a list of chords, rounded.
-function averageProgress(progress, chordKeys) {
-  const sum = chordKeys.reduce((total, key) => total + (progress[key] || 0), 0);
-  return Math.round(sum / chordKeys.length);
-}
-
 // ─── Dashboard charts ───
 
 // Draws the bar chart of minutes practiced on each of the last 7 days.
@@ -67,7 +53,7 @@ export function renderWeeklyChart(sessions) {
   destroyChart('weekly');
 
   const style = chartStyle();
-  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const labels = lastDayLabels(7);
   const minutes = labels.map((_, index) => minutesOnDay(sessions, daysBefore(new Date(), 6 - index)));
 
   charts.weekly = new Chart(canvas, {
@@ -97,56 +83,6 @@ export function renderWeeklyChart(sessions) {
         x: {
           grid: { display: false },
           ticks: { color: style.axisText, font: { size: 12, family: style.font } },
-        },
-      },
-    },
-  });
-}
-
-// Draws the skill radar from the self-rated chord progress.
-export function renderSkillRadar(progress) {
-  const canvas = document.getElementById('chR');
-  if (!canvas) return;
-  destroyChart('radar');
-
-  const style = chartStyle();
-  const openAverage = averageProgress(progress, OPEN_CHORD_KEYS);
-  const barreAverage = progress['F'] || 0;
-  const seventhAverage = averageProgress(progress, SEVENTH_CHORD_KEYS);
-  const values = [
-    openAverage,
-    barreAverage,
-    seventhAverage,
-    Math.min(100, openAverage * 0.8),
-    Math.min(100, openAverage * 0.6),
-    Math.min(100, openAverage * 0.4),
-  ];
-
-  charts.radar = new Chart(canvas, {
-    type: 'radar',
-    data: {
-      labels: ['Open chords', 'Barre', '7th chords', 'Strumming', 'Rhythm', 'Ear'],
-      datasets: [{
-        data: values,
-        backgroundColor: withAlpha(colour('bronze'), 0.15),
-        borderColor: colour('bronze'),
-        pointBackgroundColor: colour('bronze'),
-        pointRadius: 3,
-        borderWidth: 1.5,
-      }],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        r: {
-          beginAtZero: true,
-          max: 100,
-          ticks: { display: false, stepSize: 25 },
-          grid: { color: style.gridLine },
-          angleLines: { color: style.gridLine },
-          pointLabels: { color: colour('text-muted'), font: { size: 12, family: 'Archivo' } },
         },
       },
     },
@@ -201,38 +137,6 @@ export function renderCumulativeChart(sessions) {
           ticks: { color: style.axisText, font: { size: 12, family: style.font }, maxRotation: 45 },
         },
       },
-    },
-  });
-}
-
-// Draws the doughnut of average self-rated % for major, minor and 7th chords.
-export function renderChordTypeDonut(progress) {
-  const canvas = document.getElementById('chDo');
-  if (!canvas) return;
-  destroyChart('donut');
-
-  const values = [
-    Math.max(1, averageProgress(progress, MAJOR_CHORD_KEYS)),
-    Math.max(1, averageProgress(progress, MINOR_CHORD_KEYS)),
-    Math.max(1, averageProgress(progress, SEVENTH_CHORD_KEYS)),
-  ];
-
-  charts.donut = new Chart(canvas, {
-    type: 'doughnut',
-    data: {
-      labels: ['Major', 'Minor', '7th'],
-      datasets: [{
-        data: values,
-        backgroundColor: [colour('bronze'), colour('sonic'), colour('verdigris')],
-        borderColor: colour('body-2'),
-        borderWidth: 3,
-      }],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: { legend: { display: false } },
     },
   });
 }

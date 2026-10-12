@@ -1,86 +1,134 @@
-// The Dashboard page (becomes "Today" in Phase 4): metric tiles, weekly chart,
-// skill radar, chord mastery grid and quick actions. Same output as v1.
+// The Today page: what to practice now and why. A ticker of today's openings, four numbers
+// from real practice data, the week's minutes, the next steps, and the first chords with
+// their clean rate. (The full Today hero with the setlist preview comes later in Phase 4.)
 
 import { CHORDS_V1 } from '../data/chords-v1.js';
-import { getState } from '../state/storage.js';
-import { loadChordProgress } from '../state/legacy-ratings.js';
+import { getState, updateState } from '../state/storage.js';
+import { getSettings } from '../state/settings.js';
 import { totalMinutes, weeklyMinutes, countStreak } from '../practice/history.js';
+import { generateOpenings } from '../practice/openings.js';
+import { cleanRate } from '../practice/measures.js';
 import { renderGreeting } from '../components/header.js';
-import { renderWeeklyChart, renderSkillRadar } from '../components/charts.js';
+import { renderTicker } from '../components/ticker.js';
+import { renderWeeklyChart } from '../components/charts.js';
 import { navigate, chordLink } from '../router.js';
+import { escapeHtml } from '../utils/html.js';
+
+const NEXT_STEPS_SHOWN = 4;
 
 // ─── Rendering ───
 
-// Draws the whole Dashboard page from the stored sessions and chord progress.
+// Draws the whole page from the saved practice data.
 export function renderTodayPage() {
-  const sessions = getState().sessions;
-  const progress = loadChordProgress();
+  const state = getState();
+  const openings = generateOpenings(state);
 
   const page = document.getElementById('pg-dashboard');
   page.innerHTML = `
+    ${renderTicker(openings.slice(0, 8).map((opening) => opening.short))}
     <div class="greet" id="greetBox"></div>
-    ${renderMetricTiles(sessions, progress)}
+    ${renderRatingsNotice(state)}
+    ${renderMetricTiles(state)}
     <div class="two" style="margin-bottom:14px">
-      <div class="card"><div class="card-t"><span class="dot"></span>Weekly practice</div><div class="chart-box"><canvas id="chW"></canvas></div><div class="legend"><span><i style="background:var(--accent)"></i>Minutes</span></div></div>
-      <div class="card"><div class="card-t"><span class="dot" style="background:var(--blue)"></span>Skill radar</div><div class="chart-box"><canvas id="chR"></canvas></div></div>
+      <div class="card"><div class="card-t"><span class="dot"></span>Last 7 days</div><div class="chart-box"><canvas id="chW"></canvas></div><div class="legend"><span><i style="background:var(--accent)"></i>Minutes</span></div></div>
+      <div class="card next-steps"><div class="card-t"><span class="dot"></span>Next steps</div>${renderNextSteps(openings)}</div>
     </div>
-    <div class="sec">Chord mastery</div>
-    <div class="mg">${renderMasteryGrid(progress)}</div>
+    <div class="sec">Your chords · clean rate</div>
+    <div class="mg">${renderChordGrid(state)}</div>
     <div class="sec">Quick actions</div>
     ${renderQuickActions()}`;
 
   renderGreeting();
   bindEvents(page);
-  renderWeeklyChart(sessions);
-  renderSkillRadar(progress);
+  renderWeeklyChart(state.sessions);
 }
 
-// Returns the four tiles: total minutes, streak, chords learned and this week's minutes.
-function renderMetricTiles(sessions, progress) {
-  const total = totalMinutes(sessions);
-  const streak = countStreak(sessions);
-  const chordCount = Object.keys(CHORDS_V1).length;
-  const learned = Object.values(progress).filter((value) => value >= 50).length;
-  const thisWeek = weeklyMinutes(sessions);
+// Returns the four numbers: total time, streak, shapes practiced and this week's minutes.
+function renderMetricTiles(state) {
+  const total = totalMinutes(state.sessions);
+  const streak = countStreak(state.sessions, new Date(), getSettings().restDaysPerWeek);
+  const shapes = practicedShapes(state);
+  const cleanShapes = shapes.filter((shape) => shape.rate !== null && shape.rate >= 0.8).length;
+  const thisWeek = weeklyMinutes(state.sessions);
+  const streakNote = streak.practicedToday ? 'Played today' : streak.days > 0 ? 'Play today to keep it' : 'Start today';
 
   return `
     <div class="metrics">
-      <div class="met"><div class="ml">Total practice</div><div class="mv">${total}<span style="font-size:13px;color:var(--tx3)">m</span></div><div class="ms">${(total / 60).toFixed(1)} hours</div></div>
-      <div class="met"><div class="ml">Streak</div><div class="mv" style="color:var(--green)">${streak}<span style="font-size:13px;color:var(--tx3)">d</span></div><div class="ms">${streak > 0 ? 'Keep going!' : 'Start today!'}</div></div>
-      <div class="met"><div class="ml">Chords learned</div><div class="mv" style="color:var(--blue)">${learned}<span style="font-size:13px;color:var(--tx3)">/${chordCount}</span></div><div class="ms">${Math.round(learned / chordCount * 100)}% complete</div></div>
-      <div class="met"><div class="ml">This week</div><div class="mv" style="color:var(--amber)">${thisWeek}<span style="font-size:13px;color:var(--tx3)">m</span></div><div class="ms">${thisWeek >= 60 ? 'On track!' : 'Aim for 60m/wk'}</div></div>
+      ${tile('Total practice', total, 'm', `${(total / 60).toFixed(1)} hours`)}
+      ${tile('Streak', streak.days, 'd', streakNote)}
+      ${tile('Shapes practiced', shapes.length, '', shapes.length ? `${cleanShapes} clean 8/10 or better` : 'Add one from Chords')}
+      ${tile('This week', thisWeek, 'm', thisWeek >= 60 ? 'On track for 60m' : `${60 - thisWeek}m to 60m`)}
     </div>`;
 }
 
-// Returns one square per chord, filled and coloured by its self-rated %.
-function renderMasteryGrid(progress) {
-  return Object.keys(CHORDS_V1).map((chordKey) => {
-    const percent = progress[chordKey] || 0;
-    const colour = percent >= 80 ? 'var(--green)' : percent >= 40 ? 'var(--amber)' : percent >= 10 ? 'var(--blue)' : 'var(--bd2)';
-    return `<div class="mc" data-chord="${chordKey}"><div class="mb" style="border-color:${colour}"><div class="mfill" style="height:${percent}%;background:${colour}"></div>${chordKey}</div><div class="mpct">${percent}%</div></div>`;
+// One number tile.
+function tile(label, value, unit, note) {
+  return `<div class="met"><div class="ml">${label}</div><div class="mv">${value}<span class="unit">${unit}</span></div><div class="ms">${note}</div></div>`;
+}
+
+// The top openings as a short list with a link to plan a session.
+function renderNextSteps(openings) {
+  const steps = openings.slice(0, NEXT_STEPS_SHOWN)
+    .map((opening) => `<li><span class="label">${escapeHtml(opening.type)}</span><span>${escapeHtml(opening.text)}</span></li>`)
+    .join('');
+  return `<ol class="next-steps__list">${steps}</ol><button class="button button--primary" data-go="practice">Plan a session</button>`;
+}
+
+// One square per first chord, filled by the clean rate of its most-practiced shape.
+function renderChordGrid(state) {
+  const shapes = practicedShapes(state);
+  return Object.keys(CHORDS_V1).map((chord) => {
+    const shape = shapes.filter((candidate) => candidate.item.chord === chord).sort((a, b) => b.total - a.total)[0];
+    const rate = shape ? shape.rate : null;
+    const fill = rate === null ? 0 : Math.round(rate * 100);
+    const label = rate === null ? '–' : `${shape.clean}/${shape.total}`;
+    return `<a class="mc" href="${chordLink(chord)}" aria-label="${chord}: ${rate === null ? 'not practiced yet' : `${label} clean`}"><div class="mb"><div class="mfill" style="height:${fill}%"></div>${chord}</div><div class="mpct">${label}</div></a>`;
   }).join('');
 }
 
-// Returns the three shortcut tiles to Practice, Guitar and Progress.
+// The three shortcut tiles.
 function renderQuickActions() {
   return `
     <div class="sg">
-      <div class="sug" data-go="practice"><div class="st" style="color:var(--accent)">Start practice</div><div class="sd" style="color:var(--accent)">Timer + metronome</div></div>
-      <div class="sug" data-go="guitar"><div class="st" style="color:var(--blue)">Chord library</div><div class="sd" style="color:var(--blue)">16 chords with diagrams</div></div>
-      <div class="sug" data-go="progress"><div class="st" style="color:var(--green)">View progress</div><div class="sd" style="color:var(--green)">Charts and history</div></div>
+      <button class="sug" data-go="practice"><span class="st">Start practice</span><span class="sd">Setlist, metronome, receipt</span></button>
+      <button class="sug" data-go="chords"><span class="st">Chord library</span><span class="sd">168 chords, every shape</span></button>
+      <button class="sug" data-go="progress"><span class="st">View progress</span><span class="sd">Charts and session log</span></button>
     </div>`;
+}
+
+// The one-time note that the old self-rated chord percentages were not carried over.
+function renderRatingsNotice(state) {
+  const notice = state.meta.notices.chordRatingsDropped;
+  if (!notice || notice.dismissed) return '';
+  return `
+    <div class="storage-notice ratings-notice" role="status">
+      <span>Your old "+10%" chord ratings weren't carried over: they didn't measure anything. Your practice minutes were kept, and chords now get a clean rate from real reps.</span>
+      <button class="button" data-dismiss-ratings>OK</button>
+    </div>`;
+}
+
+// ─── Data ───
+
+// Every chord shape that has been practiced, with its clean rate: [{ item, clean, total, rate }].
+function practicedShapes(state) {
+  return Object.values(state.items)
+    .filter((item) => item.type === 'voicing')
+    .map((item) => ({ item, ...cleanRate(state.reps, item.id) }))
+    .filter((shape) => shape.total > 0);
 }
 
 // ─── Events ───
 
-// Makes mastery squares open that chord's page, and quick actions open their page.
+// Quick actions, next steps and the notice.
 function bindEvents(page) {
-  page.querySelectorAll('[data-chord]').forEach((cell) => {
-    cell.addEventListener('click', () => {
-      navigate(chordLink(cell.dataset.chord));
+  page.querySelectorAll('[data-go]').forEach((button) => {
+    button.addEventListener('click', () => navigate(button.dataset.go === 'chords' ? '#/chords/C' : button.dataset.go));
+  });
+  const dismiss = page.querySelector('[data-dismiss-ratings]');
+  if (dismiss) {
+    dismiss.addEventListener('click', () => {
+      updateState((state) => { state.meta.notices.chordRatingsDropped.dismissed = true; });
+      renderTodayPage();
     });
-  });
-  page.querySelectorAll('[data-go]').forEach((tile) => {
-    tile.addEventListener('click', () => navigate(tile.dataset.go));
-  });
+  }
 }
