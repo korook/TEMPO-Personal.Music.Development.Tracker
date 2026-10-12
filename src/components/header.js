@@ -14,6 +14,6 @@ export function renderGreeting() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   const dateText = new Date().toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric' });
   box.innerHTML =
-    `<div class="greet-line">${greeting}, <b>${escapeHtml(getSettings().name)}</b></div><div class="greet-date">${dateText}</div>`;
+    `<p class="greeting__line">${greeting}, <b>${escapeHtml(getSettings().name)}</b></p><p class="greeting__date label">${dateText}</p>`;
 }
 

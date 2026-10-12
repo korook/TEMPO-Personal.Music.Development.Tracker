@@ -9,8 +9,8 @@ import { renderPlaceholder } from '../components/placeholder.js';
 export function renderEarPage() {
   renderGreeting();
   document.getElementById('pg-ear').innerHTML = renderPlaceholder(
-    '◎',
     'Ear training',
-    'Interval recognition, chord identification, relative pitch exercises — coming soon. Interactive drills to sharpen your musical ear.',
+    'Ear',
+    'Eight listening games are next: scale degrees, intervals, chord types, progressions, call and response, rhythm tap-back and more, with a short daily workout. They use the same practice model, so mix-ups become Fix openings.',
   );
 }

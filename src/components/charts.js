@@ -70,6 +70,7 @@ export function renderWeeklyChart(sessions) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { left: 4 } },
       plugins: {
         legend: { display: false },
         tooltip: style.tooltip,
@@ -77,8 +78,9 @@ export function renderWeeklyChart(sessions) {
       scales: {
         y: {
           beginAtZero: true,
+          suggestedMax: 10,
           grid: { color: style.gridLine },
-          ticks: { color: style.axisText, font: { size: 12, family: style.font } },
+          ticks: { color: style.axisText, font: { size: 12, family: style.font }, precision: 0, padding: 6 },
         },
         x: {
           grid: { display: false },
@@ -125,12 +127,14 @@ export function renderCumulativeChart(sessions) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { left: 4 } },
       plugins: { legend: { display: false } },
       scales: {
         y: {
           beginAtZero: true,
+          suggestedMax: 10,
           grid: { color: style.gridLine },
-          ticks: { color: style.axisText, font: { size: 12, family: style.font } },
+          ticks: { color: style.axisText, font: { size: 12, family: style.font }, precision: 0, padding: 6 },
         },
         x: {
           grid: { display: false },

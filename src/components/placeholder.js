@@ -1,8 +1,25 @@
-// A "coming soon" card used by pages that are not built yet.
+// A "coming soon" panel for pages that are not built yet (Ear training, Theory),
+// with a frame where one of Baranay's characters will stand.
+
+import { renderArtPlaceholder } from './art-placeholder.js';
+import { escapeHtml } from '../utils/html.js';
 
 // ─── Rendering ───
 
-// Returns a card with a faint icon, a title and a short description.
-export function renderPlaceholder(icon, title, description) {
-  return `<div class="card"><div class="placeholder"><div class="ph-icon">${icon}</div><div class="ph-title">${title}</div><div class="ph-sub">${description}</div></div></div>`;
+// Returns the page head and an empty state saying what is coming and when.
+export function renderPlaceholder(kicker, title, description) {
+  return `
+    <header class="page-head">
+      <div class="section-head">
+        <span class="section-head__kicker">${escapeHtml(kicker)}</span>
+        <h1 class="section-head__title section-head__title--hero">${escapeHtml(title)}</h1>
+      </div>
+    </header>
+    <section class="panel empty-state">
+      ${renderArtPlaceholder('character', 'Waiting backstage')}
+      <div>
+        <h2 class="empty-state__title">Coming soon</h2>
+        <p class="empty-state__text">${escapeHtml(description)}</p>
+      </div>
+    </section>`;
 }

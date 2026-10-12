@@ -40,7 +40,7 @@ export function renderMetronomePanel() {
         </div>
         <label class="metro-slider">
           <span class="label">Tempo · <span id="bN">${settings.bpm}</span> BPM</span>
-          <input type="range" class="bpm-s" id="bpmSlider" min="${MIN_BPM}" max="${MAX_BPM}" value="${settings.bpm}" step="1" aria-label="Tempo in BPM">
+          <input type="range" class="tempo-slider" id="bpmSlider" min="${MIN_BPM}" max="${MAX_BPM}" value="${settings.bpm}" step="1" aria-label="Tempo in BPM">
         </label>
         <div class="metro-options">
           <label>Time ${renderSelect('timeSignature', Object.keys(TIME_SIGNATURES), settings.timeSignature)}</label>
@@ -67,9 +67,9 @@ function renderChordChangeDisplay(chordChange) {
   const [first, second] = chordChange.chords;
   return `
     <div class="metro-chords">
-      <div><div class="metro-chord-now" id="chordNow">${first}</div><div class="bpm-l">now</div></div>
-      <div><div class="metro-chord-next" id="chordNext">${second || first}</div><div class="bpm-l">next · change every ${chordChange.everyBeats} beats</div></div>
-      <button class="metro-small-btn" id="chordChangeOff">End drill</button>
+      <div><div class="metro-chord-now" id="chordNow">${first}</div><div class="label">now</div></div>
+      <div><div class="metro-chord-next" id="chordNext">${second || first}</div><div class="label">next · change every ${chordChange.everyBeats} beats</div></div>
+      <button class="button" id="chordChangeOff">End drill</button>
     </div>`;
 }
 

@@ -28,17 +28,17 @@ export function renderTodayPage() {
   const page = document.getElementById('pg-dashboard');
   page.innerHTML = `
     ${renderTicker(openings.slice(0, 8).map((opening) => opening.short))}
-    <div class="greet" id="greetBox"></div>
+    <div class="greeting" id="greetBox"></div>
     ${renderRatingsNotice(state)}
     ${needsExportReminder(state) ? '<p class="storage-notice" role="status">It\'s been over 30 days since your last backup. <a href="#/settings">Export one in Settings</a> so your practice history is safe.</p>' : ''}
     ${renderHero(state)}
     ${renderMetricTiles(state)}
-    <div class="two" style="margin-bottom:14px">
-      <div class="card"><div class="card-t"><span class="dot"></span>Last 7 days</div><div class="chart-box"><canvas id="chW"></canvas></div><div class="legend"><span><i style="background:var(--accent)"></i>Minutes</span></div></div>
-      <div class="card next-steps"><div class="card-t"><span class="dot"></span>Next steps</div>${renderNextSteps(openings)}</div>
+    <div class="split">
+      <section class="panel"><h2 class="panel__title">Last 7 days</h2><div class="chart-frame"><canvas id="chW"></canvas></div><p class="label">Minutes per day</p></section>
+      <section class="panel next-steps"><h2 class="panel__title">Next steps</h2>${renderNextSteps(openings)}</section>
     </div>
-    <div class="sec">Your chords · clean rate</div>
-    <div class="mg">${renderChordGrid(state)}</div>
+    <h2 class="section-label">Your chords · clean rate</h2>
+    <div class="chord-rates">${renderChordGrid(state)}</div>
 `;
 
   renderGreeting();
@@ -56,11 +56,11 @@ function renderMetricTiles(state) {
   const streakNote = streak.practicedToday ? 'Played today' : streak.days > 0 ? 'Play today to keep it' : 'Start today';
 
   return `
-    <div class="metrics">
+    <div class="stat-grid">
       ${tile('Total practice', total, 'm', total >= 60 ? `${(total / 60).toFixed(1)} hours` : 'minutes so far')}
       ${tile('Streak', streak.days, 'd', streakNote)}
       ${tile('Shapes practiced', shapes.length, '', shapesNote(shapes.length, cleanShapes))}
-      ${tile('This week', thisWeek, 'm', thisWeek >= 60 ? 'On track for 60m' : `${60 - thisWeek}m to 60m`)}
+      ${tile('This week', thisWeek, 'm', thisWeek >= 60 ? 'Weekly 60 minutes reached' : `${60 - thisWeek}m to go for 60`)}
     </div>`;
 }
 
@@ -73,7 +73,7 @@ function shapesNote(total, clean) {
 
 // One number tile.
 function tile(label, value, unit, note) {
-  return `<div class="met"><div class="ml">${label}</div><div class="mv">${value}<span class="unit">${unit}</span></div><div class="ms">${note}</div></div>`;
+  return `<div class="stat"><span class="stat__label">${label}</span><span class="stat__value">${value}<span class="stat__unit">${unit}</span></span><span class="stat__note">${note}</span></div>`;
 }
 
 // The top openings as a short list with a link to plan a session.
@@ -92,7 +92,7 @@ function renderChordGrid(state) {
     const rate = shape ? shape.rate : null;
     const fill = rate === null ? 0 : Math.round(rate * 100);
     const label = rate === null ? '–' : `${shape.clean}/${shape.total}`;
-    return `<a class="mc" href="${chordLink(chord)}" aria-label="${chord}: ${rate === null ? 'not practiced yet' : `${label} clean`}"><div class="mb"><div class="mfill" style="height:${fill}%"></div>${chord}</div><div class="mpct">${label}</div></a>`;
+    return `<a class="chord-rate" href="${chordLink(chord)}" aria-label="${chord}: ${rate === null ? 'not practiced yet' : `${label} clean`}"><span class="chord-rate__key"><span class="chord-rate__fill" style="height:${fill}%"></span><span class="chord-rate__name">${chord}</span></span><span class="chord-rate__value">${label}</span></a>`;
   }).join('');
 }
 

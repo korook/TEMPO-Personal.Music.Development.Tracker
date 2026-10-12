@@ -9,8 +9,8 @@ import { renderPlaceholder } from '../components/placeholder.js';
 export function renderTheoryPage() {
   renderGreeting();
   document.getElementById('pg-theory').innerHTML = renderPlaceholder(
-    '♮',
     'Music theory',
-    'Scales, modes, keys, chord construction, the circle of fifths — coming soon. Visual lessons to build your theoretical foundation.',
+    'Theory',
+    'Short lessons with exercises and quizzes, starting with the notes on the fretboard, then intervals, the major scale, chord building and chords in a key.',
   );
 }

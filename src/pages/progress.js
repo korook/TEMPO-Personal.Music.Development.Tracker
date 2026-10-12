@@ -46,12 +46,12 @@ export function renderProgressPage() {
     </section>
     ${renderBestsCard(state)}
     ${renderMilestones(state)}
-    <div class="two-eq" style="margin-bottom:14px">
-      <div class="card"><div class="card-t"><span class="dot"></span>Mistake patterns</div>${renderMistakePatterns(state)}</div>
+    <div class="split split--even">
+      <section class="panel"><h2 class="panel__title">Mistake patterns</h2>${renderMistakePatterns(state)}</section>
       ${renderHeatmapCard(sessions)}
     </div>
     ${renderCleanRateCard(state)}
-    <div class="card"><div class="card-t"><span class="dot"></span>Total minutes, last 14 days</div><div class="chart-box"><canvas id="chCu"></canvas></div></div>
+    <section class="panel"><h2 class="panel__title">Total minutes, last 14 days</h2><div class="chart-frame"><canvas id="chCu"></canvas></div></section>
     ${renderSessionLogCard(sessions)}`;
 
   bindEvents(page);
@@ -75,9 +75,9 @@ function renderBestsCard(state) {
     }
   }
   return `
-    <div class="card"><div class="card-t"><span class="dot"></span>Personal bests</div>
+    <section class="panel"><h2 class="panel__title">Personal bests</h2>
       ${rows.length ? `<ul class="bests-list">${rows.join('')}</ul>` : '<p class="progress-empty">Bests appear after a one-minute changes test, three clean passes at a tempo, or a timed chord change.</p>'}
-    </div>`;
+    </section>`;
 }
 
 // One personal-best row: item, metric, best value and its trend line.
@@ -146,12 +146,12 @@ function renderCleanRateCard(state) {
     ? '<p class="progress-empty">No chord shapes practiced yet. Start a session on the Practice page.</p>'
     : shapes.map(({ item, clean, total, rate }) => {
       const colour = rate >= 0.8 ? 'var(--verdigris)' : rate >= 0.5 ? 'var(--bronze)' : 'var(--shell)';
-      return `<div class="pi"><div class="pbw"><div class="pbl"><span>${escapeHtml(item.label)}</span><span style="font-family:var(--mono)">${clean}/${total} clean</span></div><div class="pb"><div class="pf" style="width:${Math.round(rate * 100)}%;background:${colour}"></div></div></div></div>`;
+      return `<div class="rate-row"><div class="rate-row__head"><span>${escapeHtml(item.label)}</span><span class="mono">${clean}/${total} clean</span></div><div class="rate-bar"><div class="rate-bar__fill" style="width:${Math.round(rate * 100)}%;background:${colour}"></div></div></div>`;
     }).join('');
   return `
-    <div class="card"><div class="card-t"><span class="dot"></span>Clean rate per shape · last 10 reps</div>
+    <section class="panel"><h2 class="panel__title">Clean rate per shape · last 10 reps</h2>
       ${rows}
-    </div>`;
+    </section>`;
 }
 
 // Returns the 28-day heatmap: one square per day, brighter for more minutes.
@@ -160,15 +160,15 @@ function renderHeatmapCard(sessions) {
     const day = daysBefore(new Date(), 27 - index);
     const minutes = minutesOnDay(sessions, day);
     const opacity = minutes === 0 ? 0.08 : Math.min(1, 0.4 + minutes / 60);
-    const label = `${day.toLocaleDateString('en', { month: 'short', day: 'numeric' })}:${minutes}m`;
-    return `<div class="hc" data-t="${label}" title="${label}" style="background:var(--accent-text);opacity:${opacity}"></div>`;
+    const label = `${day.toLocaleDateString('en', { month: 'short', day: 'numeric' })}: ${minutes} min`;
+    return `<div class="heatmap__day" title="${label}" style="opacity:${opacity}"><span class="visually-hidden">${label}</span></div>`;
   }).join('');
 
   return `
-    <div class="card"><div class="card-t"><span class="dot"></span>Last 28 days</div>
-      <div class="hm">${cells}</div>
-      <div class="legend"><span><i style="background:var(--accent-text);opacity:.08"></i>None</span><span><i style="background:var(--accent-text);opacity:.45"></i>A few minutes</span><span><i style="background:var(--accent-text);opacity:.75"></i>20 min</span><span><i style="background:var(--accent-text);opacity:1"></i>40 min +</span></div>
-    </div>`;
+    <section class="panel"><h2 class="panel__title">Last 28 days</h2>
+      <div class="heatmap">${cells}</div>
+      <div class="heatmap__legend label"><span><i style="opacity:.08"></i>none</span><span><i style="opacity:.45"></i>a few min</span><span><i style="opacity:.75"></i>20 min</span><span><i style="opacity:1"></i>40 min +</span></div>
+    </section>`;
 }
 
 // The session log: the latest receipts, then a plain list of every session (newest first),
@@ -179,18 +179,18 @@ function renderSessionLogCard(sessions) {
     : sessions.slice().reverse().slice(0, 30).map((session) => {
       const date = new Date(session.end).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
       const what = session.blocks && session.blocks.length ? session.blocks.map((block) => block.title).join(' · ') : 'Practice session';
-      return `<div class="sr"><span class="sd">${date}</span><span class="sm">${session.minutes}m</span><span class="sr__what">${escapeHtml(what)}</span></div>`;
+      return `<div class="session-log__row"><span class="session-log__date">${date}</span><span class="mono">${session.minutes}m</span><span class="session-log__what">${escapeHtml(what)}</span></div>`;
     }).join('');
 
   const clearButton = sessions.length > 0
-    ? '<div class="slog__actions"><button class="button" id="clearHistory">Clear history</button></div>'
+    ? '<div class="session-log__actions"><button class="button" id="clearHistory">Clear history</button></div>'
     : '';
 
   return `
-    <div class="card"><div class="card-t"><span class="dot"></span>Session log</div>
-      <div class="slog">${log}</div>
+    <section class="panel"><h2 class="panel__title">Session log</h2>
+      <div class="session-log">${log}</div>
       ${clearButton}
-    </div>`;
+    </section>`;
 }
 
 // ─── Events ───

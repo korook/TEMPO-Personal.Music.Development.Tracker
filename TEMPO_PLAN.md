@@ -41,14 +41,14 @@ The other 13 shapes are correct. **Song lists are unverified, and some are wrong
 
 ### Logic and code problems
 Status: ✅ = fixed, ⏳ = fixed in Phase 4.
-- ⏳ **Mastery is self-clicked** (+10% / −10%), so 100% is reached in 10 clicks. Replaced by section 6.
-- ⏳ **Skill radar uses fake data.** "Strumming / Rhythm / Ear" are the open-chord score × 0.8 / 0.6 / 0.4. Remove it.
-- ⏳ **Weekly chart labels are wrong.** They're always Mon→Sun, but the data is the last 7 days ending today.
-- ⏳ **The streak shows 0** if you practiced yesterday but not yet today.
+- ✅ **Mastery is self-clicked** (+10% / −10%), so 100% is reached in 10 clicks. Replaced by section 6.
+- ✅ **Skill radar uses fake data.** "Strumming / Rhythm / Ear" are the open-chord score × 0.8 / 0.6 / 0.4. Remove it.
+- ✅ **Weekly chart labels are wrong.** They're always Mon→Sun, but the data is the last 7 days ending today.
+- ✅ **The streak shows 0** if you practiced yesterday but not yet today.
 - ✅ **The metronome drifts.** It used `setInterval`. Fixed in Phase 1: Web Audio lookahead scheduling, tested over 5 minutes.
 - ✅ **Greeting name is hard-coded** ("Uglum"). Now read from settings (Phase 1).
 - ✅ **Sessions only store minutes.** Storage v2 has reps, bests and sessions (Phase 1); Phase 4 fills them.
-- ⏳ Clickable `div`s, text as small as 9px, no keyboard support (the new components already use real buttons and ≥ 12px text).
+- ✅ Clickable `div`s, text as small as 9px, no keyboard support (the new components already use real buttons and ≥ 12px text).
 - ✅ One file with minified one-line functions and short names. Split into commented modules in Phase 0.
 - ✅ **No backup.** Export/import functions exist (Phase 1); the buttons arrive with the Settings page in Phase 4.
 
@@ -469,8 +469,8 @@ tempo/
 | **1. Core** | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth. | Metronome stays in time over 5 minutes; migration test passes. | ✅ |
 | **2. Chord engine** | Shapes, generator, fingering, validation tests (5.4). | All tests pass, including C and F regressions; every chord has ≥ 5 voicings across the neck. | ✅ (≥ 13 each) |
 | **3. Design system** | Tokens, fonts, components, placeholders for art; rev. 2 after feedback (section 3), sticky menu + ⚙ settings. | One component page shows every component in its states. | ✅ (`components.html`) |
-| **4. Pages** | Top bar + ⚙ menu, then Chords → Practice (section 6) → Today → Progress → Settings, built from the component page parts only. Remove the v1 styles, tokens, chord list and +10% ratings. | A full session runs: setlist → measured reps → receipt, and openings change with the data. | next |
-| **5. Ear training** | Section 8, linked to the practice model. | All 8 exercises play; confusion duels appear after repeated mix-ups. | |
+| **4. Pages** | Top bar + ⚙ menu, then Chords → Practice (section 6) → Today → Progress → Settings, built from the component page parts only. Remove the v1 styles, tokens, chord list and +10% ratings. | A full session runs: setlist → measured reps → receipt, and openings change with the data. | ✅ |
+| **5. Ear training** | Section 8, linked to the practice model. | All 8 exercises play; confusion duels appear after repeated mix-ups. | next |
 | **6. Theory scaffold** | Section 9 folders, renderers for lecture / exercise / quiz, topic 1 as a sample. | Topic 1 lecture, exercise and quiz work end to end. | |
 | **Later** | Microphone (tuner, buzz detection, weekly recordings), Production tab, Baranay's own palette and handwriting font. | — | |
 

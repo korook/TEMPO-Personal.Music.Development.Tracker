@@ -60,7 +60,7 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 | 1. Core ✅ | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth | Metronome stays in time over 5 min; migration test passes |
 | 2. Chord engine ✅ | Shapes, generator, fingering, validation tests (§5.4) | All tests pass incl. C and F regressions; every chord has ≥ 5 voicings |
 | 3. Design system ✅ | Tokens, fonts, components, art placeholders | One component page shows every component in its states |
-| 4. Pages | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
+| 4. Pages ✅ | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
 | 5. Ear training | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
 | 6. Theory scaffold | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
 
@@ -103,7 +103,7 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
   `--accent-text` for their section. Text on accent fills and paper is `--ink`. `tests/tokens.test.js` checks contrast in both themes.
 - Disc metronome: the playhead is steered by the audio clock (lands exactly on each beat); grooves turn via CSS.
 
-## Notes from Phase 4 (in progress)
+## Notes from Phase 4
 - App shell: sticky top bar (`src/components/top-bar.js`) with Today, Practice, Chords (A–G), Ear & theory, Progress, and ⚙
   quick settings (day/night, left-handed, reduced motion; saved in `settings`). Production is hidden.
 - Routing is hash-based (`src/router.js`): `#/today`, `#/chords/C`, `#/chord/Cmaj7` (use `chordLink()`), `#/practice`, `#/progress`, `#/ear`, `#/theory`.
@@ -118,4 +118,5 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
   Progress ✅ (groove disc, receipts, personal bests with sparklines, milestones in `src/practice/milestones.js`,
   mistake patterns, clean rates, heatmap, log), Settings ✅ (`#/settings`: name, handedness, rest days, look, backup).
 - Storage falls back to memory when the browser blocks localStorage (locked-down previews); a notice says so.
-- Still to do: delete the v1 styles/tokens once Today and Progress stop using v1 class names (.card, .met, .mg ...).
+- The v1 styles and tokens are deleted; every page uses design-system classes only (panel, stat, split, chord-rate, heatmap, session-log ...).
+- Next: Phase 5, ear training (plan §8).
