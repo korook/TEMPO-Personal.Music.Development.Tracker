@@ -3,7 +3,7 @@
 // their clean rate. (The full Today hero with the setlist preview comes later in Phase 4.)
 
 import { CHORDS_V1 } from '../data/chords-v1.js';
-import { getState, updateState } from '../state/storage.js';
+import { getState, updateState, needsExportReminder } from '../state/storage.js';
 import { getSettings } from '../state/settings.js';
 import { totalMinutes, weeklyMinutes, countStreak } from '../practice/history.js';
 import { generateOpenings } from '../practice/openings.js';
@@ -28,6 +28,7 @@ export function renderTodayPage() {
     ${renderTicker(openings.slice(0, 8).map((opening) => opening.short))}
     <div class="greet" id="greetBox"></div>
     ${renderRatingsNotice(state)}
+    ${needsExportReminder(state) ? '<p class="storage-notice" role="status">It\'s been over 30 days since your last backup. <a href="#/settings">Export one in Settings</a> so your practice history is safe.</p>' : ''}
     ${renderMetricTiles(state)}
     <div class="two" style="margin-bottom:14px">
       <div class="card"><div class="card-t"><span class="dot"></span>Last 7 days</div><div class="chart-box"><canvas id="chW"></canvas></div><div class="legend"><span><i style="background:var(--accent)"></i>Minutes</span></div></div>

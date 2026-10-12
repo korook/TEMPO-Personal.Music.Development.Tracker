@@ -17,6 +17,7 @@ import { renderPracticePage } from './pages/practice.js';
 import { renderProgressPage } from './pages/progress.js';
 import { renderEarPage } from './pages/ear.js';
 import { renderTheoryPage } from './pages/theory.js';
+import { renderSettingsPage } from './pages/settings.js';
 
 // ─── Main menu ───
 
@@ -45,7 +46,8 @@ function renderQuickSettings() {
     <div class="chip-row">
       <button class="chip" data-setting="leftHanded" ${pressed(settings.leftHanded)}>Left-handed</button>
       <button class="chip" data-setting="reduceMotion" ${pressed(settings.reduceMotion)}>Reduced motion</button>
-    </div>`;
+    </div>
+    <a class="top-bar__link" href="#/settings">All settings and backup →</a>`;
 }
 
 // Saves a quick-setting change, applies it and redraws the current page.
@@ -56,12 +58,20 @@ function bindQuickSettings(container) {
       const value = chip.dataset.value !== undefined ? chip.dataset.value : !getSettings()[name];
       updateSettings({ [name]: value });
       applySettings();
-      container.querySelectorAll(`[data-setting="${name}"]`).forEach((other) => {
-        const on = other.dataset.value !== undefined ? other.dataset.value === getSettings()[name] : getSettings()[name];
-        other.setAttribute('aria-pressed', String(on));
-      });
+      refreshQuickSettings(container);
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
+  });
+  window.addEventListener('tempo-settings-changed', () => refreshQuickSettings(container));
+}
+
+// Updates the pressed state of the quick-setting chips to match the saved settings.
+function refreshQuickSettings(container) {
+  const settings = getSettings();
+  container.querySelectorAll('[data-setting]').forEach((chip) => {
+    const name = chip.dataset.setting;
+    const on = chip.dataset.value !== undefined ? chip.dataset.value === settings[name] : Boolean(settings[name]);
+    chip.setAttribute('aria-pressed', String(on));
   });
 }
 
@@ -102,6 +112,7 @@ function startApp() {
   registerRoute({ pattern: /^#\/progress$/, pageId: 'progress', render: renderProgressPage, menuKey: 'progress', accent: 'shell' });
   registerRoute({ pattern: /^#\/ear$/, pageId: 'ear', render: renderEarPage, menuKey: 'learn', accent: 'verdigris' });
   registerRoute({ pattern: /^#\/theory$/, pageId: 'theory', render: renderTheoryPage, menuKey: 'learn', accent: 'sonic' });
+  registerRoute({ pattern: /^#\/settings$/, pageId: 'settings', render: renderSettingsPage, menuKey: 'settings' });
 
   startRouter(({ menuKey, hash }) => setTopBarCurrent(topBar, { key: menuKey, href: hash }));
 }
