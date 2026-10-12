@@ -36,6 +36,30 @@ export function renderNeck(root, quality, { voicing = null, leftHanded = false }
     </div>`;
 }
 
+// Returns the neck with specific notes marked wherever they can be played on frets 0–15
+// (used by ear training to show where an interval lives). notes = [{ midi, label }].
+export function renderNeckForNotes(notes, { leftHanded = false, description = 'Where the notes are on the neck' } = {}) {
+  const layout = getLayout(leftHanded);
+  let marks = '';
+  for (let string = 0; string < 6; string++) {
+    for (let fret = 0; fret <= LAST_FRET; fret++) {
+      const note = notes.find((candidate) => candidate.midi === STANDARD_TUNING[string] + fret);
+      if (!note) continue;
+      const classes = note.label === 'R' ? 'neck-note neck-note--root neck-note--active' : 'neck-note neck-note--active';
+      const x = noteX(layout, fret);
+      const y = stringY(layout, string);
+      marks += `<g class="${classes}"><circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central">${escapeHtml(note.label)}</text></g>`;
+    }
+  }
+  const parts = [renderBoard(layout), renderInlays(layout), renderFrets(layout), renderStrings(layout), marks, renderFretNumbers(layout)];
+  return `
+    <div class="neck">
+      <svg viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="${escapeHtml(description)}" xmlns="http://www.w3.org/2000/svg">
+        ${parts.join('')}
+      </svg>
+    </div>`;
+}
+
 // ─── Layout ───
 
 // Works out where every fret wire and string sits. Frets get slightly narrower up the

@@ -61,7 +61,7 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 | 2. Chord engine ✅ | Shapes, generator, fingering, validation tests (§5.4) | All tests pass incl. C and F regressions; every chord has ≥ 5 voicings |
 | 3. Design system ✅ | Tokens, fonts, components, art placeholders | One component page shows every component in its states |
 | 4. Pages ✅ | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
-| 5. Ear training | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
+| 5. Ear training ✅ | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
 | 6. Theory scaffold | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
 
 ## Known v1 issues still in the code (fixed in later phases)
@@ -119,4 +119,14 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
   mistake patterns, clean rates, heatmap, log), Settings ✅ (`#/settings`: name, handedness, rest days, look, backup).
 - Storage falls back to memory when the browser blocks localStorage (locked-down previews); a notice says so.
 - The v1 styles and tokens are deleted; every page uses design-system classes only (panel, stat, split, chord-rate, heatmap, session-log ...).
-- Next: Phase 5, ear training (plan §8).
+
+## Notes from Phase 5
+- Ear games live in `src/ear/`, one file each. A game is a pure question builder: `makeQuestion(level, random, { pool })` returns
+  `{ kind: 'choice'|'self'|'fretboard'|'tap', prompt, options, answer, sound, explain }`. Sounds play through `src/audio/instruments.js`
+  (clean guitar, distorted guitar, piano, synth; picked in `settings.earTimbres`).
+- Scoring (`src/ear/scoring.js`): stars from the last 10 answers, 4 stars open the next level, 3+ mix-ups of the same pair make a confusion duel.
+  Duels lead the daily workout (`src/ear/workout.js`), become ear Fix openings, and the setlist's ear block plays them.
+- One quiz player for everything: `mountEarQuiz(container, { drills, compact })` in `src/components/ear-quiz.js` (Ear page, workout, practice ear block).
+- Routes: `#/ear`, `#/ear/<game>`, `#/ear/workout`, `#/ear/duel/<game>/<expected>~<heard>`.
+- Song anchors for intervals are in `src/ear/common.js` (SONG_ANCHORS): Baranay to check them.
+- Next: Phase 6, theory scaffold (plan §9).

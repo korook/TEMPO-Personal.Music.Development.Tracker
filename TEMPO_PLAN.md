@@ -470,8 +470,8 @@ tempo/
 | **2. Chord engine** | Shapes, generator, fingering, validation tests (5.4). | All tests pass, including C and F regressions; every chord has ≥ 5 voicings across the neck. | ✅ (≥ 13 each) |
 | **3. Design system** | Tokens, fonts, components, placeholders for art; rev. 2 after feedback (section 3), sticky menu + ⚙ settings. | One component page shows every component in its states. | ✅ (`components.html`) |
 | **4. Pages** | Top bar + ⚙ menu, then Chords → Practice (section 6) → Today → Progress → Settings, built from the component page parts only. Remove the v1 styles, tokens, chord list and +10% ratings. | A full session runs: setlist → measured reps → receipt, and openings change with the data. | ✅ |
-| **5. Ear training** | Section 8, linked to the practice model. | All 8 exercises play; confusion duels appear after repeated mix-ups. | next |
-| **6. Theory scaffold** | Section 9 folders, renderers for lecture / exercise / quiz, topic 1 as a sample. | Topic 1 lecture, exercise and quiz work end to end. | |
+| **5. Ear training** | Section 8, linked to the practice model. | All 8 exercises play; confusion duels appear after repeated mix-ups. | ✅ |
+| **6. Theory scaffold** | Section 9 folders, renderers for lecture / exercise / quiz, topic 1 as a sample. | Topic 1 lecture, exercise and quiz work end to end. | next |
 | **Later** | Microphone (tuner, buzz detection, weekly recordings), Production tab, Baranay's own palette and handwriting font. | — | |
 
 ### Review flow (Baranay's rule, 12 Oct 2026)
@@ -502,10 +502,11 @@ tempo/
 
 ## 15. Starter prompt for Claude Code
 
-> Read `TEMPO_PLAN.md` and `CLAUDE.md` fully. Phases 0–3 are done. Continue with Phase 4 in section 12, following the design direction in section 3 and the code conventions in section 11. Use the review flow: show each change as a preview file and push to `main` only after approval. Stop at the end of the phase, summarize what changed, and wait for approval before Phase 5.
+> Read `TEMPO_PLAN.md` and `CLAUDE.md` fully. Phases 0–5 are done. Continue with Phase 6 in section 12, following the design direction in section 3 and the code conventions in section 11. Use the review flow: show each change as a preview file and push to `main` only after approval. Stop at the end of the phase, summarize what changed, and wait for approval.
 
 ---
 
 ## 16. Change log
+- **2.2 (12 Oct 2026):** Phase 5 (ear training) marked done: eight games, four sounds, stars and levels, ear map, confusion duels, daily workout, ear blocks inside practice sessions.
 - **2.1 (12 Oct 2026):** Phases 0–3 marked done with results. Design direction rewritten after Baranay's feedback: Teenage Engineering / Nothing analog-modern language, sans-serif only (Archivo, Doto, Martian Mono; Caveat as handwriting stand-in), guitar-materials colours instead of coral/mint/mustard/pink, day theme default plus night, abstract disc metronome, receipts and label-maker strips, sticky categorized menu with ⚙ settings. Review flow added (preview file → approval → push). Audit items marked fixed. Architecture tree updated. Open question added about the chord chart and 6/m6 chords.
 - **2.0 (12 Oct 2026):** rewrite of v1 (audit, chord engine, practice model, ear training, phases).

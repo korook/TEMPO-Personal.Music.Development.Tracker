@@ -20,7 +20,7 @@ let cachedState = null;
 export function createEmptyState(now = new Date()) {
   return {
     schemaVersion: SCHEMA_VERSION,
-    settings: { name: 'Baranay', leftHanded: false, sound: 'clean', restDaysPerWeek: 1, theme: 'day', reduceMotion: false },
+    settings: { name: 'Baranay', leftHanded: false, sound: 'clean', restDaysPerWeek: 1, theme: 'day', reduceMotion: false, earTimbres: ['guitar', 'distorted', 'piano', 'synth'] },
     items: {},
     reps: [],
     bests: {},

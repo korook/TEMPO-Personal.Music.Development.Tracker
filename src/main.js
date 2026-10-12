@@ -111,7 +111,7 @@ function startApp() {
   registerRoute({ pattern: /^#\/chord\/(.+)$/, pageId: 'chords', render: renderChordPage, menuKey: 'chords' });
   registerRoute({ pattern: /^#\/practice$/, pageId: 'practice', render: renderPracticePage, menuKey: 'practice' });
   registerRoute({ pattern: /^#\/progress$/, pageId: 'progress', render: renderProgressPage, menuKey: 'progress', accent: 'shell' });
-  registerRoute({ pattern: /^#\/ear$/, pageId: 'ear', render: renderEarPage, menuKey: 'learn', accent: 'verdigris' });
+  registerRoute({ pattern: /^#\/ear(?:\/(.+))?$/, pageId: 'ear', render: renderEarPage, menuKey: 'learn', accent: 'verdigris' });
   registerRoute({ pattern: /^#\/theory$/, pageId: 'theory', render: renderTheoryPage, menuKey: 'learn', accent: 'sonic' });
   registerRoute({ pattern: /^#\/settings$/, pageId: 'settings', render: renderSettingsPage, menuKey: 'settings' });
 

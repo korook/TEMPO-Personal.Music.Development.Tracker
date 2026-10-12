@@ -30,6 +30,8 @@ let clockId = null;
 document.addEventListener('keydown', (event) => {
   if (!isPracticePageOpen()) return;
   if (session.phase === 'play' && handleMeasureKey(event, document.getElementById('pg-practice'), logRep, renderPracticePage)) return;
+  // During the ear block the quiz owns the keys (Space taps rhythms, Enter moves on).
+  if (session.phase === 'play' && session.blocks[session.current].measure === 'ear') return;
   handleMetronomeKey(event);
 });
 

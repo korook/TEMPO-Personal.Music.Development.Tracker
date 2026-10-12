@@ -32,7 +32,7 @@ export const rhythmTapBack = {
       prompt: 'Listen, then tap the same rhythm after the four count-in clicks.',
       answer: pattern.map((eighth) => eighth * EIGHTH),
       sound: { type: 'rhythm', bpm: BPM, onsets: pattern },
-      explain: `The rhythm on eighth notes: ${pattern.map((eighth) => (eighth % 2 ? '&' : eighth / 2 + 1)).join(' ')}.`,
+      explain: `Counted 1 & 2 & 3 & 4 &, the hits were on ${pattern.map((eighth) => (eighth % 2 ? '&' : eighth / 2 + 1)).join(' ')}.`,
     };
   },
 };

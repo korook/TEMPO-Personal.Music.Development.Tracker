@@ -18,6 +18,10 @@ import { startChordDrill } from './metronome-panel.js';
 import { playChord } from '../audio/guitar-synth.js';
 import { getSettings } from '../state/settings.js';
 import { escapeHtml } from '../utils/html.js';
+import { mountEarQuiz } from './ear-quiz.js';
+import { getExercise } from '../ear/index.js';
+import { unlockedLevel } from '../ear/scoring.js';
+import { getState } from '../state/storage.js';
 
 const TEST_SECONDS = 60;
 const EXTRA_MISTAKES = ['finger-order', 'tension', 'strum-range'];
@@ -40,6 +44,7 @@ export function renderMeasureTool(context) {
   if (block.measure === 'clean-check') return renderCleanCheck(context);
   if (block.measure === 'changes') return renderChanges(context);
   if (block.measure === 'bpm-pass') return renderBpmPass(context);
+  if (block.measure === 'ear') return '<div class="measure measure--ear"><div data-ear-drill></div></div>';
   return renderNoMeasure(block);
 }
 
@@ -177,6 +182,8 @@ function readout(value, label) {
 
 // Connects the tool. logRep(fields) saves a rep; redraw() redraws the block.
 export function bindMeasureTool(container, { block, item }, logRep, redraw) {
+  const earDrill = container.querySelector('[data-ear-drill]');
+  if (earDrill) mountEarDrill(earDrill, block);
   container.querySelectorAll('[data-string]').forEach((key) => {
     key.addEventListener('click', () => {
       const name = key.dataset.string;
@@ -228,6 +235,18 @@ export function handleMeasureKey(event, container, logRep, redraw) {
   event.preventDefault();
   target.click();
   return true;
+}
+
+// Runs a short ear drill inside the session: the duel from the setlist if there is one,
+// otherwise intervals at your level. Ear results are saved like any other ear game.
+function mountEarDrill(container, block) {
+  const ear = block.ear || { exercise: 'intervals', pool: null };
+  const exercise = getExercise(ear.exercise);
+  const level = unlockedLevel(getState().ear.results, exercise.id, exercise.levels);
+  mountEarQuiz(container, {
+    drills: [{ exercise: exercise.id, level, pool: ear.pool, questions: 5, label: block.title }],
+    compact: true,
+  });
 }
 
 // Cycles a string's mark: nothing → buzzed → muted → nothing.
