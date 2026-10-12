@@ -470,7 +470,16 @@
 .kit {
   max-width: 1120px;
   margin: 0 auto;
-  padding: var(--space-7) var(--space-4) var(--space-8);
+  padding: var(--space-6) var(--space-4) var(--space-8);
+}
+
+/* The wrapper steps aside so the bar can stick to the top of the whole page. */
+#top-bar {
+  display: contents;
+}
+
+#top-bar .top-bar {
+  padding-inline: max(var(--space-4), calc((100vw - 1120px) / 2 + var(--space-4)));
 }
 
 .kit__intro {
@@ -493,6 +502,7 @@
 }
 
 .kit__section {
+  scroll-margin-top: 72px;
   padding: var(--space-7) 0;
   border-top: 1px solid var(--line);
 }

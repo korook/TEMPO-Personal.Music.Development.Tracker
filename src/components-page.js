@@ -15,6 +15,7 @@ import { renderStub, renderStubStack } from './components/stub.js';
 import { renderTicker } from './components/ticker.js';
 import { renderTapedCard, renderPolaroid } from './components/taped-card.js';
 import { renderArtPlaceholder, ART_SPECS } from './components/art-placeholder.js';
+import { renderTopBar, bindTopBar } from './components/top-bar.js';
 import { getMetronome } from './audio/metronome.js';
 
 // Page options the visitor can change at the top.
@@ -24,6 +25,15 @@ const view = {
   motionOff: false,
   accent: 'bronze',
 };
+
+// The page's sections, grouped into categories for the main menu.
+const MENU_GROUPS = [
+  { label: 'Foundations', items: [{ label: 'Colour', href: '#colour' }, { label: 'Type', href: '#type' }] },
+  { label: 'Controls', items: [{ label: 'Buttons & chips', href: '#controls' }, { label: 'Ticker', href: '#ticker' }] },
+  { label: 'Paper', items: [{ label: 'Setlist cards', href: '#setlist' }, { label: 'Polaroids', href: '#polaroids' }, { label: 'Session receipts', href: '#stubs' }] },
+  { label: 'Music', items: [{ label: 'Chord diagrams', href: '#diagrams' }, { label: 'Fretboard', href: '#neck' }, { label: 'Disc metronome', href: '#vinyl' }] },
+  { label: 'Placeholders', items: [{ label: 'Art placeholders', href: '#art' }, { label: 'Empty state', href: '#empty' }] },
+];
 
 // Section accents and the sections that use them.
 const ACCENTS = {
@@ -90,10 +100,7 @@ const FONT_ROLES = [
 // Draws the whole page and connects its controls.
 function renderPage() {
   const kit = document.getElementById('kit');
-  document.body.classList.toggle('motion-off', view.motionOff);
-  document.body.dataset.theme = view.theme;
-  document.body.style.setProperty('--accent-now', `var(--${view.accent})`);
-  document.body.style.setProperty('--accent-text', `var(--${view.accent}-text)`);
+  applyViewToBody();
 
   kit.innerHTML = [
     renderIntro(),
@@ -115,30 +122,78 @@ function renderPage() {
   bindVinylMetronome(kit);
 }
 
-// The page header: title and the view options (theme, handedness, motion, accent).
+// The page header: kicker, title and a short description.
 function renderIntro() {
-  const pressed = (on) => `aria-pressed="${on}"`;
-  const accents = Object.keys(ACCENTS)
-    .map((accent) => `<button class="chip" data-accent="${accent}" ${pressed(view.accent === accent)}>${accent}</button>`)
-    .join('');
   return `
-    <header class="kit__intro">
+    <header class="kit__intro" id="top">
       <div class="section-head">
         <span class="section-head__kicker">Tempo · design system · rev. 2</span>
         <h1 class="section-head__title section-head__title--hero">The kit</h1>
         <p class="section-head__lead">Analog meets modern: a light instrument body with dark screens, keycaps and LEDs, and paper pieces for the human side. Colours come from the guitar itself. <span class="section-head__note">every part, every state</span></p>
       </div>
-      <div class="kit__options" role="group" aria-label="View options">
-        <span class="label">Body</span>
-        <button class="chip" data-theme-choice="day" ${pressed(view.theme === 'day')}>Day</button>
-        <button class="chip" data-theme-choice="night" ${pressed(view.theme === 'night')}>Night</button>
-        <span class="label">View</span>
-        <button class="chip" data-option="leftHanded" ${pressed(view.leftHanded)}>Left-handed</button>
-        <button class="chip" data-option="motionOff" ${pressed(view.motionOff)}>Reduced motion</button>
-        <span class="label">Accent</span>
-        ${accents}
-      </div>
     </header>`;
+}
+
+// ─── Top bar and settings ───
+
+// Draws the sticky main menu once; the ⚙ menu holds the view options.
+function renderPageTopBar() {
+  const container = document.getElementById('top-bar');
+  container.innerHTML = renderTopBar({ brand: 'Tempo · Kit', groups: MENU_GROUPS, settingsHtml: renderSettingsControls() });
+  bindTopBar(container);
+  bindSettings(container);
+}
+
+// The view options inside the ⚙ menu: body theme, handedness, motion and section accent.
+function renderSettingsControls() {
+  const pressed = (on) => `aria-pressed="${on}"`;
+  const accents = Object.entries(ACCENTS)
+    .map(([accent, sections]) => `<button class="chip" data-accent="${accent}" title="${sections}" ${pressed(view.accent === accent)}>${accent}</button>`)
+    .join('');
+  return `
+    <span class="top-bar__heading">Body</span>
+    <div class="chip-row">
+      <button class="chip" data-theme-choice="day" ${pressed(view.theme === 'day')}>Day</button>
+      <button class="chip" data-theme-choice="night" ${pressed(view.theme === 'night')}>Night</button>
+    </div>
+    <span class="top-bar__heading">View</span>
+    <div class="chip-row">
+      <button class="chip" data-option="leftHanded" ${pressed(view.leftHanded)}>Left-handed</button>
+      <button class="chip" data-option="motionOff" ${pressed(view.motionOff)}>Reduced motion</button>
+    </div>
+    <span class="top-bar__heading">Section accent</span>
+    <div class="chip-row">${accents}</div>`;
+}
+
+// Connects the settings chips. Changes redraw the showcase but keep the ⚙ menu open.
+function bindSettings(container) {
+  container.querySelectorAll('[data-theme-choice]').forEach((button) => {
+    button.addEventListener('click', () => changeView({ theme: button.dataset.themeChoice }));
+  });
+  container.querySelectorAll('[data-option]').forEach((button) => {
+    button.addEventListener('click', () => changeView({ [button.dataset.option]: !view[button.dataset.option] }));
+  });
+  container.querySelectorAll('[data-accent]').forEach((button) => {
+    button.addEventListener('click', () => changeView({ accent: button.dataset.accent }));
+  });
+}
+
+// Updates the view, the pressed state of the settings chips, and the showcase.
+function changeView(changes) {
+  Object.assign(view, changes);
+  const settings = document.getElementById('top-bar');
+  settings.querySelectorAll('[data-theme-choice]').forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.themeChoice === view.theme)));
+  settings.querySelectorAll('[data-option]').forEach((chip) => chip.setAttribute('aria-pressed', String(view[chip.dataset.option])));
+  settings.querySelectorAll('[data-accent]').forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.accent === view.accent)));
+  renderPage();
+}
+
+// Puts the current theme, motion setting and accent on <body>.
+function applyViewToBody() {
+  document.body.classList.toggle('motion-off', view.motionOff);
+  document.body.dataset.theme = view.theme;
+  document.body.style.setProperty('--accent-now', `var(--${view.accent})`);
+  document.body.style.setProperty('--accent-text', `var(--${view.accent}-text)`);
 }
 
 // Wraps one showcase section with its kicker and title.
@@ -305,26 +360,8 @@ function renderEmptyState() {
 
 // ─── Events ───
 
-// Connects the view options and the demo pickers.
+// Connects the demo root picker.
 function bindControls(kit) {
-  kit.querySelectorAll('[data-option]').forEach((button) => {
-    button.addEventListener('click', () => {
-      view[button.dataset.option] = !view[button.dataset.option];
-      renderPage();
-    });
-  });
-  kit.querySelectorAll('[data-theme-choice]').forEach((button) => {
-    button.addEventListener('click', () => {
-      view.theme = button.dataset.themeChoice;
-      renderPage();
-    });
-  });
-  kit.querySelectorAll('[data-accent]').forEach((button) => {
-    button.addEventListener('click', () => {
-      view.accent = button.dataset.accent;
-      renderPage();
-    });
-  });
   kit.querySelectorAll('[data-root]').forEach((button) => {
     button.addEventListener('click', () => {
       kit.querySelectorAll('[data-root]').forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
@@ -335,4 +372,6 @@ function bindControls(kit) {
 // ─── Start ───
 
 getMetronome().setBpm(92);
+applyViewToBody();
+renderPageTopBar();
 renderPage();

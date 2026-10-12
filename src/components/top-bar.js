@@ -1,0 +1,78 @@
+// The top bar: a sticky main menu with the page's sections grouped into categories, and a
+// ⚙ button in the right corner that opens the settings. Each category opens a small menu of
+// its sections; on phone width all categories sit in one "Menu" list instead.
+// Menus use the browser's popover feature, so Esc and clicking outside close them.
+
+import { escapeHtml } from '../utils/html.js';
+
+// ─── Rendering ───
+
+// Returns the bar. groups = [{ label, items: [{ label, href }] }];
+// settingsHtml = what the ⚙ menu holds (or '' for no ⚙ button).
+export function renderTopBar({ brand, groups, settingsHtml = '' }) {
+  const categoryMenus = groups.map((group, index) => renderMenu(`top-bar-group-${index}`, group.label, [group])).join('');
+  const phoneMenu = renderMenu('top-bar-all', 'Menu', groups);
+  const settings = settingsHtml ? renderSettings(settingsHtml) : '';
+
+  return `
+    <nav class="top-bar" aria-label="Main menu">
+      <a class="top-bar__brand" href="#top">${escapeHtml(brand)}</a>
+      <div class="top-bar__groups">${categoryMenus}</div>
+      <div class="top-bar__phone">${phoneMenu}</div>
+      ${settings}
+    </nav>`;
+}
+
+// Returns one menu button and the list it opens.
+function renderMenu(id, label, groups) {
+  const showHeadings = groups.length > 1;
+  const lists = groups.map((group) => `
+    ${showHeadings ? `<span class="top-bar__heading">${escapeHtml(group.label)}</span>` : ''}
+    <ul class="top-bar__list">
+      ${group.items.map((item) => `<li><a class="top-bar__link" href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join('')}
+    </ul>`).join('');
+  return `
+    <button class="top-bar__button" popovertarget="${id}" aria-haspopup="true">${escapeHtml(label)} <span aria-hidden="true">▾</span></button>
+    <div class="top-bar__menu" id="${id}" popover>${lists}</div>`;
+}
+
+// Returns the ⚙ button and the settings panel it opens.
+function renderSettings(settingsHtml) {
+  return `
+    <button class="top-bar__button top-bar__cog" popovertarget="top-bar-settings" aria-label="Settings">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+    <div class="top-bar__menu top-bar__settings" id="top-bar-settings" popover>
+      <span class="top-bar__heading">Settings</span>
+      ${settingsHtml}
+    </div>`;
+}
+
+// ─── Events ───
+
+// Places each menu under its button when it opens, and closes it after a link is chosen.
+export function bindTopBar(container) {
+  const bar = container.querySelector('.top-bar');
+  if (!bar) return;
+  bar.querySelectorAll('[popover]').forEach((menu) => {
+    menu.addEventListener('toggle', (event) => {
+      if (event.newState === 'open') placeUnderButton(bar, menu);
+    });
+    menu.querySelectorAll('.top-bar__link').forEach((link) => {
+      link.addEventListener('click', () => menu.hidePopover());
+    });
+  });
+}
+
+// Lines a menu up under the button that opened it, keeping it on screen.
+function placeUnderButton(bar, menu) {
+  const button = bar.querySelector(`[popovertarget="${menu.id}"]`);
+  const rect = button.getBoundingClientRect();
+  const width = menu.offsetWidth;
+  const left = Math.min(Math.max(8, rect.left), window.innerWidth - width - 8);
+  menu.style.top = `${rect.bottom + 8}px`;
+  menu.style.left = `${left}px`;
+}
