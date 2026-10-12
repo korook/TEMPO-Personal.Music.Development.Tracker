@@ -243,15 +243,38 @@ export function createTapTempo({ maxTaps = 5, resetAfterMs = 2000 } = {}) {
 
 // ─── Browser timer ───
 
-// Returns a timer that calls back every 25 ms from a Web Worker (falls back to setInterval).
+// The ticker that runs inside a Web Worker. Timers in a worker keep steady time when the
+// tab is in the background, unlike page timers, which browsers slow to once a second.
+// It is built from this text (not a separate file) so it also works when a preview is
+// opened straight from the Finder.
+const TICKER_WORKER_CODE = `
+  let intervalId = null;
+  self.onmessage = (event) => {
+    clearInterval(intervalId);
+    if (event.data.start) intervalId = setInterval(() => self.postMessage('tick'), event.data.start);
+  };
+`;
+
+// Returns a timer that calls back every 25 ms, from a Web Worker when the browser allows
+// it and from a normal page timer otherwise (or if the worker fails later).
 function createWorkerTimer() {
   let worker = null;
   let fallbackId = null;
   let callback = null;
+  let running = false;
+
+  // Switches to a page timer, keeping the ticks going if the worker can't run.
+  const useFallback = () => {
+    if (worker) worker.terminate();
+    worker = null;
+    if (running && fallbackId === null) fallbackId = setInterval(() => callback && callback(), TICK_MS);
+  };
 
   try {
-    worker = new Worker(new URL('./ticker-worker.js', import.meta.url), { type: 'module' });
+    const url = URL.createObjectURL(new Blob([TICKER_WORKER_CODE], { type: 'text/javascript' }));
+    worker = new Worker(url);
     worker.onmessage = () => callback && callback();
+    worker.onerror = useFallback;
   } catch {
     worker = null;
   }
@@ -259,12 +282,15 @@ function createWorkerTimer() {
   return {
     start(onTick) {
       callback = onTick;
+      running = true;
       if (worker) worker.postMessage({ start: TICK_MS });
-      else fallbackId = setInterval(onTick, TICK_MS);
+      else useFallback();
     },
     stop() {
+      running = false;
       if (worker) worker.postMessage({ stop: true });
-      else clearInterval(fallbackId);
+      clearInterval(fallbackId);
+      fallbackId = null;
     },
   };
 }
