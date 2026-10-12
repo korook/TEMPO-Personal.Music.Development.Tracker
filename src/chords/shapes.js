@@ -36,6 +36,15 @@ export const OPEN_SHAPES = [
   { root: 'A', quality: 'minor7', frets: 'x02010', fingers: '002010' },
   { root: 'E', quality: 'minor7', frets: '022030', fingers: '012030' },
   { root: 'D', quality: 'minor7', frets: 'xx0211', fingers: '000211' },
+  // Sixths
+  { root: 'C', quality: 'major6', frets: 'x32210', fingers: '042310' },
+  { root: 'A', quality: 'major6', frets: 'x02222', fingers: '001111' },
+  { root: 'D', quality: 'major6', frets: 'xx0202', fingers: '000203' },
+  { root: 'E', quality: 'major6', frets: '022120', fingers: '023140' },
+  { root: 'G', quality: 'major6', frets: '320000', fingers: '210000' },
+  { root: 'A', quality: 'minor6', frets: 'x02212', fingers: '002314' },
+  { root: 'D', quality: 'minor6', frets: 'xx0201', fingers: '000201' },
+  { root: 'E', quality: 'minor6', frets: '022020', fingers: '012030' },
   // Sus and add9
   { root: 'A', quality: 'sus2', frets: 'x02200', fingers: '001200' },
   { root: 'D', quality: 'sus2', frets: 'xx0230', fingers: '000130' },
@@ -94,6 +103,16 @@ export const MOVABLE_SHAPES = {
     { form: 'C', rootString: 1, offsets: [x, 0, -2, 0, -2, x], fingers: [0, 3, 1, 4, 1, 0] },
     { form: 'G', rootString: 0, offsets: [0, -2, -3, -3, d, -2], fingers: [4, 2, 1, 1, 0, 3] },
     { form: 'D', rootString: 2, offsets: [x, x, 0, 2, 1, 1], fingers: [0, 0, 1, 4, 2, 3] },
+  ],
+  'major6': [
+    { form: 'E-root', rootString: 0, offsets: [0, d, -1, 1, 0, x], fingers: [2, 0, 1, 4, 3, 0] },
+    { form: 'A-root', rootString: 1, offsets: [x, 0, 2, 2, 2, 2], fingers: [0, 1, 3, 3, 3, 3] },
+    { form: 'D-root', rootString: 2, offsets: [x, x, 0, 2, 0, 2], fingers: [0, 0, 1, 3, 1, 4] },
+  ],
+  'minor6': [
+    { form: 'E-root', rootString: 0, offsets: [0, d, -1, 0, 0, x], fingers: [2, 0, 1, 3, 4, 0] },
+    { form: 'A-root', rootString: 1, offsets: [x, 0, -2, -1, -2, x], fingers: [0, 4, 1, 2, 1, 0] },
+    { form: 'D-root', rootString: 2, offsets: [x, x, 0, 2, 0, 1], fingers: [0, 0, 1, 3, 1, 2] },
   ],
   'power': [
     { form: 'E-root', rootString: 0, offsets: [0, 2, 2, x, x, x], fingers: [1, 3, 4, 0, 0, 0] },

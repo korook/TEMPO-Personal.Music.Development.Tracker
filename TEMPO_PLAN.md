@@ -163,6 +163,8 @@ Chords are **generated from music theory and validated by tests**, not typed in 
 | Minor 7 | `Cm7` | 0 3 7 10 | R b3 b7 |
 | Sus2 | `Csus2` | 0 2 7 | R 2 5 |
 | Sus4 | `Csus4` | 0 5 7 | R 4 5 |
+| Major 6 | `C6` | 0 4 7 9 | R 3 6 |
+| Minor 6 | `Cm6` | 0 3 7 9 | R b3 6 |
 | Add9 | `Cadd9` | 0 4 7 14 | R 3 9 |
 | Diminished | `Cdim` | 0 3 6 | R b3 b5 |
 | Augmented | `Caug` | 0 4 8 | R 3 #5 |
@@ -170,7 +172,7 @@ Chords are **generated from music theory and validated by tests**, not typed in 
 
 All 12 roots × all qualities. Spell notes correctly for the key: Bb, not A#, in flat keys. The note spelling table lives in `src/theory/notes.js`.
 
-**Open question:** Baranay's "chords chart.jpg" (a roots × chord-types grid with 6, m6 and dim columns) could be the Chords page overview layout; adding 6 (`0 4 7 9`) and m6 (`0 3 7 9`) would extend the table above. Waiting for his answer.
+6 and m6 were added in Phase 4 at Baranay's request (they appear in his "chords chart.jpg"), so the library has 12 roots × 14 types.
 
 ### 5.3 Where voicings come from
 1. **Standard shapes (primary, shown first).** Curated templates with fingerings that move along the neck:

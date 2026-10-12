@@ -113,9 +113,11 @@ describe('chord formulas', () => {
     expect(notesOf('C', 'augmented')).toEqual(['C', 'E', 'G#']);
     expect(notesOf('B', 'half-diminished')).toEqual(['B', 'D', 'F', 'A']);
     expect(notesOf('C', 'add9')).toEqual(['C', 'E', 'G', 'D']);
+    expect(notesOf('C', 'major6')).toEqual(['C', 'E', 'G', 'A']);
+    expect(notesOf('F#', 'minor6')).toEqual(['F#', 'A', 'C#', 'D#']);
   });
 
-  it('builds 12 roots × 12 qualities', () => {
+  it('builds 12 roots × 14 qualities', () => {
     expect(allChords()).toHaveLength(12 * Object.keys(CHORD_QUALITIES).length);
   });
 
@@ -133,6 +135,7 @@ describe('chord formulas', () => {
     const formulas = {
       'major': [0, 4, 7], 'minor': [0, 3, 7], 'power': [0, 7], 'dominant7': [0, 4, 7, 10],
       'major7': [0, 4, 7, 11], 'minor7': [0, 3, 7, 10], 'sus2': [0, 2, 7], 'sus4': [0, 5, 7],
+      'major6': [0, 4, 7, 9], 'minor6': [0, 3, 7, 9],
       'add9': [0, 4, 7, 2], 'diminished': [0, 3, 6], 'augmented': [0, 4, 8], 'half-diminished': [0, 3, 6, 10],
     };
     for (const chord of allChords()) {

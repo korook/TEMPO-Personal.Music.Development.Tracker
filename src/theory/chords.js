@@ -9,7 +9,7 @@ import { noteNameToPitchClass, preferredRootName, mod12 } from './notes.js';
 
 // Each quality: chord symbol suffix, readable name, tones as degree labels,
 // which tones a voicing must contain, and whether it counts as minor-family for root naming.
-// Triads must keep their 5th; only 7th chords and add9 may leave it out (plan 5.2).
+// Triads must keep their 5th; only 6th, 7th and add9 chords may leave it out (plan 5.2).
 export const CHORD_QUALITIES = {
   'major': { suffix: '', name: 'major', tones: ['1', '3', '5'], required: ['1', '3', '5'], minorFamily: false },
   'minor': { suffix: 'm', name: 'minor', tones: ['1', 'b3', '5'], required: ['1', 'b3', '5'], minorFamily: true },
@@ -19,6 +19,8 @@ export const CHORD_QUALITIES = {
   'minor7': { suffix: 'm7', name: 'minor 7th', tones: ['1', 'b3', '5', 'b7'], required: ['1', 'b3', 'b7'], minorFamily: true },
   'sus2': { suffix: 'sus2', name: 'suspended 2nd', tones: ['1', '2', '5'], required: ['1', '2', '5'], minorFamily: false },
   'sus4': { suffix: 'sus4', name: 'suspended 4th', tones: ['1', '4', '5'], required: ['1', '4', '5'], minorFamily: false },
+  'major6': { suffix: '6', name: 'major 6th', tones: ['1', '3', '5', '6'], required: ['1', '3', '6'], minorFamily: false },
+  'minor6': { suffix: 'm6', name: 'minor 6th', tones: ['1', 'b3', '5', '6'], required: ['1', 'b3', '6'], minorFamily: true },
   'add9': { suffix: 'add9', name: 'add 9', tones: ['1', '3', '5', '9'], required: ['1', '3', '9'], minorFamily: false },
   'diminished': { suffix: 'dim', name: 'diminished', tones: ['1', 'b3', 'b5'], required: ['1', 'b3', 'b5'], minorFamily: true },
   'augmented': { suffix: 'aug', name: 'augmented', tones: ['1', '3', '#5'], required: ['1', '3', '#5'], minorFamily: false },
