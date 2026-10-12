@@ -55,7 +55,7 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 | 0. Set up ✅ | Vite, structure, CLAUDE.md, Vitest, v1 code moved into modules with no behaviour change | App runs as before from `npm run dev` |
 | 1. Core ✅ | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth | Metronome stays in time over 5 min; migration test passes |
 | 2. Chord engine ✅ | Shapes, generator, fingering, validation tests (§5.4) | All tests pass incl. C and F regressions; every chord has ≥ 5 voicings |
-| 3. Design system | Tokens, fonts, components, art placeholders | One component page shows every component in its states |
+| 3. Design system ✅ | Tokens, fonts, components, art placeholders | One component page shows every component in its states |
 | 4. Pages | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
 | 5. Ear training | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
 | 6. Theory scaffold | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
@@ -82,3 +82,10 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - Curated shapes live in `src/chords/shapes.js`; tests/chords.test.js checks every voicing against plan §5.4.
 - Found shapes need 4+ strings (triads are standard shapes) and may only use open strings up to fret 7.
 - The v1 Guitar page shows each chord's first standard voicing until Phase 4 builds the real Chords page.
+
+## Notes from Phase 3
+- Component page: `components.html` (built and published next to the app). Build Phase 4 pages from these parts only.
+- New styles only apply inside an element with class `stage`; pages switch to `<body class="stage">` in Phase 4, then the v1 styles and tokens get deleted.
+- Fonts picked: Anton (display), Limelight (one deco word per hero), Hanken Grotesk (text), DM Mono, Caveat (stand-in for Baranay's handwriting font). The candidates stay on the component page for comparison.
+- Text on coral / mustard / mint / pink / paper is `--ink` (dark). `tests/tokens.test.js` checks contrast.
+- `--accent-now` holds the current section's accent; set it per page (coral Today/Chords/Practice, mint Ear, mustard Theory, pink Progress).
