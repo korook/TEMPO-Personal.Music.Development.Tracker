@@ -2,7 +2,8 @@
 // mastery bars and the session log. Same output as v1.
 
 import { CHORDS_V1 } from '../data/chords-v1.js';
-import { loadSessions, saveSessions, loadChordProgress } from '../state/storage.js';
+import { getState, updateState } from '../state/storage.js';
+import { loadChordProgress } from '../state/legacy-ratings.js';
 import { minutesOnDay } from '../practice/history.js';
 import { renderGreeting } from '../components/header.js';
 import { renderCumulativeChart, renderChordTypeDonut } from '../components/charts.js';
@@ -14,7 +15,7 @@ import { daysBefore } from '../utils/time.js';
 export function renderProgressPage() {
   renderGreeting();
   const page = document.getElementById('pg-progress');
-  const sessions = loadSessions();
+  const sessions = getState().sessions;
   const progress = loadChordProgress();
 
   page.innerHTML = `
@@ -67,8 +68,8 @@ function renderSessionLogCard(sessions) {
   const log = sessions.length === 0
     ? '<div style="padding:24px;text-align:center;color:var(--tx3)">No sessions yet. Start practicing!</div>'
     : sessions.slice().reverse().slice(0, 30).map((session) => {
-      const date = new Date(session.date).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
-      return `<div class="sr"><span class="sd">${date}</span><span class="sm">${session.mins}m</span><span style="color:var(--tx3)">Practice session</span></div>`;
+      const date = new Date(session.end).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `<div class="sr"><span class="sd">${date}</span><span class="sm">${session.minutes}m</span><span style="color:var(--tx3)">Practice session</span></div>`;
     }).join('');
 
   const clearButton = sessions.length > 0
@@ -90,7 +91,9 @@ function bindEvents(page) {
   if (!clearButton) return;
   clearButton.addEventListener('click', () => {
     if (confirm('Clear all sessions?')) {
-      saveSessions([]);
+      updateState((state) => {
+        state.sessions = [];
+      });
       renderProgressPage();
     }
   });

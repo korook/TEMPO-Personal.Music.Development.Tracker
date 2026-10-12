@@ -3,7 +3,7 @@
 
 import { TRANSITION_DRILLS } from '../data/progressions.js';
 import { FINGER_EXERCISES } from '../data/exercises.js';
-import { loadSessions, saveSessions } from '../state/storage.js';
+import { updateState, makeId } from '../state/storage.js';
 import { renderGreeting } from '../components/header.js';
 import { formatClock } from '../utils/time.js';
 import {
@@ -145,9 +145,11 @@ function tickTimer() {
 function stopTimerAndLog() {
   clearInterval(timer.intervalId);
   timer.intervalId = null;
+  const end = new Date();
+  const start = new Date(end.getTime() - timer.seconds * 1000);
   const minutes = Math.max(1, Math.round(timer.seconds / 60));
-  const sessions = loadSessions();
-  sessions.push({ date: new Date().toISOString(), mins: minutes });
-  saveSessions(sessions);
+  updateState((state) => {
+    state.sessions.push({ id: makeId(), start: start.toISOString(), end: end.toISOString(), minutes, blocks: [], stub: null });
+  });
   timer.seconds = 0;
 }

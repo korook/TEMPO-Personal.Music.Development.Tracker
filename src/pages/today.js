@@ -2,7 +2,8 @@
 // skill radar, chord mastery grid and quick actions. Same output as v1.
 
 import { CHORDS_V1 } from '../data/chords-v1.js';
-import { loadSessions, loadChordProgress } from '../state/storage.js';
+import { getState } from '../state/storage.js';
+import { loadChordProgress } from '../state/legacy-ratings.js';
 import { totalMinutes, weeklyMinutes, countStreak } from '../practice/history.js';
 import { renderGreeting } from '../components/header.js';
 import { renderWeeklyChart, renderSkillRadar } from '../components/charts.js';
@@ -14,7 +15,7 @@ import { selectChord } from './chords.js';
 // Draws the whole Dashboard page from the stored sessions and chord progress.
 export function renderTodayPage() {
   renderGreeting();
-  const sessions = loadSessions();
+  const sessions = getState().sessions;
   const progress = loadChordProgress();
 
   const page = document.getElementById('pg-dashboard');

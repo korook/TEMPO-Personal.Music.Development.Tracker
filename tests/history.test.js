@@ -1,5 +1,5 @@
 // Tests for the session summaries and time formatting moved over from v1.
-// They pin down v1 behaviour so Phase 0 can prove nothing changed.
+// Sessions use the v2 shape ({ end, minutes }).
 
 import { describe, it, expect } from 'vitest';
 import { totalMinutes, weeklyMinutes, minutesOnDay, countStreak } from '../src/practice/history.js';
@@ -9,7 +9,7 @@ const NOW = new Date('2026-10-12T18:00:00');
 
 // Builds a session logged `days` days before NOW, lasting `mins` minutes.
 function sessionDaysAgo(days, mins) {
-  return { date: daysBefore(NOW, days).toISOString(), mins };
+  return { end: daysBefore(NOW, days).toISOString(), minutes: mins };
 }
 
 // ─── Time formatting ───

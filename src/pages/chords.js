@@ -3,7 +3,7 @@
 // The +10% model and song lists are removed in later phases (TEMPO_PLAN.md sections 5–6).
 
 import { CHORDS_V1, STRING_NAMES, STRING_COLOURS } from '../data/chords-v1.js';
-import { loadChordProgress, saveChordProgress } from '../state/storage.js';
+import { loadChordProgress, saveChordProgress } from '../state/legacy-ratings.js';
 import { renderGreeting } from '../components/header.js';
 import { renderChordDiagram } from '../components/chord-diagram.js';
 

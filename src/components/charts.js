@@ -141,7 +141,7 @@ export function renderCumulativeChart(sessions) {
 
   const days = Array.from({ length: 14 }).map((_, index) => {
     const day = daysBefore(new Date(), 13 - index);
-    const upToDay = sessions.filter((session) => new Date(session.date) <= day);
+    const upToDay = sessions.filter((session) => new Date(session.end) <= day);
     return {
       label: day.toLocaleDateString('en', { month: 'short', day: 'numeric' }),
       minutes: totalMinutes(upToDay),
