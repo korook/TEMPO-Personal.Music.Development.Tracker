@@ -54,11 +54,18 @@ function renderMetricTiles(state) {
 
   return `
     <div class="metrics">
-      ${tile('Total practice', total, 'm', `${(total / 60).toFixed(1)} hours`)}
+      ${tile('Total practice', total, 'm', total >= 60 ? `${(total / 60).toFixed(1)} hours` : 'minutes so far')}
       ${tile('Streak', streak.days, 'd', streakNote)}
-      ${tile('Shapes practiced', shapes.length, '', shapes.length ? `${cleanShapes} clean 8/10 or better` : 'Add one from Chords')}
+      ${tile('Shapes practiced', shapes.length, '', shapesNote(shapes.length, cleanShapes))}
       ${tile('This week', thisWeek, 'm', thisWeek >= 60 ? 'On track for 60m' : `${60 - thisWeek}m to 60m`)}
     </div>`;
+}
+
+// The line under "Shapes practiced".
+function shapesNote(total, clean) {
+  if (total === 0) return 'Add one from Chords';
+  if (clean === 0) return 'None clean 8/10 yet';
+  return `${clean} of ${total} clean 8/10 or better`;
 }
 
 // One number tile.

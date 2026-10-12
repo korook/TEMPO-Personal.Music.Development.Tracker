@@ -35,6 +35,7 @@ export function buildSetlist(state, now = new Date()) {
   };
 
   const blocks = [warmUpBlock(state, now)];
+  used.add(blocks[0].itemId);
   const fix = take(['fix']) || take(['new', 'expand', 'review', 'recall']);
   if (fix) blocks.push(practiceBlock('fix', fix, 5));
   const push = take(['push']) || take(['context', 'expand', 'new']);

@@ -166,6 +166,16 @@ describe('openings', () => {
     expect(voicingForItem(expand.create).frets).toEqual([null, 3, 5, 5, 5, 3]);
   });
 
+  it('never puts the same item in two blocks (the warm-up included)', () => {
+    const state = createEmptyState(NOW);
+    const first = buildSetlist(state, NOW);
+    const warmUp = first[0].itemId;
+    state.reps.push(...[80, 80, 80].map((bpm) => rep(warmUp, 'bpm-pass', { bpm, clean: true, mistakes: [] })));
+    const second = buildSetlist(state, NOW);
+    const ids = second.filter((block) => block.itemId).map((block) => block.itemId);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
   it('puts a shape added from the Chords page into the next setlist', () => {
     const state = createEmptyState(NOW);
     const added = ensureItem(state, voicingItem(getVoicingsForSymbol('Bm', { found: false })[0], NOW));

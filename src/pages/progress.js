@@ -85,15 +85,15 @@ function renderHeatmapCard(sessions) {
   const cells = Array.from({ length: 28 }).map((_, index) => {
     const day = daysBefore(new Date(), 27 - index);
     const minutes = minutesOnDay(sessions, day);
-    const opacity = minutes === 0 ? 0.06 : Math.min(1, 0.15 + minutes / 45);
+    const opacity = minutes === 0 ? 0.08 : Math.min(1, 0.4 + minutes / 60);
     const label = `${day.toLocaleDateString('en', { month: 'short', day: 'numeric' })}:${minutes}m`;
-    return `<div class="hc" data-t="${label}" style="background:var(--accent);opacity:${opacity}"></div>`;
+    return `<div class="hc" data-t="${label}" title="${label}" style="background:var(--accent-text);opacity:${opacity}"></div>`;
   }).join('');
 
   return `
     <div class="card"><div class="card-t"><span class="dot"></span>Last 28 days</div>
       <div class="hm">${cells}</div>
-      <div class="legend"><span><i style="background:var(--accent);opacity:.06"></i>None</span><span><i style="background:var(--accent);opacity:.3"></i>Light</span><span><i style="background:var(--accent);opacity:.6"></i>Medium</span><span><i style="background:var(--accent);opacity:1"></i>Heavy</span></div>
+      <div class="legend"><span><i style="background:var(--accent-text);opacity:.08"></i>None</span><span><i style="background:var(--accent-text);opacity:.45"></i>A few minutes</span><span><i style="background:var(--accent-text);opacity:.75"></i>20 min</span><span><i style="background:var(--accent-text);opacity:1"></i>40 min +</span></div>
     </div>`;
 }
 

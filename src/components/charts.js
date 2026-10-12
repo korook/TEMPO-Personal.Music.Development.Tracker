@@ -116,7 +116,7 @@ export function renderCumulativeChart(sessions) {
         borderColor: colour('bronze'),
         backgroundColor: withAlpha(colour('bronze'), 0.12),
         fill: true,
-        tension: 0.35,
+        cubicInterpolationMode: 'monotone',
         pointRadius: 2,
         pointBackgroundColor: colour('bronze'),
         borderWidth: 1.5,
