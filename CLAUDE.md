@@ -1,0 +1,66 @@
+# Tempo: notes for Claude Code
+
+A personal guitar practice website for Baranay (guitarist, illustrator, design student).
+Personal use first, possibly published later. The full brief is `TEMPO_PLAN.md`. Read it before starting a new phase.
+
+## How to work
+- Work **phase by phase** (table below). At the end of each phase: stop, summarize what changed, and wait for approval.
+- Ask before deciding anything the brief leaves open.
+- Commit after each meaningful step, with clear messages.
+
+## Core decisions (plan §1)
+- **Look:** stage poster × Baranay's own art. Dark stage, warm coral, bold display type, collage (vinyl, taped cards, polaroids, stubs). Placeholder frames until the art exists. Never stock or AI images.
+- **Practice model:** no "+10%" buttons and no 100% ceiling. Progress comes from measured attempts, and there is always a next opening (§6).
+- **Chords:** generated from theory and validated by Vitest, never typed in by hand (§5).
+- **Ear training:** build it (§8). **Theory:** scaffolding now, content later (§9).
+- **Microphone:** later, but the data model must allow it.
+
+## Stack and layout (plan §11)
+Vite + vanilla JS (ES modules), Chart.js, Vitest. No framework.
+
+```
+index.html
+src/main.js        app start      src/router.js   tabs and page switching
+src/theory/        notes, intervals, scales, chord formulas (one shared engine)
+src/chords/        shapes, generator, fingering
+src/practice/      items, measures, openings, spacing, session, history
+src/audio/         engine, metronome, guitar synth
+src/ear/           one file per exercise + scoring
+src/state/         storage (schema, migration, backup), settings
+src/data/          static lists (chords-v1 is temporary, replaced in Phase 2)
+src/pages/         one file per page
+src/components/    reusable UI pieces
+src/utils/         small helpers (time formatting)
+src/styles/        tokens.css, base.css, components.css, pages.css
+content/theory/    lecture.md, exercises.json, quiz.json per topic
+assets/art/        heroes, characters, covers, textures, stamps, icons
+tests/             Vitest tests
+```
+
+Commands: `npm run dev`, `npm test`, `npm run build`.
+
+## Code conventions (Baranay's style)
+- Every file starts with a comment saying what it does.
+- Group functions under section comments: `// ─── Rendering ───`.
+- Readable names (`renderChordsPage`, not `rGuitar`).
+- A one-line comment above each function explaining its purpose.
+- No minified one-liners. Small functions, one job each.
+- All copy in plain, human English. Encouraging and specific, no hype words.
+- Accessibility: real buttons, visible focus, text ≥ 12px, WCAG AA contrast, respect `prefers-reduced-motion`.
+- Works at phone width with large tap targets.
+
+## Phases (plan §12)
+| Phase | Work | Done when |
+|---|---|---|
+| 0. Set up ✅ | Vite, structure, CLAUDE.md, Vitest, v1 code moved into modules with no behaviour change | App runs as before from `npm run dev` |
+| 1. Core | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth | Metronome stays in time over 5 min; migration test passes |
+| 2. Chord engine | Shapes, generator, fingering, validation tests (§5.4) | All tests pass incl. C and F regressions; every chord has ≥ 5 voicings |
+| 3. Design system | Tokens, fonts, components, art placeholders | One component page shows every component in its states |
+| 4. Pages | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
+| 5. Ear training | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
+| 6. Theory scaffold | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
+
+## Known v1 issues still in the code (fixed in later phases)
+Wrong C and F shapes, G tip/fingering mismatch, unverified song lists, self-rated mastery, fake radar values,
+Mon→Sun weekly labels, streak showing 0 before today's practice, drifting `setInterval` metronome,
+hard-coded greeting name, clickable `div`s and small text. See plan §2.
