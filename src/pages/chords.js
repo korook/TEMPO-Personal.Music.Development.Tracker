@@ -261,6 +261,11 @@ function handleArrowKeys(event) {
   if (!match) return;
   event.preventDefault();
   const symbol = decodeURIComponent(match[1]);
-  const { root, quality } = parseChordSymbol(symbol);
-  stepVoicing(symbol, getVoicings(root, quality).length, event.key === 'ArrowRight' ? 1 : -1);
+  let chord;
+  try {
+    chord = parseChordSymbol(symbol);
+  } catch {
+    return; // a broken chord link: nothing to step through
+  }
+  stepVoicing(symbol, getVoicings(chord.root, chord.quality).length, event.key === 'ArrowRight' ? 1 : -1);
 }
