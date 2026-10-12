@@ -310,21 +310,23 @@
   margin: 0 auto;
 }
 
-/* ═══════════════ Stage-poster components (Phase 3) ═══════════════
-   Everything below belongs to the new design system and only applies inside
-   an element with class "stage" (the component page now; every page from Phase 4).
-   The v1 styles above are deleted in Phase 4. */
+/* ═══════════════ Tempo design system components ═══════════════
+   Analog meets modern: device-body panels, dark inset screens, keycaps, LEDs, small
+   spec-sheet labels, plus paper pieces (receipts, label strips, polaroids).
+   Everything below applies inside an element with class "stage", except the chord
+   diagram and neck parts, which the old Guitar page also uses. The v1 styles above are
+   deleted in Phase 4. */
 
 /* ─── Stage base ─── */
-/* The v1 styles set the root to 14px; the stage design's rem sizes assume 16px. */
+/* The v1 styles set the root to 14px; the design system's rem sizes assume 16px. */
 html:has(> body.stage) {
   font-size: 100%;
 }
 
 .stage {
-  background: var(--stage) var(--grain);
+  background: var(--dot-grid), var(--body);
   color: var(--text);
-  font-family: var(--font-text);
+  font-family: var(--font-ui);
   font-size: var(--size-base);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -345,45 +347,86 @@ html:has(> body.stage) {
   white-space: nowrap;
 }
 
-/* ─── Section heads ─── kicker (handwritten), poster title, one deco word at most */
+/* ─── Labels ─── tiny uppercase mono, like the print on a device face */
+.label {
+  font: 500 var(--size-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ─── Section heads ─── an indexed label, then a wide grotesk title */
 .section-head {
   margin-bottom: var(--space-5);
 }
 
 .section-head__kicker {
-  display: block;
-  font-family: var(--font-hand);
-  font-size: var(--size-hand);
-  color: var(--accent-now);
-  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  font: 500 var(--size-xs) / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.section-head__kicker::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-now);
 }
 
 .section-head__title {
-  font-family: var(--font-display);
-  font-weight: 400;
+  font-family: var(--font-ui);
+  font-weight: 650;
+  font-stretch: 112%;
   font-size: var(--size-2xl);
-  line-height: 0.95;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .section-head__title--hero {
   font-size: var(--size-hero);
+  font-weight: 700;
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
 }
 
-.section-head__deco {
-  font-family: var(--font-deco);
-  color: var(--accent-now);
-  text-transform: none;
+.section-head__note {
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: var(--size-hand);
+  color: var(--accent-text);
+  letter-spacing: 0;
 }
 
 .section-head__lead {
-  margin-top: var(--space-3);
-  max-width: 52ch;
+  margin-top: var(--space-4);
+  max-width: 56ch;
   color: var(--text-muted);
 }
 
-/* ─── Buttons ─── dark ink on accents (white on coral fails contrast) */
+/* ─── Panels and screens ─── */
+.panel {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--body-2);
+  box-shadow: var(--shadow-panel);
+}
+
+.screen {
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  background: var(--screen);
+  color: var(--screen-text);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
+}
+
+/* ─── Keys (buttons) ─── keycaps that press down */
 .button {
   display: inline-flex;
   align-items: center;
@@ -391,43 +434,44 @@ html:has(> body.stage) {
   gap: var(--space-2);
   min-height: var(--tap-target);
   padding: 0 var(--space-5);
-  border: 2px solid transparent;
-  border-radius: var(--radius-pill);
-  font: 700 var(--size-sm) / 1 var(--font-text);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--body-2);
+  color: var(--text);
+  box-shadow: 0 2px 0 var(--key-shadow);
+  font: 600 var(--size-sm) / 1 var(--font-ui);
+  font-stretch: 110%;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform var(--fast) var(--ease), background var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+  transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+
+.button:hover {
+  background: var(--body-3);
 }
 
 .button:active {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(2px);
+  box-shadow: 0 0 0 var(--key-shadow);
 }
 
 .button--primary {
   background: var(--accent-now);
+  border-color: transparent;
   color: var(--ink);
 }
 
 .button--primary:hover {
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-now) 25%, transparent);
+  background: color-mix(in srgb, var(--accent-now) 88%, #000);
 }
 
-.button--ghost {
-  background: transparent;
-  color: var(--text);
-  border-color: var(--stage-line);
-}
-
-.button--ghost:hover {
-  background: var(--stage-3);
-}
-
-.button--live {
-  background: var(--stage-2);
-  color: var(--text);
-  border-color: var(--violet-line);
-  box-shadow: 0 0 24px var(--violet-glow);
+.button--live::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--phosphor);
+  box-shadow: 0 0 0 2px var(--screen), 0 0 10px var(--phosphor-glow);
 }
 
 .button--icon {
@@ -436,81 +480,100 @@ html:has(> body.stage) {
   font-size: var(--size-lg);
 }
 
+.button--round {
+  border-radius: 50%;
+}
+
 .button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
 }
 
-/* ─── Chips ─── tags, filters and small stats */
+/* ─── Chips ─── tags with an LED dot, toggles, and small screen readouts */
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 6px;
   min-height: 28px;
   padding: 0 var(--space-3);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--stage-line);
-  background: var(--stage-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--body-2);
   color: var(--text-muted);
-  font: 600 var(--size-xs) / 1 var(--font-text);
+  font: 500 var(--size-xs) / 1 var(--font-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.chip--standard { color: var(--text); }
-.chip--found { color: var(--mint); border-color: color-mix(in srgb, var(--mint) 40%, transparent); }
-.chip--stretch { color: var(--mustard); border-color: color-mix(in srgb, var(--mustard) 40%, transparent); }
-.chip--easy { color: var(--mint); }
-.chip--medium { color: var(--mustard); }
-.chip--hard { color: var(--coral); }
+.chip[class*='chip--']::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dot, var(--text-faint));
+}
+
+.chip--standard { --dot: var(--text); color: var(--text); }
+.chip--found { --dot: var(--verdigris); }
+.chip--stretch { --dot: var(--shell); }
+.chip--easy { --dot: var(--verdigris); }
+.chip--medium { --dot: var(--sonic); }
+.chip--hard { --dot: var(--bronze); }
+.chip--picked { --dot: var(--accent-now); color: var(--text); }
 
 button.chip {
   min-height: var(--tap-target);
+  font-size: var(--size-xs);
   cursor: pointer;
-  font-size: var(--size-sm);
+  box-shadow: 0 2px 0 var(--key-shadow);
 }
 
 button.chip:hover {
-  background: var(--stage-3);
+  background: var(--body-3);
 }
 
 button.chip[aria-pressed='true'] {
-  background: var(--accent-now);
-  border-color: var(--accent-now);
-  color: var(--ink);
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--body);
 }
 
-.stat-chip {
+.readout {
   display: inline-flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--stage-line);
+  gap: var(--space-1);
+  min-width: 120px;
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius);
-  background: var(--stage-2);
+  background: var(--screen);
+  color: var(--screen-text);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
 }
 
-.stat-chip__value {
-  font: 500 var(--size-xl) / 1.1 var(--font-mono);
-  color: var(--text);
+.readout__value {
+  font-family: var(--font-dots);
+  font-weight: 700;
+  font-size: var(--size-2xl);
+  line-height: 1;
+  color: var(--accent-now);
 }
 
-.stat-chip__label {
-  font-size: var(--size-xs);
-  color: var(--text-faint);
+.readout__label {
+  font: 500 var(--size-xs) / 1.2 var(--font-mono);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  color: var(--screen-muted);
 }
 
-/* ─── Marquee ticker ─── scrolls today's openings; static when motion is reduced */
+/* ─── Ticker ─── a dot-matrix sign on a screen strip; still when motion is reduced */
 .ticker {
   position: relative;
   overflow: hidden;
-  background: var(--paper);
-  color: var(--ink);
-  border-block: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--screen);
+  color: var(--screen-text);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
 }
 
 .ticker__track {
@@ -536,79 +599,90 @@ button.chip[aria-pressed='true'] {
 .ticker__item {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-4);
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-5) var(--space-3) 0;
   white-space: nowrap;
-  font-family: var(--font-display);
+  font-family: var(--font-dots);
+  font-weight: 700;
   font-size: var(--size-lg);
-  text-transform: uppercase;
   letter-spacing: 0.02em;
 }
 
-.ticker__item::after {
-  content: '✦';
-  color: var(--coral-deep);
-  font-size: var(--size-sm);
+.ticker__item::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-now);
 }
 
 @keyframes ticker-scroll {
   to { transform: translateX(-50%); }
 }
 
-/* ─── Taped card ─── paper card with a strip of tape, slightly rotated */
+/* ─── Setlist card ─── a module with an index, a label-maker strip and an LED */
 .taped-card {
   position: relative;
-  padding: var(--space-6) var(--space-5) var(--space-5);
-  border-radius: var(--radius);
-  background: var(--card-colour, var(--paper));
-  color: var(--ink);
-  box-shadow: var(--shadow-paper);
-  transform: rotate(var(--tilt, -1.2deg));
-  transition: transform var(--medium) var(--ease);
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--body-2);
+  box-shadow: var(--shadow-panel);
 }
 
-.taped-card::before {
-  content: '';
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  width: 84px;
-  height: 26px;
-  background: var(--tape);
-  transform: translateX(-50%) rotate(-3deg);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+.taped-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.taped-card:not([class*='taped-card--coral']):not([class*='taped-card--mint']):not([class*='taped-card--mustard']):not([class*='taped-card--pink'])::before {
-  background: var(--tape-kraft);
+.taped-card__index {
+  font: 500 var(--size-xs) / 1 var(--font-mono);
+  color: var(--text-faint);
 }
 
-.taped-card:hover {
-  transform: rotate(0deg) translateY(-2px);
+.taped-card__led {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--body-3);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
-.taped-card--coral { --card-colour: var(--coral); }
-.taped-card--mint { --card-colour: var(--mint); }
-.taped-card--mustard { --card-colour: var(--mustard); }
-.taped-card--pink { --card-colour: var(--pink); }
-
+/* Label-maker strip: dark tape with light raised letters, stuck on slightly crooked. */
 .taped-card__kicker {
-  font: 600 var(--size-xs) / 1 var(--font-mono);
-  letter-spacing: 0.1em;
+  justify-self: start;
+  padding: 3px 10px;
+  border-radius: 3px;
+  background: var(--card-colour, var(--screen));
+  color: var(--card-ink, var(--screen-text));
+  font: 600 var(--size-xs) / 1.4 var(--font-mono);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  transform: rotate(var(--tilt, -1.2deg));
+  box-shadow: 0 0 0 1px var(--line), 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.25);
 }
+
+.taped-card--bronze { --card-colour: var(--bronze); --card-ink: var(--ink); }
+.taped-card--verdigris { --card-colour: var(--verdigris); --card-ink: var(--ink); }
+.taped-card--sonic { --card-colour: var(--sonic); --card-ink: var(--ink); }
+.taped-card--shell { --card-colour: var(--shell); --card-ink: var(--ink); }
 
 .taped-card__title {
-  margin: var(--space-2) 0;
-  font-family: var(--font-display);
-  font-weight: 400;
+  font-family: var(--font-ui);
+  font-weight: 650;
+  font-stretch: 112%;
   font-size: var(--size-xl);
-  line-height: 1;
-  text-transform: uppercase;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 
 .taped-card__body {
   font-size: var(--size-sm);
+  color: var(--text-muted);
 }
 
 .taped-card__footer {
@@ -616,40 +690,42 @@ button.chip[aria-pressed='true'] {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  margin-top: var(--space-4);
 }
 
 .taped-card__note {
   font-family: var(--font-hand);
+  font-weight: 500;
   font-size: var(--size-hand);
   line-height: 1;
+  color: var(--accent-text);
 }
 
 .taped-card__meta {
-  font: 500 var(--size-sm) / 1 var(--font-mono);
-}
-
-.taped-card .button--ghost {
-  color: var(--ink);
-  border-color: rgba(13, 12, 14, 0.35);
-}
-
-.taped-card .button--ghost:hover {
-  background: rgba(13, 12, 14, 0.08);
+  font: 500 var(--size-xs) / 1 var(--font-mono);
+  color: var(--text-muted);
 }
 
 .taped-card--current {
-  outline: 3px solid var(--text);
-  outline-offset: 4px;
+  border-color: var(--text);
+  box-shadow: 0 0 0 1px var(--text), var(--shadow-panel);
+}
+
+.taped-card--current .taped-card__led {
+  background: var(--phosphor);
+  box-shadow: 0 0 0 2px var(--screen), 0 0 10px var(--phosphor-glow);
 }
 
 .taped-card--done {
-  filter: saturate(0.55);
+  opacity: 0.6;
 }
 
 .taped-card--done .taped-card__title {
   text-decoration: line-through;
-  text-decoration-thickness: 3px;
+  text-decoration-thickness: 2px;
+}
+
+.taped-card--done .taped-card__led {
+  background: var(--text-faint);
 }
 
 /* ─── Polaroid ─── milestones and artwork */
@@ -661,13 +737,15 @@ button.chip[aria-pressed='true'] {
   padding: var(--space-3) var(--space-3) var(--space-5);
   background: var(--paper);
   color: var(--ink);
+  border-radius: 3px;
   box-shadow: var(--shadow-paper);
-  transform: rotate(var(--tilt, 1.5deg));
+  transform: rotate(var(--tilt, 1.2deg));
 }
 
 .polaroid__caption {
   margin-top: var(--space-3);
   font-family: var(--font-hand);
+  font-weight: 500;
   font-size: var(--size-hand);
   line-height: 1.1;
   text-align: center;
@@ -675,57 +753,38 @@ button.chip[aria-pressed='true'] {
 
 .polaroid__date {
   display: block;
-  font: 500 var(--size-xs) / 1.4 var(--font-mono);
+  font: 500 var(--size-xs) / 1.6 var(--font-mono);
   color: var(--ink-muted);
 }
 
-/* ─── Ticket stub ─── one per practice session */
+.polaroid .art-placeholder {
+  --line: #cfc9bd;
+  background: #efebe3;
+  color: var(--ink-muted);
+}
+
+.polaroid .art-placeholder__label {
+  color: var(--ink);
+}
+
+/* ─── Receipt (session stub) ─── thermal paper with torn zig-zag edges */
 .stub {
-  --notch: 10px;
-  --side: 104px;
+  --tooth: 8px;
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr var(--side);
-  max-width: 520px;
+  max-width: 360px;
+  padding: calc(var(--space-5) + var(--tooth)) var(--space-5);
   background: var(--paper);
   color: var(--ink);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-paper);
-  /* round notches at the top and bottom of the tear line */
+  font: 400 var(--size-sm) / 1.5 var(--font-mono);
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.18));
   -webkit-mask:
-    radial-gradient(circle var(--notch) at calc(100% - var(--side)) 0, transparent 98%, #000 100%),
-    radial-gradient(circle var(--notch) at calc(100% - var(--side)) 100%, transparent 98%, #000 100%);
-  -webkit-mask-composite: source-in;
+    conic-gradient(from -45deg at bottom, transparent, #000 1deg 89deg, transparent 90deg) bottom / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    conic-gradient(from 135deg at top, transparent, #000 1deg 89deg, transparent 90deg) top / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - var(--tooth) * 2) no-repeat;
   mask:
-    radial-gradient(circle var(--notch) at calc(100% - var(--side)) 0, transparent 98%, #000 100%),
-    radial-gradient(circle var(--notch) at calc(100% - var(--side)) 100%, transparent 98%, #000 100%);
-  mask-composite: intersect;
-}
-
-.stub__main {
-  padding: var(--space-4) var(--space-5);
-}
-
-.stub__side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4) var(--space-2);
-  border-left: 2px dashed rgba(13, 12, 14, 0.35);
-  text-align: center;
-}
-
-.stub__minutes {
-  font-family: var(--font-display);
-  font-size: var(--size-2xl);
-  line-height: 1;
-}
-
-.stub__unit {
-  font: 600 var(--size-xs) / 1 var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+    conic-gradient(from -45deg at bottom, transparent, #000 1deg 89deg, transparent 90deg) bottom / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    conic-gradient(from 135deg at top, transparent, #000 1deg 89deg, transparent 90deg) top / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - var(--tooth) * 2) no-repeat;
 }
 
 .stub__header {
@@ -733,9 +792,9 @@ button.chip[aria-pressed='true'] {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 0 var(--space-3);
-  font: 600 var(--size-xs) / 1.4 var(--font-mono);
+  font-size: var(--size-xs);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--ink-muted);
 }
 
@@ -744,28 +803,53 @@ button.chip[aria-pressed='true'] {
 }
 
 .stub__title {
-  margin: var(--space-1) 0 var(--space-3);
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: var(--size-xl);
-  text-transform: uppercase;
+  margin: var(--space-2) 0 0;
+  font: 650 var(--size-lg) / 1.15 var(--font-ui);
+  font-stretch: 112%;
+  letter-spacing: -0.01em;
+}
+
+.stub__rule {
+  margin: var(--space-3) 0;
+  border: 0;
+  border-top: 1px dashed rgba(26, 24, 22, 0.4);
+}
+
+.stub__minutes {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.stub__minutes-value {
+  font-family: var(--font-dots);
+  font-weight: 800;
+  font-size: 3.5rem;
   line-height: 1;
+}
+
+.stub__unit {
+  font-size: var(--size-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .stub__rows {
   display: grid;
-  gap: var(--space-1);
+  gap: var(--space-2);
   margin: 0;
-  font-size: var(--size-sm);
 }
 
 .stub__row {
   display: grid;
-  grid-template-columns: 7.5em 1fr;
+  grid-template-columns: 6.5em 1fr;
   gap: var(--space-2);
 }
 
 .stub__row dt {
+  font-size: var(--size-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--ink-muted);
 }
 
@@ -774,36 +858,51 @@ button.chip[aria-pressed='true'] {
 }
 
 .stub__next {
-  margin-top: var(--space-3);
   font-family: var(--font-hand);
+  font-weight: 600;
   font-size: var(--size-hand);
-  line-height: 1.1;
-  color: var(--coral-deep);
+  line-height: 1.15;
+}
+
+.stub__barcode {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 28px;
+  margin-top: var(--space-3);
+}
+
+.stub__barcode span {
+  background: var(--ink);
 }
 
 .stub-stack {
-  display: grid;
-  gap: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.stub-stack > li:nth-child(odd) .stub { transform: rotate(-0.6deg); }
-.stub-stack > li:nth-child(even) .stub { transform: rotate(0.5deg) translateX(8px); }
+.stub-stack > li:nth-child(odd) .stub { transform: rotate(-0.8deg); }
+.stub-stack > li:nth-child(even) .stub { transform: rotate(0.7deg) translateY(10px); }
 
 /* ─── Chord diagram ─── */
 .chord-diagram {
   display: block;
   max-width: 100%;
   height: auto;
-  color: var(--text);
 }
 
-/* ─── Fretboard neck ─── scrolls sideways inside its frame on narrow screens */
+/* ─── Fretboard neck ─── sits on a screen and scrolls sideways inside it on phones */
 .neck {
   overflow-x: auto;
-  padding-bottom: var(--space-2);
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  border-radius: var(--radius);
+  background: var(--screen);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
   scrollbar-width: thin;
 }
 
@@ -814,96 +913,102 @@ button.chip[aria-pressed='true'] {
   height: auto;
 }
 
-/* ─── Vinyl metronome ─── the record spins one turn per bar */
+/* ─── Disc metronome ─── an abstract record: a playhead sweeps once per bar */
 .vinyl {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   gap: var(--space-5);
+  padding: var(--space-6) var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--body-2);
+  box-shadow: var(--shadow-panel);
 }
 
 .vinyl__record {
-  position: relative;
-  width: min(100%, 420px);
+  width: min(100%, 400px);
   aspect-ratio: 1;
-  border-radius: 50%;
-  transition: box-shadow var(--medium) var(--ease);
 }
 
 .vinyl__disc {
+  display: block;
   width: 100%;
   height: 100%;
-  animation: vinyl-spin var(--spin-seconds, 3s) linear infinite;
+  overflow: visible;
+}
+
+.vinyl__grooves {
+  transform-origin: 200px 200px;
+  animation: vinyl-spin var(--spin-seconds, 12s) linear infinite;
   animation-play-state: paused;
 }
 
-.vinyl[data-running='true'] .vinyl__disc {
+.vinyl[data-running='true'] .vinyl__grooves {
   animation-play-state: running;
 }
 
-.vinyl[data-running='true'] .vinyl__record {
-  box-shadow: 0 0 0 2px var(--violet-line), 0 0 60px var(--violet-glow);
+.vinyl__playhead {
+  opacity: 0;
+  transition: opacity var(--medium) var(--ease);
 }
 
-.vinyl__label {
-  fill: var(--coral);
-  transition: fill 60ms linear;
+.vinyl[data-running='true'] .vinyl__playhead {
+  opacity: 1;
 }
 
-.vinyl[data-flash='downbeat'] .vinyl__label {
-  fill: var(--paper);
+.vinyl__rim { fill: none; stroke: var(--text); stroke-width: 2; }
+.vinyl__groove { fill: none; stroke: var(--text); }
+.vinyl__cut { fill: var(--body-2); }
+.vinyl__cut-dot { fill: var(--text-faint); }
+.vinyl__beat { fill: none; stroke: var(--line); stroke-width: 14; stroke-linecap: butt; transition: stroke 60ms linear; }
+.vinyl__beat[data-on='true'] { stroke: var(--accent-now); }
+.vinyl__beat--one[data-on='true'] { stroke: var(--text); }
+.vinyl__needle { stroke: var(--accent-now); stroke-width: 2.5; stroke-linecap: round; }
+.vinyl__needle-tip { fill: var(--accent-now); }
+.vinyl__label { fill: var(--screen); transition: fill 60ms linear; }
+.vinyl__label-ring { fill: none; stroke: var(--accent-now); stroke-width: 2; }
+.vinyl__bpm-dots { fill: var(--accent-now); font-family: var(--font-dots); font-weight: 800; }
+.vinyl__bpm-unit-dots { fill: var(--screen-muted); font-family: var(--font-mono); }
+.vinyl__spindle { fill: var(--body-2); }
+
+.vinyl[data-flash='downbeat'] .vinyl__label { fill: #2a2622; }
+.vinyl[data-flash='downbeat'] .vinyl__bpm-dots { fill: var(--screen-text); }
+
+.vinyl__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
 }
 
-.vinyl[data-flash='beat'] .vinyl__label {
-  fill: #ff8c6b;
-}
-
-.vinyl__readout {
+.vinyl__status {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-}
-
-.vinyl__bpm {
-  min-width: 3.2ch;
-  font-family: var(--font-display);
-  font-size: var(--size-hero);
-  line-height: 0.9;
-  text-align: center;
-}
-
-.vinyl__bpm-unit {
-  display: block;
-  font: 600 var(--size-xs) / 1 var(--font-mono);
-  letter-spacing: 0.12em;
-  color: var(--text-faint);
-  text-align: center;
-}
-
-.vinyl__beats {
-  display: flex;
   gap: var(--space-2);
 }
 
-.vinyl__beat {
-  width: 14px;
-  height: 14px;
+.vinyl__led {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--stage-3);
-  border: 1px solid var(--stage-line);
+  background: var(--body-3);
+  box-shadow: 0 0 0 2px var(--screen), inset 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
-.vinyl__beat[data-on='true'] {
-  background: var(--accent-now);
-  border-color: var(--accent-now);
+.vinyl[data-running='true'] .vinyl__led {
+  background: var(--phosphor);
+  box-shadow: 0 0 0 2px var(--screen), 0 0 10px var(--phosphor-glow);
 }
 
 @keyframes vinyl-spin {
   to { transform: rotate(360deg); }
 }
 
-/* ─── Art placeholders ─── clearly marked frames until Baranay's artwork exists */
+/* ─── Art placeholders ─── spec-sheet frames until Baranay's artwork exists */
 .art-placeholder {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -912,19 +1017,29 @@ button.chip[aria-pressed='true'] {
   width: 100%;
   margin: 0;
   padding: var(--space-4);
-  border: 2px dashed color-mix(in srgb, var(--accent-now) 70%, transparent);
-  border-radius: var(--radius);
-  background:
-    repeating-linear-gradient(-45deg, transparent 0 14px, rgba(255, 255, 255, 0.025) 14px 28px),
-    var(--stage-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--body-3);
   color: var(--text-muted);
   text-align: center;
 }
 
+/* Crop marks in the corners, like a print proof. */
+.art-placeholder::before,
+.art-placeholder::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--text);
+}
+
+.art-placeholder::before { top: 6px; left: 6px; border-top-width: 1.5px; border-left-width: 1.5px; }
+.art-placeholder::after { right: 6px; bottom: 6px; border-right-width: 1.5px; border-bottom-width: 1.5px; }
+
 .art-placeholder__label {
-  font-family: var(--font-display);
-  font-size: var(--size-lg);
-  text-transform: uppercase;
+  font: 650 var(--size-base) / 1.2 var(--font-ui);
+  font-stretch: 112%;
   color: var(--text);
 }
 
@@ -935,20 +1050,15 @@ button.chip[aria-pressed='true'] {
 /* ─── Empty state ─── a character steps in where data is missing */
 .empty-state {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: 160px 1fr;
   align-items: center;
   gap: var(--space-5);
-  padding: var(--space-5);
-  border: 1px solid var(--stage-line);
-  border-radius: var(--radius-lg);
-  background: var(--stage-2);
 }
 
 .empty-state__title {
-  font-family: var(--font-display);
-  font-size: var(--size-xl);
-  text-transform: uppercase;
-  line-height: 1;
+  font: 650 var(--size-xl) / 1.1 var(--font-ui);
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
 }
 
 .empty-state__text {
@@ -956,86 +1066,78 @@ button.chip[aria-pressed='true'] {
   color: var(--text-muted);
 }
 
-/* ─── Reduced motion ─── the vinyl stops spinning and the ticker stops scrolling */
+/* ─── Reduced motion ─── the disc and the ticker stop; the beat lights still work */
 @media (prefers-reduced-motion: reduce) {
-  .vinyl__disc,
+  .vinyl__grooves,
   .ticker__track {
     animation: none !important;
   }
 
-  .taped-card,
+  .vinyl__playhead {
+    display: none;
+  }
+
+  .ticker__track { width: auto; }
+  .ticker__list { flex-wrap: wrap; padding: 0 var(--space-4); }
+  .ticker__list[aria-hidden='true'] { display: none; }
+
   .button {
     transition: none;
   }
 }
 
 /* The component page can preview reduced motion without changing system settings. */
-.motion-off .vinyl__disc,
+.motion-off .vinyl__grooves,
 .motion-off .ticker__track {
   animation: none !important;
 }
+
+.motion-off .vinyl__playhead {
+  display: none;
+}
+
+.motion-off .ticker__track { width: auto; }
+.motion-off .ticker__list { flex-wrap: wrap; padding: 0 var(--space-4); }
+.motion-off .ticker__list[aria-hidden='true'] { display: none; }
 
 @media (max-width: 560px) {
   .empty-state {
     grid-template-columns: 1fr;
   }
-
-  .stub {
-    grid-template-columns: 1fr;
-    -webkit-mask: none;
-    mask: none;
-  }
-
-  .stub__side {
-    flex-direction: row;
-    gap: var(--space-2);
-    border-left: 0;
-    border-top: 2px dashed rgba(13, 12, 14, 0.35);
-  }
 }
 
 /* ─── Chord diagram parts ─── (not scoped to .stage: the v1 Guitar page uses them too) */
-.cd-nut { fill: var(--paper); }
-.cd-fret { stroke: #4a444f; stroke-width: 1; }
-.cd-string { stroke: #8f867a; }
-.cd-open { fill: none; stroke: var(--text-muted); stroke-width: 1.6; }
-.cd-muted { fill: var(--text-muted); font-family: var(--font-text); }
+.cd-nut { fill: var(--text); }
+.cd-fret { stroke: var(--line); stroke-width: 1; }
+.cd-string { stroke: var(--text-faint); }
+.cd-open { fill: none; stroke: var(--text-muted); stroke-width: 1.5; }
+.cd-muted { fill: var(--text-muted); font-family: var(--font-ui); }
 .cd-muted--damped { fill: var(--text-faint); }
 .cd-start-fret { fill: var(--text-muted); font-family: var(--font-mono); }
-.cd-barre { fill: var(--paper); }
-.cd-dot { fill: var(--paper); }
-.cd-dot--root { fill: var(--coral); }
-.cd-finger { fill: var(--ink); font-family: var(--font-mono); font-weight: 600; }
+.cd-barre { fill: var(--text); }
+.cd-dot { fill: var(--text); }
+.cd-dot--root { fill: var(--accent-now); }
+.cd-finger { fill: var(--body); font-family: var(--font-mono); font-weight: 600; }
+.cd-dot--root + .cd-finger { fill: var(--ink); }
 .cd-interval { fill: var(--text-muted); font-family: var(--font-mono); }
-.cd-interval--root { fill: var(--coral); font-weight: 600; }
+.cd-interval--root { fill: var(--accent-text); font-weight: 600; }
 .cd-string-name { fill: var(--text-faint); font-family: var(--font-mono); }
 
-/* ─── Neck parts ─── */
-.neck-board { fill: #1b1719; }
-.neck-nut { stroke: var(--paper); stroke-width: 6; }
-.neck-fret { stroke: #5a535f; stroke-width: 2; }
-.neck-inlay { fill: #2c272f; }
-.neck-string { stroke: #9a9083; }
-.neck-string-name { fill: var(--text-faint); font: 600 12px var(--font-mono); }
-.neck-fret-number { fill: var(--text-faint); font: 500 12px var(--font-mono); }
-.neck-fret-number--marked { fill: var(--text-muted); }
+/* ─── Neck parts ─── drawn on a screen, so they use the screen colours */
+.neck-board { fill: none; }
+.neck-nut { stroke: var(--screen-text); stroke-width: 5; }
+.neck-fret { stroke: #4a4540; stroke-width: 1.5; }
+.neck-inlay { fill: #2b2825; }
+.neck-string { stroke: #7d756b; }
+.neck-string-name { fill: var(--screen-muted); font: 500 12px var(--font-mono); }
+.neck-fret-number { fill: var(--screen-muted); font: 500 12px var(--font-mono); }
+.neck-fret-number--marked { fill: var(--screen-text); }
 
-.neck-note circle { fill: var(--stage-3); stroke: var(--text-muted); stroke-width: 1.2; }
-.neck-note text { fill: var(--text); font: 600 12px var(--font-mono); }
-.neck-note--root circle { fill: var(--coral); stroke: var(--coral); }
+.neck-note circle { fill: var(--screen); stroke: var(--screen-muted); stroke-width: 1.2; }
+.neck-note text { fill: var(--screen-text); font: 600 12px var(--font-mono); }
+.neck-note--root circle { fill: var(--accent-now); stroke: var(--accent-now); }
 .neck-note--root text { fill: var(--ink); }
-.neck-note--active circle { fill: var(--paper); stroke: var(--paper); }
+.neck-note--active circle { fill: var(--screen-text); stroke: var(--screen-text); }
 .neck-note--active text { fill: var(--ink); }
-.neck-note--active.neck-note--root circle { fill: var(--coral); stroke: var(--paper); stroke-width: 2.5; }
-.neck-note--dim { opacity: 0.32; }
-
-/* ─── Ticker without motion ─── a still, wrapped list instead of a scrolling one */
-@media (prefers-reduced-motion: reduce) {
-  .ticker__track { width: auto; }
-  .ticker__list { flex-wrap: wrap; }
-  .ticker__list[aria-hidden='true'] { display: none; }
-}
-
-.motion-off .ticker__track { width: auto; }
-.motion-off .ticker__list { flex-wrap: wrap; }
-.motion-off .ticker__list[aria-hidden='true'] { display: none; }
+.neck-note--active.neck-note--root circle { fill: var(--accent-now); stroke: var(--screen-text); stroke-width: 2.5; }
+.neck-note--dim { opacity: 0.3; }

@@ -34,8 +34,9 @@ export function renderChordDiagram(voicing, options = {}) {
 
 // Works out sizes and positions for a diagram `size` pixels wide.
 function getLayout(size, leftHanded, voicing) {
-  const padLeft = size * 0.2;
-  const padRight = size * 0.08;
+  // Room on the left for a starting-fret label such as "12fr" (on the right when left-handed).
+  const padLeft = leftHanded ? size * 0.1 : size * 0.26;
+  const padRight = leftHanded ? size * 0.26 : size * 0.1;
   const top = size * 0.2;
   const stringGap = (size - padLeft - padRight) / 5;
   const fretGap = stringGap * 1.25;
@@ -76,7 +77,9 @@ function renderGrid(layout) {
   if (startFret === 1) {
     svg += `<rect class="cd-nut" x="${padLeft - 1}" y="${top - 5}" width="${5 * stringGap + 2}" height="6" rx="1.5"/>`;
   } else {
-    const labelX = layout.leftHanded ? right + 6 : padLeft - 8;
+    // Sit clear of the dots and any barre end, which reach one dot radius past the outer strings.
+    const gap = layout.dotRadius + 4;
+    const labelX = layout.leftHanded ? right + gap : padLeft - gap;
     const anchor = layout.leftHanded ? 'start' : 'end';
     svg += `<text class="cd-start-fret" x="${labelX}" y="${top + fretGap / 2}" text-anchor="${anchor}" dominant-baseline="central" font-size="${fontSize}">${startFret}fr</text>`;
   }

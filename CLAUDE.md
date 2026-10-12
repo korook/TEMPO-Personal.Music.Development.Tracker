@@ -84,9 +84,18 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - Found shapes need 4+ strings (triads are standard shapes) and may only use open strings up to fret 7.
 - The v1 Guitar page shows each chord's first standard voicing until Phase 4 builds the real Chords page.
 
-## Notes from Phase 3
+## Notes from Phase 3 (design system, revision 2)
+- Baranay's direction (12 Oct 2026): sans-serif only; analog meets modern like Teenage Engineering and Nothing
+  (refs 5–9 in References/); no copied reference colours and no generic "AI" palettes; the vinyl should be abstract.
+  This replaces the stage-poster look in TEMPO_PLAN.md §3 (dark stage, coral, Anton/Limelight).
+- Look: light device-body panels (day theme, default) or ebony (night theme); dark inset screens for live data
+  (neck, readouts, ticker); keycap buttons; LED dots (green phosphor LED only for "running"); mono spec labels;
+  paper pieces: thermal-receipt session stubs, label-maker strips on setlist cards, polaroids for art.
+- Colour = guitar CMF: ebony, bone, nickel, phosphor-bronze (Today/Chords/Practice), verdigris (Ear),
+  "sonic blue" (Theory), "shell pink" (Progress). Placeholder until Baranay sets a palette.
+- Type: Archivo (wide for headings, normal for text), Doto (dot-matrix readouts), Martian Mono (labels/numbers),
+  Caveat (stand-in for Baranay's handwriting font).
 - Component page: `components.html` (built and published next to the app). Build Phase 4 pages from these parts only.
-- New styles only apply inside an element with class `stage`; pages switch to `<body class="stage">` in Phase 4, then the v1 styles and tokens get deleted.
-- Fonts picked: Anton (display), Limelight (one deco word per hero), Hanken Grotesk (text), DM Mono, Caveat (stand-in for Baranay's handwriting font). The candidates stay on the component page for comparison.
-- Text on coral / mustard / mint / pink / paper is `--ink` (dark). `tests/tokens.test.js` checks contrast.
-- `--accent-now` holds the current section's accent; set it per page (coral Today/Chords/Practice, mint Ear, mustard Theory, pink Progress).
+- New styles only apply inside `.stage`; set `data-theme="day"|"night"` on it. Pages set `--accent-now` and
+  `--accent-text` for their section. Text on accent fills and paper is `--ink`. `tests/tokens.test.js` checks contrast in both themes.
+- Disc metronome: the playhead is steered by the audio clock (lands exactly on each beat); grooves turn via CSS.

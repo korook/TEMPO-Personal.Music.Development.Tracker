@@ -2,8 +2,8 @@
 
    Two sets live here for now:
    1. The v1 tokens (--bg, --s1, --accent ...) still used by the old pages.
-   2. The stage-poster tokens from TEMPO_PLAN.md section 3 (--stage, --coral ...),
-      used by the new components. Phase 4 moves every page onto set 2 and deletes set 1. */
+   2. The Tempo design system tokens (--body, --screen, --bronze ...), used by the new
+      components. Phase 4 moves every page onto set 2 and deletes set 1. */
 
 :root {
   /* ─── Surfaces ─── */
@@ -42,44 +42,63 @@
   --rl: 14px;
 }
 
-/* ═══════════════ Stage-poster design system (Phase 3) ═══════════════ */
+/* ═══════════════ Tempo design system ═══════════════
+   Direction (revised 12 Oct 2026 after Baranay's feedback): analog meets modern, like
+   Teenage Engineering and Nothing hardware. Light device-body panels, dark inset screens
+   for live data, keycap buttons, LED dots, small spec-sheet labels. Sans-serif only.
+
+   Colour comes from the guitar itself (colour, material, finish):
+   ebony fretboard, bone nut, nickel frets, phosphor-bronze strings, and three muted
+   classic guitar finishes for the other sections. Placeholder until Baranay sets a palette.
+
+   Two themes: "day" (light body, the default inside .stage) and "night" (dark body).
+   :root holds the night values so the old dark pages can use the components too. */
 
 :root {
-  /* ─── Surfaces ─── */
-  --stage: #0d0c0e;          /* page background, with grain */
-  --stage-2: #17151a;        /* raised surfaces */
-  --stage-3: #211e25;        /* hover, inputs, wells */
-  --stage-line: #2e2a33;     /* hairlines on stage */
-  --paper: #f2e8d5;          /* posters, polaroids, stubs */
-  --paper-2: #e6d9c0;        /* paper shadow side, tape edges */
-  --tape: rgba(246, 239, 224, 0.72);        /* pale tape, for coloured cards */
-  --tape-kraft: rgba(196, 170, 118, 0.72);  /* brown tape, for paper cards */
+  /* ─── Body (night) ─── */
+  --body: #151413;           /* ebony */
+  --body-2: #1e1c1a;         /* raised panels, cards, keys */
+  --body-3: #282522;         /* wells, pressed keys */
+  --line: #3a3632;           /* hairlines */
+  --text: #ece4d4;           /* bone */
+  --text-muted: #b0a796;
+  --text-faint: #958c7e;
+  --key-shadow: rgba(0, 0, 0, 0.55);
 
-  /* ─── Text ─── (contrast checked in tests/tokens.test.js) */
-  --text: #f3ece0;           /* main text on stage: 16.6:1 */
-  --text-muted: #b3a99a;     /* secondary text on stage-2: 7.8:1 */
-  --text-faint: #9a9083;     /* labels, captions on stage-3: 5.2:1 */
-  --ink: #0d0c0e;            /* text on coral, mustard, mint, pink, paper */
-  --ink-muted: #6e6458;      /* secondary text on paper: 4.8:1 */
+  /* ─── Screens ─── always dark, in both themes: neck, readouts, ticker */
+  --screen: #141312;
+  --screen-2: #1f1d1b;
+  --screen-line: #3a3632;
+  --screen-text: #ece4d4;
+  --screen-muted: #a39b8e;
 
-  /* ─── Section accents ─── one per section, so you always know where you are */
-  --coral: #ef6a45;          /* Practice, Today, Chords */
-  --coral-deep: #b23f24;     /* coral text on paper: 4.8:1 */
-  --mint: #7fd6b4;           /* Ear training */
-  --mustard: #eabb4e;        /* Theory */
-  --pink: #f07aa0;           /* Progress, milestones */
-  --violet-glow: rgba(91, 75, 255, 0.35);   /* "live" only: metronome running, timer on, recording */
-  --violet-line: #8b7dff;
+  /* ─── Paper ─── receipts, polaroids, label strips */
+  --paper: #fbfaf6;
+  --ink: #1a1816;            /* text on paper and on every accent fill */
+  --ink-muted: #5f5850;
+  --nickel: #b8b5ad;         /* fret wire, metal details */
 
-  /* The accent of the current section. Pages set this on <body> or a wrapper. */
-  --accent-now: var(--coral);
+  /* ─── Accents ─── fill colour + a text colour that passes AA on the body */
+  --bronze: #c9813f;         /* phosphor-bronze strings: Today, Chords, Practice */
+  --bronze-text: #e0a066;
+  --verdigris: #6aa894;      /* oxidised copper: Ear training */
+  --verdigris-text: #86c2ae;
+  --sonic: #8fb8cc;          /* "sonic blue" finish: Theory */
+  --sonic-text: #a6c9da;
+  --shell: #d89aa6;          /* "shell pink" finish: Progress, milestones */
+  --shell-text: #e2afb9;
+  --phosphor: #9af0a8;       /* LED for "live" only: metronome running, timer on, recording */
+  --phosphor-glow: rgba(154, 240, 168, 0.35);
 
-  /* ─── Type ─── */
-  --font-display: 'Anton', 'Big Shoulders Display', Impact, sans-serif;
-  --font-deco: 'Limelight', 'Poiret One', serif;
-  --font-text: 'Hanken Grotesk', 'Familjen Grotesk', system-ui, sans-serif;
-  --font-mono: 'DM Mono', ui-monospace, monospace;
-  --font-hand: 'Caveat', 'Comic Sans MS', cursive;   /* stand-in until Baranay's own handwriting font */
+  /* The current section's accent. Pages set these two on <body> or a wrapper. */
+  --accent-now: var(--bronze);
+  --accent-text: var(--bronze-text);
+
+  /* ─── Type ─── sans-serif only */
+  --font-ui: 'Archivo', 'Helvetica Neue', Arial, sans-serif;   /* width axis: 62–125 */
+  --font-mono: 'Martian Mono', ui-monospace, monospace;        /* labels, numbers */
+  --font-dots: 'Doto', 'Martian Mono', monospace;              /* dot-matrix readouts */
+  --font-hand: 'Caveat', cursive;    /* stand-in until Baranay's own handwriting font */
 
   --size-xs: 0.75rem;        /* 12px: the smallest text allowed */
   --size-sm: 0.875rem;       /* 14px */
@@ -87,8 +106,8 @@
   --size-lg: 1.25rem;        /* 20px */
   --size-xl: 1.75rem;        /* 28px */
   --size-2xl: 2.5rem;        /* 40px */
-  --size-hero: clamp(3rem, 9vw, 6.5rem);
-  --size-hand: 1.375rem;     /* handwriting runs small, so it gets a bump */
+  --size-hero: clamp(2.75rem, 8vw, 6rem);
+  --size-hand: 1.375rem;
 
   /* ─── Space, radius, depth ─── */
   --space-1: 4px;
@@ -103,7 +122,8 @@
   --radius: 12px;
   --radius-lg: 20px;
   --radius-pill: 999px;
-  --shadow-paper: 0 1px 0 rgba(0, 0, 0, 0.25), 0 10px 24px rgba(0, 0, 0, 0.45);
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-paper: 0 1px 1px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.18);
   --tap-target: 44px;        /* minimum size for anything pressed with a guitar in hand */
 
   /* ─── Motion ─── */
@@ -111,6 +131,25 @@
   --fast: 120ms;
   --medium: 240ms;
 
-  /* ─── Grain ─── a tiny noise texture laid over the stage */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* ─── Texture ─── a very fine dot grid, like perforated speaker metal */
+  --dot-grid: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 1.4px) 0 0 / 14px 14px;
+}
+
+/* ─── Day theme ─── light hardware body; the default inside .stage */
+.stage:not([data-theme='night']) {
+  --body: #e8e4dc;           /* warm bone-grey powder coat */
+  --body-2: #f4f1ea;
+  --body-3: #d9d4ca;
+  --line: #c3bdb1;
+  --text: #1a1816;
+  --text-muted: #56504a;
+  --text-faint: #625b53;
+  --key-shadow: rgba(60, 52, 40, 0.28);
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 1px 2px rgba(60, 52, 40, 0.12);
+  --bronze-text: #7d4a1e;
+  --verdigris-text: #2c6655;
+  --sonic-text: #336680;
+  --shell-text: #8c4757;
+  --accent-text: var(--bronze-text);
+  --dot-grid: radial-gradient(circle at 1px 1px, rgba(26, 24, 22, 0.07) 1px, transparent 1.4px) 0 0 / 14px 14px;
 }

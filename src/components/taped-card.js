@@ -1,17 +1,18 @@
-// Taped cards (the session "setlist") and polaroids (milestones and artwork):
-// paper pieces stuck on the stage, each slightly rotated (TEMPO_PLAN.md section 3).
+// Setlist cards and polaroids. A setlist card is a small module: an index number, an LED
+// that lights for the block being played, a label-maker strip for the block type, the
+// title and a handwritten note. Polaroids hold milestones and artwork.
 
 import { escapeHtml } from '../utils/html.js';
 
-// Small rotations, picked in turn so a row of cards looks hand-placed rather than random.
+// Small rotations for label strips and polaroids, picked in turn so they look hand-placed.
 const TILTS = ['-1.4deg', '1deg', '-0.6deg', '1.6deg', '-1deg'];
 
-// ─── Taped card ───
+// ─── Setlist card ───
 
-// Returns a taped card. Options:
-//   kicker, title, body, meta (e.g. "3 min"), note (handwritten), actions (HTML),
-//   colour: 'paper' | 'coral' | 'mint' | 'mustard' | 'pink',
-//   state: 'default' | 'current' | 'done', index (picks the tilt).
+// Returns a setlist card. Options:
+//   kicker (label strip), title, body, meta (e.g. "3 min"), note (handwritten), actions (HTML),
+//   colour of the label strip: 'screen' | 'bronze' | 'verdigris' | 'sonic' | 'shell',
+//   state: 'default' | 'current' | 'done', index (position in the setlist, from 0).
 export function renderTapedCard({
   kicker = '',
   title,
@@ -19,18 +20,22 @@ export function renderTapedCard({
   meta = '',
   note = '',
   actions = '',
-  colour = 'paper',
+  colour = 'screen',
   state = 'default',
   index = 0,
 }) {
   const classes = ['taped-card'];
-  if (colour !== 'paper') classes.push(`taped-card--${colour}`);
+  if (colour !== 'screen') classes.push(`taped-card--${colour}`);
   if (state !== 'default') classes.push(`taped-card--${state}`);
   const stateText = { current: 'Now playing', done: 'Done' }[state];
 
   return `
-    <article class="${classes.join(' ')}" style="--tilt:${TILTS[index % TILTS.length]}">
-      ${kicker ? `<div class="taped-card__kicker">${escapeHtml(kicker)}</div>` : ''}
+    <article class="${classes.join(' ')}">
+      <div class="taped-card__top">
+        <span class="taped-card__index">${String(index + 1).padStart(2, '0')}</span>
+        <span class="taped-card__led" aria-hidden="true"></span>
+      </div>
+      ${kicker ? `<span class="taped-card__kicker" style="--tilt:${TILTS[index % TILTS.length]}">${escapeHtml(kicker)}</span>` : ''}
       <h3 class="taped-card__title">${escapeHtml(title)}</h3>
       ${stateText ? `<span class="visually-hidden">${stateText}</span>` : ''}
       ${body ? `<p class="taped-card__body">${escapeHtml(body)}</p>` : ''}
