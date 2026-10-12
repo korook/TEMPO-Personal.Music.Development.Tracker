@@ -98,6 +98,7 @@ function showStorageNotice() {
 
 // Applies settings, draws the top bar, connects every route and shows the current page.
 function startApp() {
+  document.getElementById('no-app')?.remove();
   applySettings();
   const topBar = document.getElementById('top-bar');
   topBar.innerHTML = renderTopBar({ brand: 'Tempo', brandHref: '#/today', groups: MENU_GROUPS, settingsHtml: renderQuickSettings() });

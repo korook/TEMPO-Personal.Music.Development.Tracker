@@ -372,6 +372,7 @@ function bindControls(kit) {
 // ─── Start ───
 
 getMetronome().setBpm(92);
+document.getElementById('no-app')?.remove();
 applyViewToBody();
 renderPageTopBar();
 renderPage();
