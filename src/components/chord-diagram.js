@@ -1,15 +1,16 @@
-// Draws a v1 chord box diagram as an SVG string: nut, 5 frets, 6 strings,
+// Draws a v1-style chord box diagram as an SVG string: nut, 5 frets, 6 strings,
 // open/muted markers above the nut and coloured finger dots.
+// Takes a voicing from the chord engine ({ frets, fingers }, frets null = not played).
 // Phase 3 replaces this with the new diagram (barre bar, intervals, left-handed mirror).
 
-import { CHORDS_V1, STRING_NAMES, STRING_COLOURS } from '../data/chords-v1.js';
+import { STRING_NAMES, STRING_COLOURS } from '../data/chords-v1.js';
 
 // ─── Rendering ───
 
-// Returns the SVG markup for the chord `chordKey`, `size` pixels wide.
-export function renderChordDiagram(chordKey, size = 180) {
-  const chord = CHORDS_V1[chordKey];
-  if (!chord) return '';
+// Returns the SVG markup for a voicing, `size` pixels wide.
+export function renderChordDiagram(voicing, size = 180) {
+  if (!voicing) return '';
+  const chord = voicing;
 
   const layout = getDiagramLayout(size);
   let svg = `<svg width="${layout.width}" height="${layout.height}" viewBox="0 0 ${layout.width} ${layout.height}" xmlns="http://www.w3.org/2000/svg">`;
@@ -65,7 +66,7 @@ function renderOpenAndMutedMarkers(chord, layout) {
   let svg = '';
   for (let string = 0; string < 6; string++) {
     const x = stringX(layout, string);
-    if (chord.muted[string]) {
+    if (chord.frets[string] === null) {
       svg += `<text x="${x}" y="${layout.padY - 10}" text-anchor="middle" font-size="12" font-weight="500" fill="#777" font-family="Plus Jakarta Sans,sans-serif">✕</text>`;
     } else if (chord.frets[string] === 0) {
       svg += `<circle cx="${x}" cy="${layout.padY - 12}" r="5" fill="none" stroke="#aaa" stroke-width="1.5"/>`;
@@ -79,7 +80,7 @@ function renderFingerDots(chord, layout) {
   let svg = '';
   for (let string = 0; string < 6; string++) {
     const fret = chord.frets[string];
-    if (fret === 0 || fret === 'x') continue;
+    if (fret === 0 || fret === null) continue;
     const x = stringX(layout, string);
     const y = layout.padY + (fret - 0.5) * layout.fretGap;
     const radius = Math.min(layout.stringGap, layout.fretGap) * 0.3;

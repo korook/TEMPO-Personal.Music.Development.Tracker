@@ -7,6 +7,7 @@ import { loadChordProgress, saveChordProgress } from '../state/legacy-ratings.js
 import { renderGreeting } from '../components/header.js';
 import { renderChordDiagram } from '../components/chord-diagram.js';
 import { playChord } from '../audio/guitar-synth.js';
+import { getVoicingsForSymbol } from '../chords/voicings.js';
 
 let selectedChord = 'C';
 
@@ -15,6 +16,12 @@ let selectedChord = 'C';
 // Sets which chord the detail panel shows next time the page is drawn.
 export function selectChord(chordKey) {
   selectedChord = chordKey;
+}
+
+// Returns the shape shown for a chord: the engine's first standard voicing
+// (the open chord, or the E-form barre for F).
+function primaryVoicing(chordKey) {
+  return getVoicingsForSymbol(chordKey, { found: false })[0];
 }
 
 // ─── Rendering ───
@@ -54,7 +61,7 @@ function groupChordsByCategory() {
 function renderChordCard(chordKey) {
   const chord = CHORDS_V1[chordKey];
   const selectedClass = selectedChord === chordKey ? ' sel' : '';
-  return `<div class="cc${selectedClass}" data-chord="${chordKey}"><div style="display:flex;justify-content:space-between;align-items:start"><div><div class="cn">${chord.name}</div><div class="ct">${chord.type}</div></div><span class="diff diff-${chord.difficulty}">${chord.difficulty}</span></div><div style="margin-top:8px">${renderChordDiagram(chordKey, 110)}</div></div>`;
+  return `<div class="cc${selectedClass}" data-chord="${chordKey}"><div style="display:flex;justify-content:space-between;align-items:start"><div><div class="cn">${chord.name}</div><div class="ct">${chord.type}</div></div><span class="diff diff-${chord.difficulty}">${chord.difficulty}</span></div><div style="margin-top:8px">${renderChordDiagram(primaryVoicing(chordKey), 110)}</div></div>`;
 }
 
 // Draws the detail panel: big diagram, fret per string, notes, mastery, tip and songs.
@@ -63,6 +70,7 @@ function renderChordDetail() {
   if (!panel) return;
 
   const chord = CHORDS_V1[selectedChord];
+  const voicing = primaryVoicing(selectedChord);
   const percent = loadChordProgress()[selectedChord] || 0;
   const colour = percent >= 80 ? 'var(--green)' : percent >= 40 ? 'var(--amber)' : 'var(--blue)';
 
@@ -70,13 +78,13 @@ function renderChordDetail() {
     <div class="fb-panel">
       <div style="font-family:var(--serif);font-size:28px">${chord.name}</div>
       <div style="font-size:12px;color:var(--tx3);margin-bottom:14px">${chord.type}</div>
-      ${renderChordDiagram(selectedChord, 240)}
-      <div class="sdots" style="margin-top:12px">${renderFretPerString(chord)}</div>
+      ${renderChordDiagram(voicing, 240)}
+      <div class="sdots" style="margin-top:12px">${renderFretPerString(voicing)}</div>
       <div style="font-size:10px;color:var(--tx3);margin-top:6px;font-family:var(--mono)">fret per string</div>
       <button class="btn play-chord" id="playChord">▶ Play</button>
     </div>
     <div class="info-p">
-      <div class="irow"><span class="k">Notes</span><span class="v" style="font-family:var(--mono)">${chord.notes}</span></div>
+      <div class="irow"><span class="k">Notes</span><span class="v" style="font-family:var(--mono)">${chord.notes}${omittedNote(voicing)}</span></div>
       <div class="irow"><span class="k">Difficulty</span><span class="v"><span class="diff diff-${chord.difficulty}">${chord.difficulty}</span></span></div>
       <div class="irow"><span class="k">Mastery</span><span class="v" style="color:${colour}">${percent}%</span></div>
       <div style="margin-top:8px"><div class="pb" style="height:6px"><div class="pf" style="width:${percent}%;background:${colour}"></div></div></div>
@@ -89,20 +97,27 @@ function renderChordDetail() {
       </div>
     </div>`;
 
-  panel.querySelector('#playChord').addEventListener('click', () => playChord(chord.frets));
+  panel.querySelector('#playChord').addEventListener('click', () => playChord(voicing.frets));
   panel.querySelectorAll('[data-change]').forEach((button) => {
     button.addEventListener('click', () => changeMastery(selectedChord, Number(button.dataset.change)));
   });
 }
 
 // Returns six round badges showing the fret played on each string (✕ if not played).
-function renderFretPerString(chord) {
+function renderFretPerString(voicing) {
   return STRING_NAMES.map((_, string) => {
-    const fret = chord.frets[string];
-    const background = fret === 'x' ? '#333' : STRING_COLOURS[string];
-    const opacity = fret === 'x' ? '.4' : '.85';
-    return `<div class="sdot" style="background:${background};opacity:${opacity}">${fret === 'x' ? '✕' : fret}</div>`;
+    const fret = voicing.frets[string];
+    const background = fret === null ? '#333' : STRING_COLOURS[string];
+    const opacity = fret === null ? '.4' : '.85';
+    return `<div class="sdot" style="background:${background};opacity:${opacity}">${fret === null ? '✕' : fret}</div>`;
   }).join('');
+}
+
+// Returns a short note when the shape leaves out a chord tone, e.g. " · 5th omitted".
+function omittedNote(voicing) {
+  if (voicing.omitted.length === 0) return '';
+  const names = { '5': '5th', '3': '3rd', '1': 'root', 'b5': 'b5', '9': '9th' };
+  return ` · ${voicing.omitted.map((label) => names[label] || label).join(', ')} omitted`;
 }
 
 // ─── Actions ───
