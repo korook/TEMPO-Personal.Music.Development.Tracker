@@ -1632,3 +1632,58 @@ a.chip[aria-current='page'] {
     grid-template-columns: 1fr;
   }
 }
+
+/* ═══════════════ Today hero ═══════════════ */
+.today-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: stretch;
+  margin-bottom: var(--space-5);
+}
+
+.today-hero__art .art-placeholder {
+  height: 100%;
+}
+
+.today-setlist {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.today-setlist .section-head {
+  margin-bottom: 0;
+}
+
+.today-setlist__list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.today-setlist__list li {
+  display: grid;
+  grid-template-columns: 2em 6.5em 1fr auto;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding: var(--space-2) 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: var(--size-sm);
+}
+
+.today-setlist__kind {
+  font-weight: 650;
+}
+
+.today-setlist .button {
+  justify-self: start;
+}
+
+@media (max-width: 760px) {
+  .today-hero {
+    grid-template-columns: 1fr;
+  }
+}

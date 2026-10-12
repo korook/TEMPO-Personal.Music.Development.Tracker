@@ -1,12 +1,14 @@
-// The Today page: what to practice now and why. A ticker of today's openings, four numbers
-// from real practice data, the week's minutes, the next steps, and the first chords with
-// their clean rate. (The full Today hero with the setlist preview comes later in Phase 4.)
+// The Today page: what to practice now and why. A ticker of today's openings; the hero
+// (an artwork frame next to tonight's setlist); four numbers from real practice data; the
+// week's minutes; the next steps; and the first chords with their clean rate.
 
 import { CHORDS_V1 } from '../data/chords-v1.js';
 import { getState, updateState, needsExportReminder } from '../state/storage.js';
 import { getSettings } from '../state/settings.js';
 import { totalMinutes, weeklyMinutes, countStreak } from '../practice/history.js';
 import { generateOpenings } from '../practice/openings.js';
+import { buildSetlist, blockLabel } from '../practice/session.js';
+import { renderArtPlaceholder } from '../components/art-placeholder.js';
 import { cleanRate } from '../practice/measures.js';
 import { renderGreeting } from '../components/header.js';
 import { renderTicker } from '../components/ticker.js';
@@ -29,6 +31,7 @@ export function renderTodayPage() {
     <div class="greet" id="greetBox"></div>
     ${renderRatingsNotice(state)}
     ${needsExportReminder(state) ? '<p class="storage-notice" role="status">It\'s been over 30 days since your last backup. <a href="#/settings">Export one in Settings</a> so your practice history is safe.</p>' : ''}
+    ${renderHero(state)}
     ${renderMetricTiles(state)}
     <div class="two" style="margin-bottom:14px">
       <div class="card"><div class="card-t"><span class="dot"></span>Last 7 days</div><div class="chart-box"><canvas id="chW"></canvas></div><div class="legend"><span><i style="background:var(--accent)"></i>Minutes</span></div></div>
@@ -36,8 +39,7 @@ export function renderTodayPage() {
     </div>
     <div class="sec">Your chords · clean rate</div>
     <div class="mg">${renderChordGrid(state)}</div>
-    <div class="sec">Quick actions</div>
-    ${renderQuickActions()}`;
+`;
 
   renderGreeting();
   bindEvents(page);
@@ -94,14 +96,24 @@ function renderChordGrid(state) {
   }).join('');
 }
 
-// The three shortcut tiles.
-function renderQuickActions() {
+// The hero: a frame for Baranay's artwork beside tonight's proposed setlist.
+// The setlist is worked out on a copy, so looking at Today never changes saved data.
+function renderHero(state) {
+  const blocks = buildSetlist(structuredClone(state));
+  const rows = blocks.map((block, index) => `
+    <li><span class="label">${String(index + 1).padStart(2, '0')}</span><span class="today-setlist__kind">${escapeHtml(blockLabel(block))}</span><span>${escapeHtml(block.title)}</span><span class="label">${block.minutes ? `${block.minutes} min` : '–'}</span></li>`).join('');
   return `
-    <div class="sg">
-      <button class="sug" data-go="practice"><span class="st">Start practice</span><span class="sd">Setlist, metronome, receipt</span></button>
-      <button class="sug" data-go="chords"><span class="st">Chord library</span><span class="sd">168 chords, every shape</span></button>
-      <button class="sug" data-go="progress"><span class="st">View progress</span><span class="sd">Charts and session log</span></button>
-    </div>`;
+    <section class="today-hero">
+      <div class="today-hero__art">${renderArtPlaceholder('hero', 'Today')}</div>
+      <div class="panel today-setlist">
+        <div class="section-head">
+          <span class="section-head__kicker">Tonight's setlist</span>
+          <h1 class="section-head__title">Ready when you are</h1>
+        </div>
+        <ol class="today-setlist__list">${rows}</ol>
+        <button class="button button--primary" data-go="practice">Start practice</button>
+      </div>
+    </section>`;
 }
 
 // The one-time note that the old self-rated chord percentages were not carried over.

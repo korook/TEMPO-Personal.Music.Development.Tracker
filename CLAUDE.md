@@ -114,4 +114,8 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
   mistake tips in `src/data/mistake-tips.js`, measuring tools in `src/components/measure-tools.js`. Page flow:
   setlist (taped cards, reorder/remove) → blocks with timer + tool (⏎ = clean / tap / clean pass) → receipt.
   The disc metronome is the page hero. Chord pages have "+ Add to practice".
-- Next: Today (setlist preview + ticker of openings), Progress, Settings; then delete v1 styles/tokens, chords-v1.js, legacy-ratings.js.
+- Today ✅ (ticker, hero with tonight's setlist built on a copy of the state, real tiles, next steps, chord clean rates),
+  Progress ✅ (groove disc, receipts, personal bests with sparklines, milestones in `src/practice/milestones.js`,
+  mistake patterns, clean rates, heatmap, log), Settings ✅ (`#/settings`: name, handedness, rest days, look, backup).
+- Storage falls back to memory when the browser blocks localStorage (locked-down previews); a notice says so.
+- Still to do: delete the v1 styles/tokens once Today and Progress stop using v1 class names (.card, .met, .mg ...).
