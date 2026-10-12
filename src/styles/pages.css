@@ -1,0 +1,381 @@
+/* Page-specific styles: chord grid and detail panel, mastery grid, metronome and
+   practice cards, quick actions, session log, and the phone-width layout. */
+
+/* ─── Chord grid (Guitar page) ─── */
+.cg {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cc {
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+  text-align: center;
+}
+
+.cc:hover {
+  border-color: var(--bd2);
+  background: var(--s2);
+}
+
+.cc.sel {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 16px var(--glow);
+}
+
+.cc .cn {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin-bottom: 1px;
+}
+
+.cc .ct {
+  font-size: 10px;
+  color: var(--tx3);
+}
+
+/* ─── Chord detail panel ─── */
+.detail {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.fb-panel {
+  flex: 0 0 280px;
+  background: var(--s2);
+  border-radius: var(--rl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.info-p {
+  flex: 1;
+  min-width: 260px;
+}
+
+.irow {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bd);
+  font-size: 13px;
+}
+
+.irow .k {
+  color: var(--tx3);
+}
+
+.irow .v {
+  font-weight: 500;
+}
+
+.tip {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: var(--r);
+  background: rgba(74, 143, 232, 0.08);
+  border-left: 3px solid var(--blue);
+  font-size: 12px;
+  color: var(--tx2);
+  line-height: 1.6;
+}
+
+.songs {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.stag {
+  font-size: 11px;
+  background: var(--s3);
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: var(--tx2);
+}
+
+.sdots {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.sdot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ─── Mastery grid (Dashboard) ─── */
+.mg {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.mc {
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.mc:hover {
+  transform: scale(1.06);
+}
+
+.mb {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--r);
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.mfill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0.12;
+}
+
+.mpct {
+  font-size: 10px;
+  color: var(--tx3);
+  margin-top: 3px;
+  font-family: var(--mono);
+}
+
+/* ─── Metronome and practice ─── */
+.bpm-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.bpm-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--bd2);
+  background: var(--s2);
+  color: var(--tx);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+}
+
+.bpm-btn:hover {
+  background: var(--s3);
+}
+
+.bpm-btn:active {
+  transform: scale(0.92);
+}
+
+.bpm-d {
+  text-align: center;
+}
+
+.bpm-n {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.bpm-l {
+  font-size: 10px;
+  color: var(--tx3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bpm-s {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--s3);
+  outline: none;
+}
+
+.bpm-s::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+}
+
+.bdots {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.bd {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--s3);
+  border: 1px solid var(--bd2);
+  transition: all 0.06s;
+}
+
+.bd.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.25);
+  box-shadow: 0 0 12px var(--glow);
+}
+
+.bd.down {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  transform: scale(1.3);
+}
+
+.drill-g {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.drill {
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 14px 16px;
+}
+
+.drill .dn {
+  font-family: var(--serif);
+  font-size: 17px;
+  margin-bottom: 2px;
+}
+
+.drill .ds {
+  font-size: 11px;
+  color: var(--tx3);
+}
+
+.exercise {
+  padding: 12px 16px;
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  margin-bottom: 8px;
+}
+
+.exercise .en {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.exercise .ed {
+  font-size: 12px;
+  color: var(--tx3);
+  line-height: 1.5;
+}
+
+/* ─── Quick actions (Dashboard) ─── */
+.sg {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.sug {
+  padding: 14px;
+  border-radius: var(--rl);
+  cursor: pointer;
+  transition: all 0.12s;
+  border: 1px solid transparent;
+}
+
+.sug:hover {
+  transform: translateY(-1px);
+}
+
+.sug .st {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.sug .sd {
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+/* ─── Session log (Progress) ─── */
+.slog {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.sr {
+  display: flex;
+  gap: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--bd);
+  font-size: 13px;
+}
+
+.sr .sd {
+  color: var(--tx3);
+  min-width: 100px;
+}
+
+.sr .sm {
+  font-family: var(--mono);
+  font-weight: 500;
+  min-width: 50px;
+}
+
+/* ─── Phone width ─── */
+@media (max-width: 700px) {
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .cg { grid-template-columns: repeat(3, 1fr); }
+  .detail { flex-direction: column; }
+  .fb-panel { flex: none; width: 100%; }
+  .two,
+  .two-eq { grid-template-columns: 1fr; }
+  .mg { grid-template-columns: repeat(4, 1fr); }
+  .sg { grid-template-columns: 1fr; }
+  .drill-g { grid-template-columns: 1fr; }
+}

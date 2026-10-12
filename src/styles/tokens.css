@@ -1,0 +1,40 @@
+/* Design tokens: colours, fonts and radii shared by every page.
+   These are the v1 values, carried over unchanged. Phase 3 replaces them
+   with the stage-poster palette from TEMPO_PLAN.md section 3. */
+
+:root {
+  /* ─── Surfaces ─── */
+  --bg: #0c0c0d;
+  --s1: #131315;
+  --s2: #1a1a1d;
+  --s3: #222225;
+  --s4: #2a2a2e;
+  --s5: #333337;
+
+  /* ─── Accents ─── */
+  --accent: #e85c3a;
+  --accent2: #d44a2a;
+  --glow: rgba(232, 92, 58, 0.12);
+  --green: #3dba7a;
+  --amber: #e8a832;
+  --blue: #4a8fe8;
+  --purple: #9b6dd7;
+  --pink: #d4537e;
+  --teal: #38b2a0;
+
+  /* ─── Text and borders ─── */
+  --tx: #f0ede6;
+  --tx2: #9c9a92;
+  --tx3: #6a6862;
+  --bd: #2a2a2e;
+  --bd2: #3a3a3e;
+
+  /* ─── Type ─── */
+  --serif: 'Instrument Serif', serif;
+  --sans: 'Plus Jakarta Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+
+  /* ─── Radii ─── */
+  --r: 10px;
+  --rl: 14px;
+}
