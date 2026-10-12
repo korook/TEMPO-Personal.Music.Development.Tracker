@@ -3,9 +3,10 @@
 **Repo:** `korook/TEMPO-Personal.Music.Development.Tracker` (currently one `index.html`, 388 lines)
 **Owner:** Baranay — Industrial + Communication Design student, guitarist, illustrator
 **Purpose:** a personal guitar practice website that looks professional, feels encouraging and carries Baranay's own artwork. Personal use first, possibly published later.
-**Version:** 2.0 — rewritten 12 Oct 2026 (replaces v1 of this file)
+**Live site:** https://korook.github.io/TEMPO-Personal.Music.Development.Tracker/ (design system: `/components.html`)
+**Version:** 2.1, revised 12 Oct 2026 after Phases 0–3 and Baranay's feedback (see the change log at the end). Replaces 2.0.
 
-> **For Claude Code:** read this whole file before writing code. Work phase by phase (section 12). At the end of each phase, stop, summarize what changed and wait for approval. Ask before deciding anything this brief leaves open.
+> **For Claude Code:** read this whole file before writing code. Work phase by phase (section 12). Show every change as a preview file first and push to `main` only after approval (section 12, "Review flow"). At the end of each phase, stop, summarize what changed and wait for approval. Ask before deciding anything this brief leaves open.
 
 ---
 
@@ -13,20 +14,21 @@
 
 | Topic | Decision |
 |---|---|
-| Visual direction | **Stage poster × Baranay's multimedia art.** Dark stage base, warm coral, bold display type, collage elements (vinyl, taped cards, polaroids, stubs), with his illustrations as the hero of each page. The visuals themselves should invite the user to practice, not just look high-contrast. |
+| Visual direction | **Analog meets modern, like Teenage Engineering and Nothing hardware.** A light instrument body with dark inset screens for live data, keycap buttons, LED dots and small spec-sheet labels, plus paper pieces for the human side (receipts, label-maker strips, polaroids), with Baranay's illustrations as the hero of each page. Sans-serif type only. Colours come from the guitar itself, not from the references (section 3). *Revised 12 Oct 2026; replaces the "stage poster" direction.* |
 | Mastery model | **No more "+10%" buttons and no 100% ceiling.** Progress comes from measured attempts. The app always shows the next mistake to fix or the next opening to try, even for skills that are well learned (section 6). |
 | Chords | **Rebuild the chord library.** Every chord is correct and validated by automated tests, with all practical voicings across the fretboard (section 5). |
 | Ear training | Build now (section 8). |
 | Music theory | Folder structure and content format now, content later (section 9). |
 | Microphone features | Later (tuner, buzz detection, recordings). Design the data so they can plug in. |
 | Audience | Personal now. Keep the code clean enough to publish. |
+| Review flow | Every change is shown as a single-file HTML preview first; it goes to `main` (and the live site) only after Baranay approves (section 12). |
 
 ---
 
 ## 2. Audit of the current code
 
-### Wrong chord data (fix first)
-Checked by script: every played note against the chord's notes.
+### Wrong chord data (fix first) ✅ fixed in Phase 2
+Checked by script: every played note against the chord's notes. All shapes now come from the chord engine.
 
 | Chord | Stored | Correct | Problem |
 |---|---|---|---|
@@ -38,73 +40,76 @@ Checked by script: every played note against the chord's notes.
 The other 13 shapes are correct. **Song lists are unverified, and some are wrong.** For example, "Smells Like Teen Spirit" is played with power chords, not an open E. Remove all song lists. Only add a song back with a source link (section 5.6).
 
 ### Logic and code problems
-- **Mastery is self-clicked** (+10% / −10%), so 100% is reached in 10 clicks. Replaced by section 6.
-- **Skill radar uses fake data.** "Strumming / Rhythm / Ear" are the open-chord score × 0.8 / 0.6 / 0.4. Remove it.
-- **Weekly chart labels are wrong.** They're always Mon→Sun, but the data is the last 7 days ending today.
-- **The streak shows 0** if you practiced yesterday but not yet today.
-- **The metronome drifts.** It uses `setInterval`, which isn't precise enough for audio timing.
-- **Greeting name is hard-coded** ("Uglum").
-- **Sessions only store minutes**, so there's no record of what was practiced.
-- Clickable `div`s, text as small as 9px, no keyboard support.
-- One file with minified one-line functions and short names (`gS`, `rDet`, `bCumul`), and no comments.
-- **No backup.** All data is in localStorage and can be lost.
+Status: ✅ = fixed, ⏳ = fixed in Phase 4.
+- ⏳ **Mastery is self-clicked** (+10% / −10%), so 100% is reached in 10 clicks. Replaced by section 6.
+- ⏳ **Skill radar uses fake data.** "Strumming / Rhythm / Ear" are the open-chord score × 0.8 / 0.6 / 0.4. Remove it.
+- ⏳ **Weekly chart labels are wrong.** They're always Mon→Sun, but the data is the last 7 days ending today.
+- ⏳ **The streak shows 0** if you practiced yesterday but not yet today.
+- ✅ **The metronome drifts.** It used `setInterval`. Fixed in Phase 1: Web Audio lookahead scheduling, tested over 5 minutes.
+- ✅ **Greeting name is hard-coded** ("Uglum"). Now read from settings (Phase 1).
+- ✅ **Sessions only store minutes.** Storage v2 has reps, bests and sessions (Phase 1); Phase 4 fills them.
+- ⏳ Clickable `div`s, text as small as 9px, no keyboard support (the new components already use real buttons and ≥ 12px text).
+- ✅ One file with minified one-line functions and short names. Split into commented modules in Phase 0.
+- ✅ **No backup.** Export/import functions exist (Phase 1); the buttons arrive with the Settings page in Phase 4.
 
 ### Keep
 - The general tab idea, Chart.js, the 28-day heatmap concept, the finger exercises list, and the transition drill progressions.
 
 ---
 
-## 3. Design direction (from the 4 uploaded references)
+## 3. Design direction (revised 12 Oct 2026)
 
-### What each reference contributes
-| Ref | Site | Take from it | Don't copy |
-|---|---|---|---|
-| ref1 | Stemtracks (dark, blue-violet glow) | Painted / surreal artwork used as cover tiles; vinyl discs peeking out behind cards; circular avatars; rounded dark cards; horizontal carousels | Generic marketplace layout, blue as the main colour |
-| ref2 | Rechords (coral + black) | Big coral hero with a giant half-visible vinyl; Art Deco display headlines in caps; album-cover collage grid | E-commerce structure |
-| ref3 | The Covasettes (illustrated band site) | Illustration as the hero; psychedelic poster frames; dark textured background with small planets and stars; chunky retro nav type | Busy pattern density everywhere |
-| ref4 | Bake & Soda (record club) | Condensed bold headlines in several colours; a scrolling **marquee ticker**; **taped, slightly rotated cards**; **polaroid frames**; handwritten script labels; small stat chips; "made by hand" feel | Disco ball and party imagery |
+> Rev. 2 of the design system. Rev. 1 (dark "stage poster", coral, Anton + Limelight, a literal spinning vinyl) was built in Phase 3 and then replaced after Baranay's feedback: *sans-serif only; take Teenage Engineering and Nothing's analog-meets-modern language; make the vinyl abstract; don't copy the references' colours and don't use the colours AI uses for everyone.* The component page `components.html` is the source of truth for every part and state.
 
-**Common thread:** dark stage, coral heat, vinyl as a motif, art as cover, tactile collage on top of a clean grid.
-
-### Colour tokens (starting point, tune in the browser)
-| Token | Role | Starting value |
+### References (`References/`)
+| Ref | What | Take from it |
 |---|---|---|
-| `--stage` | Page background, with subtle grain | `#0d0c0e` |
-| `--stage-2` | Raised surfaces | `#17151a` |
-| `--paper` | Poster/polaroid/stub paper | `#f2e8d5` |
-| `--coral` | Primary accent, Practice | `#ef6a45` (close to the current `#e85c3a`, which keeps continuity) |
-| `--mint` | Ear training | `#7fd6b4` |
-| `--mustard` | Theory | `#eabb4e` |
-| `--pink` | Progress / milestones | `#f07aa0` |
-| `--violet-glow` | "Live" states only: metronome running, timer on, recording | `#5b4bff` at low opacity |
+| ref1–ref4 | Stemtracks, Rechords, The Covasettes, Bake & Soda | Art as cover tiles, vinyl as a motif, a scrolling ticker, handmade paper pieces (tape, polaroids, stubs). **Not** their colours or their serif/display type. |
+| ref5–ref7 | Teenage Engineering K.O. II, K.O. Sidekick, OP-1 | Device body with an inset screen, keycaps, small LED dots, tiny spec-sheet labels, line-art screen graphics (tape reels), analog + modern together. |
+| ref8–ref9 | Nothing Phone and Ear | Dot-matrix type, transparent "see the mechanism" details, clean white surfaces with a single red accent dot. |
 
-**Flagged departure:** the violet glow (from ref1) is the only cool colour. Use it only for live states so it means "something is running right now". Remove it if it clashes with the art.
+### Look
+- **Body and screens:** light device-body panels (day theme, the default) or ebony (night theme). Live data sits on dark inset **screens**: the neck, readouts, the ticker.
+- **Hardware details:** keycap buttons that press down; LED dots for state (a green phosphor LED only while something is running: metronome, timer, recording); mono spec labels; a fine dot-grid texture like perforated speaker metal.
+- **Paper for the human side:** session **receipts** (thermal paper, torn edges, barcode), **label-maker strips** on setlist cards, **polaroids** for milestones and artwork, handwritten notes.
+- **Main menu:** a sticky top bar with sections grouped into categories (each opens a small menu; one "Menu" on phones) and a **⚙ settings menu** in the right corner.
 
-Each section owns one accent so the user always knows where they are. Text on coral and mustard must pass WCAG AA (test it).
-
-### Typography
-| Role | Use | Candidates (pick by testing) |
+### Colour (guitar colour-material-finish palette; a placeholder until Baranay sets his own)
+| Token | Source | Role |
 |---|---|---|
-| Display / poster | Page heroes, big numbers | Condensed bold: **Anton**, **Big Shoulders Display** |
-| Deco accent | One word per hero at most (ref2 feel) | **Limelight**, **Poiret One** |
-| Text | Body, UI | **Hanken Grotesk**, **Familjen Grotesk** |
-| Mono | BPM, timers, frets | **DM Mono** (keep) |
-| Handwritten | Labels, setlist, stub notes | **Baranay's own handwriting as a font** (scan → font tool such as Calligraphr) |
+| `--body` / `--body-2` / `--body-3` | bone-grey powder coat (day) / ebony (night) | Background, raised panels and keys, wells |
+| `--screen` | ebony | Inset screens in both themes |
+| `--paper`, `--ink` | bone, ebony | Receipts, polaroids; text on paper and on every accent fill |
+| `--bronze` | phosphor-bronze strings | Today, Chords, Practice |
+| `--verdigris` | oxidised copper | Ear training |
+| `--sonic` | "sonic blue" guitar finish | Theory |
+| `--shell` | "shell pink" guitar finish | Progress, milestones |
+| `--phosphor` | LED | "Live" only |
 
-Do not use Instrument Serif + Plus Jakarta Sans; that pairing reads as AI-template. The handwriting font is the most distinctive element. Use a temporary script font until it's ready.
+Each accent has a `-text` variant that passes WCAG AA on the body. Pages set `--accent-now` / `--accent-text` for their section. `tests/tokens.test.js` checks contrast for every text/surface pair in both themes (55 pairs).
+
+### Typography (sans-serif and mono only, Google Fonts)
+| Role | Font |
+|---|---|
+| Headings | **Archivo**, wide (width 112–125) |
+| Text, UI | **Archivo**, normal width |
+| Readouts (BPM, timers, big numbers) | **Doto** (dot matrix) |
+| Labels, frets, small numbers | **Martian Mono** |
+| Handwritten notes | **Baranay's own handwriting as a font** (scan → Calligraphr); **Caveat** stands in until then |
+
+No serif or display-deco fonts. Minimum text size 12px.
 
 ### Motifs that do a job (not decoration)
-- **Vinyl metronome:** the metronome is a record that spins at a speed tied to the BPM. Beat 1 flashes the label.
-- **Groove progress:** weekly practice shown as rings on a record. Each ring is a week, and its thickness is the minutes practiced.
-- **Ticket stub per session:** the end of a session prints a stub with the date, minutes, personal bests and next opening. The session log is a stack of stubs.
-- **Marquee ticker** (ref4) at the top of the dashboard: today's openings scroll by, e.g. "C→G: 3 changes from your best ✦ B string buzzed in Am ✦ F barre rusty, 9 days".
-- **Taped cards** for the session plan ("setlist") and **polaroids** for milestones and artwork.
-- **Album-cover tiles** with Baranay's illustrations for chord families, ear games and theory topics.
-- **Illustrated empty states:** his characters appear where data is missing.
+- **Disc metronome:** an abstract record, not a literal one. A fixed ring of beat segments lights up beat by beat (beat 1 brightest); line-art grooves with a cut-away onto a dot grid turn slowly; a playhead sweeps once per bar, steered by the audio clock so it crosses each segment exactly on the click; the BPM sits in dot-matrix figures on a dark label.
+- **Groove progress:** weekly practice as rings on a disc (Progress page).
+- **Session receipt:** printed at the end of a session with minutes, personal bests, the most frequent mistake and the next opening; the session log is a pile of receipts.
+- **Ticker:** today's openings scroll by in dot-matrix type on a screen strip; it pauses on hover/focus and becomes a still list with reduced motion.
+- **Setlist cards** with an index number, an LED for the block being played and a label-maker strip for the block type; **polaroids** for milestones and artwork; **cover tiles** with Baranay's illustrations for chord families, ear games and theory topics; **illustrated empty states**.
 
 ### Avoid
-- A row of four identical KPI tiles with coloured top stripes.
-- Coloured dots before every title, emoji as icons, gradient blobs.
+- Serif or decorative display fonts; colours copied from the references; generic "AI" palettes (indigo/violet glows, neon lime, coral + cream).
+- A literal, photo-real vinyl.
+- A row of four identical KPI tiles with coloured top stripes; coloured dots before every title; emoji as icons; gradient blobs.
 - Everything boxed in cards of the same weight. Each page has one hero.
 
 ### Copy tone
@@ -120,7 +125,7 @@ Plain, specific, encouraging. "You changed C→G 4 more times than last week" be
 | Milestone stamps | SVG | 400 × 400 px | `assets/art/stamps/` |
 | Hand-drawn icons (optional) | SVG | 64 × 64 artboard | `assets/art/icons/` |
 
-Until the art exists, use clearly marked placeholder frames (dashed border + label such as "HERO — Practice, 1600×1200"). Never use stock or AI images as filler.
+Until the art exists, use the placeholder frames from the component page (dashed frame, crop marks, "HERO — Practice · 1600 × 1200 · folder"). Never use stock or AI images as filler.
 
 ---
 
@@ -128,13 +133,15 @@ Until the art exists, use clearly marked placeholder frames (dashed border + lab
 
 | Page | Accent | Hero | Job |
 |---|---|---|---|
-| **Today** (dashboard) | coral | Illustration + "Tonight's setlist" | What to practice now and why; ticker of openings; quick start |
-| **Chords** | coral | Neck view of the selected chord | Learn any chord in every position |
-| **Practice** | coral | Vinyl metronome | Run a session: timed blocks, measurements, mistake logging |
-| **Ear** | mint | Cover-tile game grid | Ear training games and daily workout |
-| **Theory** | mustard | Topic covers | Lectures, exercises, quizzes (content later) |
-| **Progress** | pink | Groove record + stub stack | Personal bests, trends, mistake patterns, milestones |
-| Settings | — | — | Name, handedness, sound, backup export/import |
+| **Today** (dashboard) | bronze | Illustration + "Tonight's setlist" | What to practice now and why; ticker of openings; quick start |
+| **Chords** | bronze | Neck view of the selected chord | Learn any chord in every position |
+| **Practice** | bronze | Disc metronome | Run a session: timed blocks, measurements, mistake logging |
+| **Ear** | verdigris | Cover-tile game grid | Ear training games and daily workout |
+| **Theory** | sonic | Topic covers | Lectures, exercises, quizzes (content later) |
+| **Progress** | shell | Groove disc + receipt pile | Personal bests, trends, mistake patterns, milestones |
+| Settings | — | — | Name, handedness, sound, day/night theme, backup export/import (also reachable from the ⚙ menu) |
+
+Navigation: the sticky top bar from the component page. Pages grouped into categories, ⚙ settings in the right corner.
 
 Production is hidden until it's planned.
 
@@ -163,6 +170,8 @@ Chords are **generated from music theory and validated by tests**, not typed in 
 
 All 12 roots × all qualities. Spell notes correctly for the key: Bb, not A#, in flat keys. The note spelling table lives in `src/theory/notes.js`.
 
+**Open question:** Baranay's "chords chart.jpg" (a roots × chord-types grid with 6, m6 and dim columns) could be the Chords page overview layout; adding 6 (`0 4 7 9`) and m6 (`0 3 7 9`) would extend the table above. Waiting for his answer.
+
 ### 5.3 Where voicings come from
 1. **Standard shapes (primary, shown first).** Curated templates with fingerings that move along the neck:
    - Open chords (the classic first-position shapes).
@@ -190,6 +199,7 @@ Use Vitest. For every voicing of every chord:
 Regression tests: C open = `x32010`, F barre = `133211`, G = `320003`, Am = `x02210`, D = `xx0232`, E = `022100`.
 
 ### 5.5 Chords page UI
+*(Built in Phase 4 with the rev. 2 components: neck on a screen, chord diagrams with a drawn barre and intervals.)*
 - **Pick:** root (12 buttons) × quality (chips).
 - **Neck view (hero):** the full fretboard (0–15) showing every chord tone, roots highlighted and other tones labelled by interval (R, 3, 5, b7...). This shows that the chord lives all over the neck.
 - **Voicing strip:** voicing cards ordered from the nut up the neck. Use arrow keys (← →) to step through them; the neck view highlights the current voicing.
@@ -276,7 +286,7 @@ New → Learning → Steady → Fluent → In the fingers.
 Labels come from the evidence (clean rate, recall, spacing interval). Every label shows what the next one needs. "In the fingers" still lists openings.
 
 ### 6.8 Session flow
-1. **Setlist:** the app proposes a session as taped cards, which the user can edit, reorder or remove:
+1. **Setlist:** the app proposes a session as setlist cards, which the user can edit, reorder or remove:
    - Warm-up (finger exercise, 3 min)
    - Fix (top Fix opening)
    - Push (top Push opening)
@@ -284,13 +294,13 @@ Labels come from the evidence (clean rate, recall, spacing interval). Every labe
    - Ear (2 min drill)
    - Free play (untimed)
 2. **Play:** each block has a timer and its own measurement tool. The metronome is available everywhere.
-3. **Stub:** at the end a ticket stub summarizes the minutes, new personal bests, the most frequent mistake and tomorrow's top opening.
+3. **Receipt:** at the end a session receipt summarizes the minutes, new personal bests, the most frequent mistake and tomorrow's top opening.
 
 ### 6.9 Progress page
 - **Personal bests over time** per item, shown as a line with dates.
 - **Mistake patterns:** most frequent tags this week compared with last week.
 - **Fretboard heatmap of buzzes and mutes** by string and position.
-- **Groove record** of weekly minutes, a **28-day heatmap** and the **stub stack**.
+- **Groove disc** of weekly minutes, a **28-day heatmap** and the **receipt pile** (session log).
 - **Milestones:** event-based stamps (first clean F barre, first 60 changes/min, first chord in all 5 CAGED shapes). These are achievements, not a level cap.
 
 ### 6.10 Encouragement rules
@@ -302,11 +312,12 @@ Labels come from the evidence (clean rate, recall, spacing interval). Every labe
 
 ## 7. Metronome and audio
 
-- **Scheduler:** Web Audio lookahead scheduling (schedule clicks on `audioCtx.currentTime` slightly ahead), never `setInterval` timing.
+- **Scheduler:** Web Audio lookahead scheduling (schedule clicks on `audioCtx.currentTime` slightly ahead), never `setInterval` timing. ✅ Built in Phase 1: click times come from a fixed anchor, a Web Worker ticks every 25 ms (built from inline code, with a page-timer fallback so previews opened from a file still work). Verified: 632 clicks over 5 min 15 s, all exactly on the grid.
+- **Visual:** the disc metronome (section 3).
 - **Settings:** 30–240 BPM, tap tempo, time signatures (2/4, 3/4, 4/4, 6/8), subdivisions, accent on/off, sound choice.
 - **Speed trainer:** +N BPM every N bars, up to a target.
 - **Chord change mode:** shows the next chord every N beats for change-pair and progression drills.
-- **Guitar synth:** Karplus-Strong plucked strings for chord playback, with a strum direction and speed. No sample files needed.
+- **Guitar synth:** Karplus-Strong plucked strings for chord playback, with a strum direction and speed. No sample files needed. ✅ Built in Phase 1, in tune within 5 cents across the neck.
 - **Keyboard shortcuts (Mac):**
   - Space: start / stop
   - ↑ / ↓: BPM ±1
@@ -372,7 +383,7 @@ Starting resources for writing content: Open Music Theory (free online textbook)
 // Stored under one key: "tempo"
 {
   schemaVersion: 2,
-  settings: { name: "Baranay", leftHanded: false, sound: "clean", restDaysPerWeek: 1 },
+  settings: { name: "Baranay", leftHanded: false, sound: "clean", restDaysPerWeek: 1 },  // + theme: "day" | "night" (Phase 4)
   items: {                       // practice items, keyed by id
     "voicing:C:open": { type: "voicing", chord: "C", voicingId: "open", createdAt, reviewIntervalDays: 1, lastPracticedAt }
   },
@@ -382,11 +393,12 @@ Starting resources for writing content: Open Music Theory (free online textbook)
   bests: { "pair:C-G": { changesPerMin: 34, cleanBpm: 92, at } },
   sessions: [ { id, start, end, minutes, blocks: [...], stub: {...} } ],
   milestones: [ { id, at } ],
-  ear: { results: [ { exercise, question, answer, correct, ms, timbre, at } ] }
+  ear: { results: [ { exercise, question, answer, correct, ms, timbre, at } ] },
+  meta: { createdAt, lastExportAt, migratedFromV1At, notices: { chordRatingsDropped, unreadableData } }
 }
 ```
 
-- **Migration from v1:** read `tempo_sess` (minutes per session) into `sessions`. Discard `tempo_cprog` (self-rated %, not meaningful), but tell the user once in a dismissible note.
+- **Migration from v1:** read `tempo_sess` (minutes per session) into `sessions`. Discard `tempo_cprog` (self-rated %, not meaningful), but tell the user once in a dismissible note. ✅ Built in Phase 1; the v1 keys are kept as a safety copy, and unreadable data is put aside instead of overwritten. The +10% buttons still read `tempo_cprog` until Phase 4 removes them; the note appears then.
 - **Backup:** export / import the whole object as JSON in Settings, plus an "export reminder" every 30 days.
 
 ---
@@ -397,31 +409,34 @@ Starting resources for writing content: Open Music Theory (free online textbook)
 
 ```
 tempo/
-├── CLAUDE.md                 # short version of sections 1, 11 and 12 for future sessions
-├── index.html
+├── CLAUDE.md                 # short version of sections 1, 3, 11 and 12 for future sessions
+├── TEMPO_PLAN.md             # this file
+├── index.html                # the app
+├── components.html           # the design system: every component in every state
+├── scripts/build-preview.mjs # npm run preview:file → single-file previews in preview/ (git-ignored)
+├── .github/workflows/deploy.yml  # tests + build + publish to GitHub Pages on every push to main
 ├── src/
-│   ├── main.js               # app start, router
+│   ├── main.js, router.js    # app start, page switching
+│   ├── components-page.js    # the component page
 │   ├── theory/               # notes.js, intervals.js, scales.js, chords.js (formulas)
 │   ├── chords/
-│   │   ├── shapes.js         # curated templates (open, CAGED, barre, triads, power)
-│   │   ├── generator.js      # voicing search
-│   │   └── fingering.js      # finger assignment + barre detection
-│   ├── practice/
-│   │   ├── items.js          # practice item helpers
-│   │   ├── measures.js       # clean rate, form time, changes/min, clean BPM
-│   │   ├── openings.js       # openings generator
-│   │   ├── spacing.js        # review intervals
-│   │   └── session.js        # setlist builder + stub
+│   │   ├── shapes.js         # curated shapes (open, CAGED, barre, triads, power)
+│   │   ├── generator.js      # standard placements + voicing search
+│   │   ├── fingering.js      # finger assignment + barre detection + checker
+│   │   └── voicings.js       # public API: getVoicings(root, quality)
+│   ├── practice/             # history.js now; items, measures, openings, spacing, session in Phase 4
 │   ├── audio/                # engine.js, metronome.js, guitar-synth.js
-│   ├── ear/                  # one file per exercise + scoring.js
-│   ├── state/                # storage.js (schema, migration, backup), settings.js
-│   ├── data/                 # mistake-tips.js, progressions.js, exercises.js
-│   ├── pages/                # today.js, chords.js, practice.js, ear.js, theory.js, progress.js, settings.js
-│   ├── components/           # neck.js, chord-diagram.js, vinyl-metronome.js, stub.js, ticker.js, taped-card.js, charts.js
+│   ├── ear/                  # one file per exercise + scoring.js (Phase 5)
+│   ├── state/                # storage.js (schema, migration, backup), settings.js, legacy-ratings.js (temporary)
+│   ├── data/                 # chords-v1.js (temporary), progressions.js, exercises.js; mistake-tips.js in Phase 4
+│   ├── pages/                # one file per page
+│   ├── components/           # top-bar, neck, chord-diagram, vinyl-metronome (disc), stub (receipt),
+│   │                         # ticker, taped-card (setlist card + polaroid), art-placeholder, charts, header
+│   ├── utils/                # time.js, html.js
 │   └── styles/               # tokens.css, base.css, components.css, pages.css
 ├── content/theory/01-fretboard-notes/  # lecture.md, exercises.json, quiz.json
 ├── assets/art/               # heroes/, characters/, covers/, textures/, stamps/, icons/
-└── tests/                    # chords.test.js, measures.test.js, openings.test.js, storage.test.js
+└── tests/                    # theory, chords, storage, metronome, guitar-synth, history, tokens
 ```
 
 ### Code conventions (Baranay's style)
@@ -433,33 +448,37 @@ tempo/
 - All copy in plain, human English.
 
 ### Quality bar
-- Accessibility: real `button`s, visible focus, minimum 12px text, WCAG AA contrast, `prefers-reduced-motion` respected (vinyl stops spinning).
+- Accessibility: real `button`s, visible focus, minimum 12px text, WCAG AA contrast in both themes (tested), `prefers-reduced-motion` respected (the disc and the ticker stop; beat lights still work).
 - Works at phone width: large tap targets for practicing with a guitar in hand.
 
 ---
 
 ## 12. Build phases (with "done when")
 
-| Phase | Work | Done when |
-|---|---|---|
-| **0. Set up** | Vite project, file structure, CLAUDE.md, Vitest. Move existing code into modules with no behaviour change. | The app runs exactly as before from `npm run dev`. |
-| **1. Core** | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth. | Metronome stays in time over 5 minutes; migration test passes. |
-| **2. Chord engine** | Shapes, generator, fingering, validation tests (5.4). | All tests pass, including C and F regressions; every chord has ≥ 5 voicings across the neck. |
-| **3. Design system** | Tokens, fonts, components (neck, diagram, vinyl, stub, ticker, taped card, placeholders for art). | One component page shows every component in its states. |
-| **4. Pages** | Chords → Practice (section 6) → Today → Progress → Settings, built in the new design. | A full session runs: setlist → measured reps → stub, and openings change with the data. |
-| **5. Ear training** | Section 8, linked to the practice model. | All 8 exercises play; confusion duels appear after repeated mix-ups. |
-| **6. Theory scaffold** | Section 9 folders, renderers for lecture / exercise / quiz, topic 1 as a sample. | Topic 1 lecture, exercise and quiz work end to end. |
-| **Later** | Microphone (tuner, buzz detection, weekly recordings), Production tab, publishing on GitHub Pages. | — |
+| Phase | Work | Done when | Status |
+|---|---|---|---|
+| **0. Set up** | Vite project, file structure, CLAUDE.md, Vitest. Move existing code into modules with no behaviour change. | The app runs exactly as before from `npm run dev`. | ✅ |
+| **1. Core** | `theory/`, storage v2 + migration + backup, Web Audio engine, lookahead metronome, guitar synth. | Metronome stays in time over 5 minutes; migration test passes. | ✅ |
+| **2. Chord engine** | Shapes, generator, fingering, validation tests (5.4). | All tests pass, including C and F regressions; every chord has ≥ 5 voicings across the neck. | ✅ (≥ 13 each) |
+| **3. Design system** | Tokens, fonts, components, placeholders for art; rev. 2 after feedback (section 3), sticky menu + ⚙ settings. | One component page shows every component in its states. | ✅ (`components.html`) |
+| **4. Pages** | Top bar + ⚙ menu, then Chords → Practice (section 6) → Today → Progress → Settings, built from the component page parts only. Remove the v1 styles, tokens, chord list and +10% ratings. | A full session runs: setlist → measured reps → receipt, and openings change with the data. | next |
+| **5. Ear training** | Section 8, linked to the practice model. | All 8 exercises play; confusion duels appear after repeated mix-ups. | |
+| **6. Theory scaffold** | Section 9 folders, renderers for lecture / exercise / quiz, topic 1 as a sample. | Topic 1 lecture, exercise and quiz work end to end. | |
+| **Later** | Microphone (tuner, buzz detection, weekly recordings), Production tab, Baranay's own palette and handwriting font. | — | |
 
-Commit after each meaningful step, with clear messages.
-
----
+### Review flow (Baranay's rule, 12 Oct 2026)
+1. Work on a local branch; commit each meaningful step with a clear message.
+2. Run the tests and the build, then `npm run preview:file`.
+3. Give Baranay the single-file previews from `preview/` ("Tempo app.html", "Tempo design system.html"). They open straight from the Finder, with no server.
+4. Only after he approves: merge into `main` and push. GitHub Actions runs the tests, builds and publishes, so the GitHub Pages link shows the new version about a minute later (⌘⇧R if the browser shows a cached copy).
+5. Never push unapproved work. Still stop at the end of each phase for approval before the next one.
 
 ## 13. Assumptions (correct me if wrong)
-- **Dark stage base** chosen, since all four references are dark with coral.
+- **Day theme** (light device body) is the default; a **night theme** is available from ⚙. *(Revised: v2.0 assumed a dark stage.)*
 - **Greeting name:** "Baranay" by default, editable in Settings.
-- **Production tab** hidden until it's planned.
-- Fonts are free web fonts (Google Fonts) unless Adobe Fonts is preferred.
+- **Production tab** hidden until it's planned (done in Phase 4).
+- Fonts are free web fonts (Google Fonts).
+- The guitar CMF palette is a placeholder until Baranay supplies his own palette.
 
 ---
 
@@ -475,4 +494,10 @@ Commit after each meaningful step, with clear messages.
 
 ## 15. Starter prompt for Claude Code
 
-> Clone `korook/TEMPO-Personal.Music.Development.Tracker` and read `TEMPO_PLAN.md` fully. Start with Phase 0 in section 12. Follow the code conventions in section 11. Stop at the end of the phase, summarize what changed, and wait for my approval before Phase 1.
+> Read `TEMPO_PLAN.md` and `CLAUDE.md` fully. Phases 0–3 are done. Continue with Phase 4 in section 12, following the design direction in section 3 and the code conventions in section 11. Use the review flow: show each change as a preview file and push to `main` only after approval. Stop at the end of the phase, summarize what changed, and wait for approval before Phase 5.
+
+---
+
+## 16. Change log
+- **2.1 (12 Oct 2026):** Phases 0–3 marked done with results. Design direction rewritten after Baranay's feedback: Teenage Engineering / Nothing analog-modern language, sans-serif only (Archivo, Doto, Martian Mono; Caveat as handwriting stand-in), guitar-materials colours instead of coral/mint/mustard/pink, day theme default plus night, abstract disc metronome, receipts and label-maker strips, sticky categorized menu with ⚙ settings. Review flow added (preview file → approval → push). Audit items marked fixed. Architecture tree updated. Open question added about the chord chart and 6/m6 chords.
+- **2.0 (12 Oct 2026):** rewrite of v1 (audit, chord engine, practice model, ear training, phases).

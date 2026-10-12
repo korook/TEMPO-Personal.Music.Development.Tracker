@@ -1,7 +1,8 @@
 # Tempo: notes for Claude Code
 
 A personal guitar practice website for Baranay (guitarist, illustrator, design student).
-Personal use first, possibly published later. The full brief is `TEMPO_PLAN.md`. Read it before starting a new phase.
+Personal use first, possibly published later. The full brief is `TEMPO_PLAN.md` (v2.1: design direction, phase status
+and review flow are current). Read it before starting a new phase.
 
 ## How to work
 - Work **phase by phase** (table below). At the end of each phase: stop, summarize what changed, and wait for approval.
@@ -12,7 +13,7 @@ Personal use first, possibly published later. The full brief is `TEMPO_PLAN.md`.
   (GitHub Actions → Pages). Never push unapproved work.
 
 ## Core decisions (plan §1)
-- **Look:** stage poster × Baranay's own art. Dark stage, warm coral, bold display type, collage (vinyl, taped cards, polaroids, stubs). Placeholder frames until the art exists. Never stock or AI images.
+- **Look:** analog meets modern (Teenage Engineering / Nothing), sans-serif only, guitar-materials colours; see "Notes from Phase 3" below and plan §3. Placeholder frames until the art exists. Never stock or AI images.
 - **Practice model:** no "+10%" buttons and no 100% ceiling. Progress comes from measured attempts, and there is always a next opening (§6).
 - **Chords:** generated from theory and validated by Vitest, never typed in by hand (§5).
 - **Ear training:** build it (§8). **Theory:** scaffolding now, content later (§9).
