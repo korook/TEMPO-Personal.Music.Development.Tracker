@@ -28,7 +28,7 @@ export function buildSetlist(state, now = new Date()) {
 
   // Takes the first opening of the given types whose item isn't in the setlist yet.
   const take = (types) => {
-    const opening = openings.find((candidate) => types.includes(candidate.type) && !used.has(candidate.create ? candidate.create.id : candidate.itemId));
+    const opening = openings.find((candidate) => types.includes(candidate.type) && !candidate.ear && !used.has(candidate.create ? candidate.create.id : candidate.itemId));
     if (!opening) return null;
     const item = opening.create ? ensureItem(state, opening.create) : state.items[opening.itemId];
     used.add(item.id);
@@ -43,9 +43,26 @@ export function buildSetlist(state, now = new Date()) {
   if (push) blocks.push(practiceBlock('push', push, 3));
   const review = take(['review']) || take(['recall', 'new', 'context', 'expand']);
   if (review) blocks.push(practiceBlock('review', review, 5));
-  blocks.push({ id: makeId(), kind: 'ear', title: 'Ear', note: 'Two minutes of listening', minutes: 2, measure: 'none', itemId: null });
+  blocks.push(earBlock(openings));
   blocks.push({ id: makeId(), kind: 'free', title: 'Free play', note: 'No timer. Play what you like.', minutes: null, measure: 'none', itemId: null });
   return blocks;
+}
+
+// The ear block: a confusion duel when you keep mixing two sounds up, otherwise a short
+// interval drill at your level.
+function earBlock(openings) {
+  const duel = openings.find((opening) => opening.ear);
+  return {
+    id: makeId(),
+    kind: 'ear',
+    label: duel ? 'Ear duel' : 'Ear',
+    title: duel ? duel.short.replace('Ear: ', '') : 'Intervals',
+    note: duel ? duel.text : 'Two minutes of listening: name the intervals.',
+    minutes: 2,
+    measure: 'ear',
+    itemId: null,
+    ear: duel ? duel.ear : { exercise: 'intervals', pool: null },
+  };
 }
 
 // The warm-up: one finger exercise, a different one each day.

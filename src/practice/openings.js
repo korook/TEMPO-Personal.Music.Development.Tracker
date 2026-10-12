@@ -13,6 +13,7 @@ import { describeMistake, tipForMistake } from '../data/mistake-tips.js';
 import { TRANSITION_DRILLS } from '../data/progressions.js';
 import { getVoicingsForSymbol } from '../chords/voicings.js';
 import { parseChordSymbol, chordSymbol } from '../theory/chords.js';
+import { confusionPairs } from '../ear/scoring.js';
 
 const FIX_MIN_COUNT = 3;
 const PUSH_STEP_CHANGES = 2;
@@ -46,6 +47,7 @@ export function generateOpenings(state, now = new Date()) {
   }
   if (items.length === 0 || !items.some((item) => item.type === 'voicing')) openings.push(...starterOpenings(state));
   if (!items.some((item) => item.type === 'pair')) openings.push(starterPairOpening());
+  openings.push(...earOpenings(state));
   return dedupe(openings).sort((a, b) => b.priority - a.priority);
 }
 
@@ -60,6 +62,19 @@ function fixOpenings(state, item) {
     short: `${item.label}: ${describeMistake(top.tag)} ${top.count}/${top.of}`,
     priority: 100 + top.count * 5,
   }];
+}
+
+// Ear Fix: two answers you keep mixing up, e.g. "you heard m3 as M3 4 of the last 10 times".
+// These point at a confusion duel rather than a practice item (itemId "ear:<game>").
+function earOpenings(state) {
+  return confusionPairs(state.ear.results).slice(0, 3).map((pair) => ({
+    type: 'fix',
+    itemId: `ear:${pair.exercise}`,
+    text: `Ear: you heard ${pair.expected} as ${pair.heard} ${pair.count} of the last ${pair.of} times. Try the ${pair.expected} vs ${pair.heard} duel.`,
+    short: `Ear: ${pair.expected} vs ${pair.heard} duel`,
+    priority: 90 + pair.count,
+    ear: { exercise: pair.exercise, pool: [pair.expected, pair.heard] },
+  }));
 }
 
 // Push: a personal best within reach, e.g. "C ↔ G: best 34 changes/min. Try 36."
