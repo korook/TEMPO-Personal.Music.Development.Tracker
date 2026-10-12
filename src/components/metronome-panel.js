@@ -1,7 +1,8 @@
-// The metronome card on the Practice page: tempo, time signature, clicks per beat,
-// sound, accent, tap tempo, speed trainer and the chord-change display, plus keyboard
-// shortcuts. Uses the v1 card style; Phase 3 replaces the look with the vinyl metronome.
+// The metronome on the Practice page: the disc metronome (start/stop, ±1 BPM, beat lights)
+// plus a panel with the tempo slider, time signature, clicks per beat, sound, accent,
+// tap tempo, speed trainer and the chord-change display, and the keyboard shortcuts.
 
+import { renderVinylMetronome, bindVinylMetronome, refreshVinylMetronome } from './vinyl-metronome.js';
 import {
   getMetronome,
   toggleMetronome,
@@ -23,42 +24,41 @@ onPulseHeard(showPulse);
 
 // ─── Rendering ───
 
-// Returns the metronome card's HTML for the current settings.
+// Returns the Practice page's metronome: the disc metronome as the hero, with the tempo
+// slider and the metronome settings in a panel beside it.
 export function renderMetronomePanel() {
-  const metronome = getMetronome();
-  const settings = metronome.getSettings();
-  const running = metronome.isRunning();
+  const settings = getMetronome().getSettings();
   const trainer = settings.speedTrainer;
-  const beatDots = Array.from({ length: TIME_SIGNATURES[settings.timeSignature].beats })
-    .map(() => '<div class="bd"></div>')
-    .join('');
 
   return `
-    <div class="card"><div class="card-t"><span class="dot"></span>Metronome</div>
-      <div class="bpm-row">
-        <button class="bpm-btn" data-bpm-step="-5" aria-label="Slower by 5 BPM">−</button>
-        <div class="bpm-d"><div class="bpm-n" id="bN">${settings.bpm}</div><div class="bpm-l">BPM</div></div>
-        <button class="bpm-btn" data-bpm-step="5" aria-label="Faster by 5 BPM">+</button>
-        <input type="range" class="bpm-s" id="bpmSlider" min="${MIN_BPM}" max="${MAX_BPM}" value="${settings.bpm}" step="1" aria-label="Tempo in BPM">
+    <section class="practice-metronome" aria-label="Metronome">
+      ${renderVinylMetronome()}
+      <div class="panel metro-controls">
+        <div class="section-head">
+          <span class="section-head__kicker">Metronome</span>
+          <h2 class="section-head__title">Tempo &amp; feel</h2>
+        </div>
+        <label class="metro-slider">
+          <span class="label">Tempo · <span id="bN">${settings.bpm}</span> BPM</span>
+          <input type="range" class="bpm-s" id="bpmSlider" min="${MIN_BPM}" max="${MAX_BPM}" value="${settings.bpm}" step="1" aria-label="Tempo in BPM">
+        </label>
+        <div class="metro-options">
+          <label>Time ${renderSelect('timeSignature', Object.keys(TIME_SIGNATURES), settings.timeSignature)}</label>
+          <label>Clicks ${renderSelect('subdivision', Object.keys(SUBDIVISION_LABELS), String(settings.subdivision), SUBDIVISION_LABELS)}</label>
+          <label>Sound ${renderSelect('sound', Object.keys(CLICK_SOUNDS), settings.sound, mapNames(CLICK_SOUNDS))}</label>
+          <label class="metro-check"><input type="checkbox" data-option="accent" ${settings.accent ? 'checked' : ''}> Accent beat 1</label>
+          <button class="button" id="tapTempo">Tap tempo</button>
+        </div>
+        <div class="metro-trainer">
+          <label class="metro-check"><input type="checkbox" data-trainer="enabled" ${trainer.enabled ? 'checked' : ''}> Speed trainer</label>
+          <label>+${renderNumber('stepBpm', trainer.stepBpm, 1, 20)} BPM</label>
+          <label>every ${renderNumber('everyBars', trainer.everyBars, 1, 32)} bars</label>
+          <label>up to ${renderNumber('targetBpm', trainer.targetBpm, MIN_BPM, MAX_BPM)}</label>
+        </div>
+        ${renderChordChangeDisplay(settings.chordChange)}
+        <p class="label metro-keys">Keys: Space start/stop · ↑ ↓ ±1 BPM · ⇧↑ ⇧↓ ±5 · T tap</p>
       </div>
-      <div class="metro-options">
-        <label>Time ${renderSelect('timeSignature', Object.keys(TIME_SIGNATURES), settings.timeSignature)}</label>
-        <label>Clicks ${renderSelect('subdivision', Object.keys(SUBDIVISION_LABELS), String(settings.subdivision), SUBDIVISION_LABELS)}</label>
-        <label>Sound ${renderSelect('sound', Object.keys(CLICK_SOUNDS), settings.sound, mapNames(CLICK_SOUNDS))}</label>
-        <label class="metro-check"><input type="checkbox" data-option="accent" ${settings.accent ? 'checked' : ''}> Accent beat 1</label>
-        <button class="metro-small-btn" id="tapTempo">Tap tempo</button>
-      </div>
-      <div class="metro-trainer">
-        <label class="metro-check"><input type="checkbox" data-trainer="enabled" ${trainer.enabled ? 'checked' : ''}> Speed trainer</label>
-        <label>+${renderNumber('stepBpm', trainer.stepBpm, 1, 20)} BPM</label>
-        <label>every ${renderNumber('everyBars', trainer.everyBars, 1, 32)} bars</label>
-        <label>up to ${renderNumber('targetBpm', trainer.targetBpm, MIN_BPM, MAX_BPM)}</label>
-      </div>
-      ${renderChordChangeDisplay(settings.chordChange)}
-      <div class="bdots" id="bDots">${beatDots}</div>
-      <button class="btn${running ? ' run' : ''}" id="metronomeToggle">${running ? 'Stop' : 'Start metronome'}</button>
-      <div class="metro-keys">Keys: Space start/stop · ↑ ↓ ±1 BPM · ⇧↑ ⇧↓ ±5 · T tap</div>
-    </div>`;
+    </section>`;
 }
 
 // Returns the big "now → next" chord display, shown only in chord-change mode.
@@ -110,12 +110,13 @@ function showPulse(pulse) {
   if (slider && Number(slider.value) !== pulse.bpm) slider.value = pulse.bpm;
 }
 
-// Writes the current BPM into the big number and the slider.
+// Writes the current BPM into the readout, the slider and the disc.
 function showBpm() {
   const bpm = getMetronome().getSettings().bpm;
   setText('bN', bpm);
   const slider = document.getElementById('bpmSlider');
   if (slider) slider.value = bpm;
+  refreshVinylMetronome();
 }
 
 // Sets the text of an element if it is on screen.
@@ -131,14 +132,11 @@ export function bindMetronomePanel(page, redraw) {
   redrawPage = redraw;
   const metronome = getMetronome();
 
-  page.querySelectorAll('[data-bpm-step]').forEach((button) => {
-    button.addEventListener('click', () => changeBpm(Number(button.dataset.bpmStep)));
-  });
+  bindVinylMetronome(page);
   page.querySelector('#bpmSlider').addEventListener('input', (event) => {
     metronome.setBpm(Number(event.target.value));
     showBpm();
   });
-  page.querySelector('#metronomeToggle').addEventListener('click', startOrStop);
   page.querySelector('#tapTempo').addEventListener('click', tap);
   page.querySelectorAll('[data-option]').forEach((control) => {
     control.addEventListener('change', () => applyOption(control));

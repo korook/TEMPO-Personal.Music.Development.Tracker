@@ -26,6 +26,7 @@ const FLASH_MS = 110;
 const bar = { startTime: null, seconds: 0 };
 let stopListening = null;
 let frameId = null;
+let animatedVinyl = null;
 
 // ─── Rendering ───
 
@@ -161,6 +162,12 @@ export function bindVinylMetronome(container) {
   if (getMetronome().isRunning()) startPlayhead(vinyl);
 }
 
+// Updates the disc inside `container` after the tempo or settings changed elsewhere.
+export function refreshVinylMetronome(container = document) {
+  const vinyl = container.querySelector('.vinyl');
+  if (vinyl) refresh(vinyl);
+}
+
 // Updates the BPM, status, groove speed and keys after a change.
 function refresh(vinyl) {
   const metronome = getMetronome();
@@ -197,9 +204,12 @@ function showPulse(vinyl, pulse) {
   if (Number(vinyl.querySelector('[data-vinyl-bpm]').textContent) !== pulse.bpm) refresh(vinyl);
 }
 
-// Turns the playhead every animation frame to match the audio clock.
+// Turns the playhead every animation frame to match the audio clock. If the page was
+// redrawn, the loop moves over to the new disc.
 function startPlayhead(vinyl) {
-  if (frameId !== null) return;
+  if (frameId !== null && animatedVinyl === vinyl) return;
+  if (frameId !== null) cancelAnimationFrame(frameId);
+  animatedVinyl = vinyl;
   const playhead = vinyl.querySelector('[data-vinyl-playhead]');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

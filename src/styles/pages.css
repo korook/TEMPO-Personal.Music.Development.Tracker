@@ -1021,3 +1021,89 @@ a.chip[aria-current='page'] {
     min-width: 48px;
   }
 }
+
+/* ═══════════════ Practice page: disc metronome as the hero ═══════════════ */
+.practice-metronome {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: stretch;
+  margin-bottom: var(--space-6);
+}
+
+.metro-controls {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.metro-controls .section-head {
+  margin-bottom: 0;
+}
+
+.metro-slider {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.metro-slider #bN {
+  color: var(--text);
+}
+
+.stage .metro-controls .bpm-s {
+  width: 100%;
+  height: 6px;
+  background: var(--body-3);
+  accent-color: var(--accent-now);
+}
+
+.stage .metro-controls .bpm-s::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  background: var(--accent-now);
+  box-shadow: 0 2px 0 var(--key-shadow);
+}
+
+.metro-controls .metro-options,
+.metro-controls .metro-trainer {
+  margin: 0;
+  gap: var(--space-3);
+  font-size: var(--size-sm);
+  color: var(--text-muted);
+}
+
+.metro-controls select,
+.metro-controls .metro-number {
+  min-height: 36px;
+  font-size: var(--size-sm) !important;
+}
+
+.metro-controls .metro-number {
+  width: 72px;
+}
+
+.metro-controls .metro-chords {
+  justify-content: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--screen);
+  color: var(--screen-text);
+}
+
+.metro-controls .metro-chords .bpm-l {
+  color: var(--screen-muted);
+}
+
+.metro-controls .metro-chord-next {
+  color: var(--screen-text);
+}
+
+.metro-keys {
+  text-align: left;
+}
+
+@media (max-width: 860px) {
+  .practice-metronome {
+    grid-template-columns: 1fr;
+  }
+}
