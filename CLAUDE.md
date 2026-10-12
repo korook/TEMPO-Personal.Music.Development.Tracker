@@ -6,7 +6,8 @@ Personal use first, possibly published later. The full brief is `TEMPO_PLAN.md`.
 ## How to work
 - Work **phase by phase** (table below). At the end of each phase: stop, summarize what changed, and wait for approval.
 - Ask before deciding anything the brief leaves open.
-- Commit after each meaningful step, with clear messages.
+- Commit after each meaningful step, with clear messages, and push it straight to `main` once tests and the build pass.
+  Every push republishes the live site (GitHub Actions → Pages), so the live link always shows the latest work.
 
 ## Core decisions (plan §1)
 - **Look:** stage poster × Baranay's own art. Dark stage, warm coral, bold display type, collage (vinyl, taped cards, polaroids, stubs). Placeholder frames until the art exists. Never stock or AI images.
