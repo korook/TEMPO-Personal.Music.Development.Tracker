@@ -53,13 +53,22 @@ function warmUpBlock(state, now) {
   return { id: makeId(), kind: 'warmup', title: exercise.name, note: exercise.description, minutes: 3, measure: 'bpm-pass', itemId: item.id };
 }
 
-// A block built from an opening.
+// What each opening type is called on a block's label strip.
+const OPENING_LABELS = { fix: 'Fix', push: 'Push', review: 'Review', new: 'Learn', expand: 'Next shape', context: 'In context', recall: 'From memory', ear: 'Ear' };
+
+// A block built from an opening. `kind` is its slot in the setlist; `label` says what it really
+// is (a beginner's "fix" slot holds a "Learn" block, for example).
 function practiceBlock(kind, { opening, item }, minutes) {
-  return { id: makeId(), kind, title: item.label, note: opening.text, minutes, measure: measureFor(item.type), itemId: item.id };
+  return { id: makeId(), kind, label: OPENING_LABELS[opening.type], title: item.label, note: opening.text, minutes, measure: measureFor(item.type), itemId: item.id };
 }
 
 // Labels for each block kind, as shown on the label-maker strips.
 export const BLOCK_LABELS = { warmup: 'Warm-up', fix: 'Fix', push: 'Push', review: 'Review', ear: 'Ear', free: 'Free play' };
+
+// Returns the label to show for a block.
+export function blockLabel(block) {
+  return block.label || BLOCK_LABELS[block.kind];
+}
 
 // ─── Finishing ───
 
@@ -98,7 +107,7 @@ export function finishSession(state, session, now = new Date()) {
     start: session.start,
     end: now.toISOString(),
     minutes,
-    blocks: session.blocks.map(({ kind, title, itemId, minutes: planned }) => ({ kind, title, itemId, minutes: planned })),
+    blocks: session.blocks.map(({ kind, label, title, itemId, minutes: planned }) => ({ kind, label: label || BLOCK_LABELS[kind], title, itemId, minutes: planned })),
     stub,
   });
   return stub;

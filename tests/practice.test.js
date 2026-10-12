@@ -166,6 +166,13 @@ describe('openings', () => {
     expect(voicingForItem(expand.create).frets).toEqual([null, 3, 5, 5, 5, 3]);
   });
 
+  it('puts a shape added from the Chords page into the next setlist', () => {
+    const state = createEmptyState(NOW);
+    const added = ensureItem(state, voicingItem(getVoicingsForSymbol('Bm', { found: false })[0], NOW));
+    const blocks = buildSetlist(state, NOW);
+    expect(blocks.some((block) => block.itemId === added.id)).toBe(true);
+  });
+
   it('changes when the data changes', () => {
     const state = createEmptyState(NOW);
     const before = generateOpenings(state, NOW).map((opening) => opening.text);
@@ -186,6 +193,7 @@ describe('sessions', () => {
     expect(blocks.map((block) => block.kind)).toEqual(['warmup', 'fix', 'push', 'review', 'ear', 'free']);
     expect(blocks.filter((block) => block.itemId).every((block) => state.items[block.itemId])).toBe(true);
     expect(new Set(blocks.filter((block) => block.itemId).map((block) => block.itemId)).size).toBe(4);
+    expect(blocks.find((block) => block.kind === 'fix').label).toBe('Learn');
   });
 
   it('runs a full session: setlist → measured reps → receipt, and the openings move on', () => {

@@ -19,6 +19,8 @@ import { renderChordDiagram } from '../components/chord-diagram.js';
 import { renderNeck } from '../components/neck.js';
 import { playChord } from '../audio/guitar-synth.js';
 import { getSettings } from '../state/settings.js';
+import { getState, updateState } from '../state/storage.js';
+import { voicingItem, voicingItemId, ensureItem } from '../practice/items.js';
 import { CHORDS_V1 } from '../data/chords-v1.js';
 import { chordLink } from '../router.js';
 import { escapeHtml } from '../utils/html.js';
@@ -182,6 +184,9 @@ function renderFocus(voicing, index, total, leftHanded) {
         <button class="button button--icon button--round" data-step="-1" aria-label="Previous shape">←</button>
         <button class="button button--primary" data-play>▶ Play</button>
         <button class="button button--icon button--round" data-step="1" aria-label="Next shape">→</button>
+        ${getState().items[voicingItemId(voicing)]
+          ? '<span class="label voicing-focus__added">In your practice ✓</span>'
+          : '<button class="button" data-add-practice>+ Add to practice</button>'}
       </div>
     </div>`;
 }
@@ -216,6 +221,13 @@ function bindChordPage(page, symbol, voicings) {
   page.querySelector('[data-play]').addEventListener('click', () => {
     playChord(voicings[chosenVoicing.get(symbol) || 0].frets);
   });
+  const addButton = page.querySelector('[data-add-practice]');
+  if (addButton) {
+    addButton.addEventListener('click', () => {
+      updateState((state) => ensureItem(state, voicingItem(voicings[chosenVoicing.get(symbol) || 0])));
+      chooseVoicing(symbol, chosenVoicing.get(symbol) || 0);
+    });
+  }
 
   const chosen = page.querySelector('.voicing-card[aria-pressed="true"]');
   const strip = page.querySelector('.voicing-strip');

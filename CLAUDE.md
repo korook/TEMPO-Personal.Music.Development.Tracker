@@ -110,4 +110,8 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - Chords page ✅: A–G categories (`src/chords/library.js`: sharps/flats under their letter), thumbnails show the most common
   shape (open → E/A-form barre → E/A-string root → any full shape), chord view with tones, type switcher, neck, focus panel, strip.
 - 6 and m6 chords added (12 roots × 14 types).
-- Next: Practice (plan §6), Today, Progress, Settings; then delete v1 styles/tokens, chords-v1.js, legacy-ratings.js.
+- Practice ✅: practice model in `src/practice/` (items, measures, spacing, openings, session; tested in tests/practice.test.js),
+  mistake tips in `src/data/mistake-tips.js`, measuring tools in `src/components/measure-tools.js`. Page flow:
+  setlist (taped cards, reorder/remove) → blocks with timer + tool (⏎ = clean / tap / clean pass) → receipt.
+  The disc metronome is the page hero. Chord pages have "+ Add to practice".
+- Next: Today (setlist preview + ticker of openings), Progress, Settings; then delete v1 styles/tokens, chords-v1.js, legacy-ratings.js.

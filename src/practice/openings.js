@@ -42,6 +42,7 @@ export function generateOpenings(state, now = new Date()) {
     openings.push(...pushOpenings(state, item));
     openings.push(...reviewOpenings(item, now));
     if (item.type === 'voicing') openings.push(...voicingGrowthOpenings(state, item));
+    if (item.type === 'voicing' && !state.reps.some((rep) => rep.itemId === item.id)) openings.push(addedShapeOpening(item));
   }
   if (items.length === 0 || !items.some((item) => item.type === 'voicing')) openings.push(...starterOpenings(state));
   if (!items.some((item) => item.type === 'pair')) openings.push(starterPairOpening());
@@ -145,6 +146,11 @@ function nextShapeUpTheNeck(state, item) {
   return getVoicingsForSymbol(item.chord, { found: false })
     .filter((voicing) => voicing.source === 'standard' && !voicing.shape.startsWith('triad'))
     .find((voicing) => voicing.position > current.position && !state.items[`voicing:${voicing.id}`]) || null;
+}
+
+// A shape added from the Chords page but not played yet.
+function addedShapeOpening(item) {
+  return { type: 'new', itemId: item.id, text: `Start with ${item.label}: get it ringing clean.`, short: `Learn ${item.label}`, priority: 58 };
 }
 
 // With no chord shapes yet: start with the classic open chords.
