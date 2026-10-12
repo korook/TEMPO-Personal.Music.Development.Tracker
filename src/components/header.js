@@ -2,6 +2,7 @@
 // The name comes from Settings (default "Baranay").
 
 import { getSettings } from '../state/settings.js';
+import { escapeHtml } from '../utils/html.js';
 
 // ─── Rendering ───
 
@@ -14,9 +15,3 @@ export function renderGreeting() {
     `<div class="greet-line">${greeting}, <b>${escapeHtml(getSettings().name)}</b></div><div class="greet-date">${dateText}</div>`;
 }
 
-// ─── Helpers ───
-
-// Makes text safe to put inside HTML (the name is typed by the user).
-function escapeHtml(text) {
-  return String(text).replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
-}

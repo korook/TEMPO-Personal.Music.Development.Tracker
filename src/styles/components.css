@@ -309,3 +309,733 @@
   max-width: 400px;
   margin: 0 auto;
 }
+
+/* ═══════════════ Stage-poster components (Phase 3) ═══════════════
+   Everything below belongs to the new design system and only applies inside
+   an element with class "stage" (the component page now; every page from Phase 4).
+   The v1 styles above are deleted in Phase 4. */
+
+/* ─── Stage base ─── */
+/* The v1 styles set the root to 14px; the stage design's rem sizes assume 16px. */
+html:has(> body.stage) {
+  font-size: 100%;
+}
+
+.stage {
+  background: var(--stage) var(--grain);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: var(--size-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage :focus-visible {
+  outline: 2px solid var(--accent-now);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.stage .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ─── Section heads ─── kicker (handwritten), poster title, one deco word at most */
+.section-head {
+  margin-bottom: var(--space-5);
+}
+
+.section-head__kicker {
+  display: block;
+  font-family: var(--font-hand);
+  font-size: var(--size-hand);
+  color: var(--accent-now);
+  margin-bottom: var(--space-2);
+}
+
+.section-head__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--size-2xl);
+  line-height: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.section-head__title--hero {
+  font-size: var(--size-hero);
+}
+
+.section-head__deco {
+  font-family: var(--font-deco);
+  color: var(--accent-now);
+  text-transform: none;
+}
+
+.section-head__lead {
+  margin-top: var(--space-3);
+  max-width: 52ch;
+  color: var(--text-muted);
+}
+
+/* ─── Buttons ─── dark ink on accents (white on coral fails contrast) */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-5);
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font: 700 var(--size-sm) / 1 var(--font-text);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform var(--fast) var(--ease), background var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+
+.button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.button--primary {
+  background: var(--accent-now);
+  color: var(--ink);
+}
+
+.button--primary:hover {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-now) 25%, transparent);
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--stage-line);
+}
+
+.button--ghost:hover {
+  background: var(--stage-3);
+}
+
+.button--live {
+  background: var(--stage-2);
+  color: var(--text);
+  border-color: var(--violet-line);
+  box-shadow: 0 0 24px var(--violet-glow);
+}
+
+.button--icon {
+  width: var(--tap-target);
+  padding: 0;
+  font-size: var(--size-lg);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─── Chips ─── tags, filters and small stats */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--stage-line);
+  background: var(--stage-2);
+  color: var(--text-muted);
+  font: 600 var(--size-xs) / 1 var(--font-text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.chip--standard { color: var(--text); }
+.chip--found { color: var(--mint); border-color: color-mix(in srgb, var(--mint) 40%, transparent); }
+.chip--stretch { color: var(--mustard); border-color: color-mix(in srgb, var(--mustard) 40%, transparent); }
+.chip--easy { color: var(--mint); }
+.chip--medium { color: var(--mustard); }
+.chip--hard { color: var(--coral); }
+
+button.chip {
+  min-height: var(--tap-target);
+  cursor: pointer;
+  font-size: var(--size-sm);
+}
+
+button.chip:hover {
+  background: var(--stage-3);
+}
+
+button.chip[aria-pressed='true'] {
+  background: var(--accent-now);
+  border-color: var(--accent-now);
+  color: var(--ink);
+}
+
+.stat-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--stage-line);
+  border-radius: var(--radius);
+  background: var(--stage-2);
+}
+
+.stat-chip__value {
+  font: 500 var(--size-xl) / 1.1 var(--font-mono);
+  color: var(--text);
+}
+
+.stat-chip__label {
+  font-size: var(--size-xs);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Marquee ticker ─── scrolls today's openings; static when motion is reduced */
+.ticker {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  border-block: 2px solid var(--ink);
+}
+
+.ticker__track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll var(--ticker-seconds, 40s) linear infinite;
+}
+
+.ticker:hover .ticker__track,
+.ticker:focus-within .ticker__track,
+.ticker[data-paused='true'] .ticker__track {
+  animation-play-state: paused;
+}
+
+.ticker__list {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ticker__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--size-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.ticker__item::after {
+  content: '✦';
+  color: var(--coral-deep);
+  font-size: var(--size-sm);
+}
+
+@keyframes ticker-scroll {
+  to { transform: translateX(-50%); }
+}
+
+/* ─── Taped card ─── paper card with a strip of tape, slightly rotated */
+.taped-card {
+  position: relative;
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  border-radius: var(--radius);
+  background: var(--card-colour, var(--paper));
+  color: var(--ink);
+  box-shadow: var(--shadow-paper);
+  transform: rotate(var(--tilt, -1.2deg));
+  transition: transform var(--medium) var(--ease);
+}
+
+.taped-card::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 84px;
+  height: 26px;
+  background: var(--tape);
+  transform: translateX(-50%) rotate(-3deg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.taped-card:not([class*='taped-card--coral']):not([class*='taped-card--mint']):not([class*='taped-card--mustard']):not([class*='taped-card--pink'])::before {
+  background: var(--tape-kraft);
+}
+
+.taped-card:hover {
+  transform: rotate(0deg) translateY(-2px);
+}
+
+.taped-card--coral { --card-colour: var(--coral); }
+.taped-card--mint { --card-colour: var(--mint); }
+.taped-card--mustard { --card-colour: var(--mustard); }
+.taped-card--pink { --card-colour: var(--pink); }
+
+.taped-card__kicker {
+  font: 600 var(--size-xs) / 1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.taped-card__title {
+  margin: var(--space-2) 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--size-xl);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.taped-card__body {
+  font-size: var(--size-sm);
+}
+
+.taped-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.taped-card__note {
+  font-family: var(--font-hand);
+  font-size: var(--size-hand);
+  line-height: 1;
+}
+
+.taped-card__meta {
+  font: 500 var(--size-sm) / 1 var(--font-mono);
+}
+
+.taped-card .button--ghost {
+  color: var(--ink);
+  border-color: rgba(13, 12, 14, 0.35);
+}
+
+.taped-card .button--ghost:hover {
+  background: rgba(13, 12, 14, 0.08);
+}
+
+.taped-card--current {
+  outline: 3px solid var(--text);
+  outline-offset: 4px;
+}
+
+.taped-card--done {
+  filter: saturate(0.55);
+}
+
+.taped-card--done .taped-card__title {
+  text-decoration: line-through;
+  text-decoration-thickness: 3px;
+}
+
+/* ─── Polaroid ─── milestones and artwork */
+.polaroid {
+  display: inline-block;
+  width: 100%;
+  max-width: 260px;
+  margin: 0;
+  padding: var(--space-3) var(--space-3) var(--space-5);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-paper);
+  transform: rotate(var(--tilt, 1.5deg));
+}
+
+.polaroid__caption {
+  margin-top: var(--space-3);
+  font-family: var(--font-hand);
+  font-size: var(--size-hand);
+  line-height: 1.1;
+  text-align: center;
+}
+
+.polaroid__date {
+  display: block;
+  font: 500 var(--size-xs) / 1.4 var(--font-mono);
+  color: var(--ink-muted);
+}
+
+/* ─── Ticket stub ─── one per practice session */
+.stub {
+  --notch: 10px;
+  --side: 104px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr var(--side);
+  max-width: 520px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-paper);
+  /* round notches at the top and bottom of the tear line */
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at calc(100% - var(--side)) 0, transparent 98%, #000 100%),
+    radial-gradient(circle var(--notch) at calc(100% - var(--side)) 100%, transparent 98%, #000 100%);
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle var(--notch) at calc(100% - var(--side)) 0, transparent 98%, #000 100%),
+    radial-gradient(circle var(--notch) at calc(100% - var(--side)) 100%, transparent 98%, #000 100%);
+  mask-composite: intersect;
+}
+
+.stub__main {
+  padding: var(--space-4) var(--space-5);
+}
+
+.stub__side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) var(--space-2);
+  border-left: 2px dashed rgba(13, 12, 14, 0.35);
+  text-align: center;
+}
+
+.stub__minutes {
+  font-family: var(--font-display);
+  font-size: var(--size-2xl);
+  line-height: 1;
+}
+
+.stub__unit {
+  font: 600 var(--size-xs) / 1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.stub__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 var(--space-3);
+  font: 600 var(--size-xs) / 1.4 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+}
+
+.stub__header span {
+  white-space: nowrap;
+}
+
+.stub__title {
+  margin: var(--space-1) 0 var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--size-xl);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.stub__rows {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  font-size: var(--size-sm);
+}
+
+.stub__row {
+  display: grid;
+  grid-template-columns: 7.5em 1fr;
+  gap: var(--space-2);
+}
+
+.stub__row dt {
+  color: var(--ink-muted);
+}
+
+.stub__row dd {
+  margin: 0;
+}
+
+.stub__next {
+  margin-top: var(--space-3);
+  font-family: var(--font-hand);
+  font-size: var(--size-hand);
+  line-height: 1.1;
+  color: var(--coral-deep);
+}
+
+.stub-stack {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stub-stack > li:nth-child(odd) .stub { transform: rotate(-0.6deg); }
+.stub-stack > li:nth-child(even) .stub { transform: rotate(0.5deg) translateX(8px); }
+
+/* ─── Chord diagram ─── */
+.chord-diagram {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  color: var(--text);
+}
+
+/* ─── Fretboard neck ─── scrolls sideways inside its frame on narrow screens */
+.neck {
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scrollbar-width: thin;
+}
+
+.neck svg {
+  display: block;
+  min-width: 760px;
+  width: 100%;
+  height: auto;
+}
+
+/* ─── Vinyl metronome ─── the record spins one turn per bar */
+.vinyl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: var(--space-5);
+}
+
+.vinyl__record {
+  position: relative;
+  width: min(100%, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transition: box-shadow var(--medium) var(--ease);
+}
+
+.vinyl__disc {
+  width: 100%;
+  height: 100%;
+  animation: vinyl-spin var(--spin-seconds, 3s) linear infinite;
+  animation-play-state: paused;
+}
+
+.vinyl[data-running='true'] .vinyl__disc {
+  animation-play-state: running;
+}
+
+.vinyl[data-running='true'] .vinyl__record {
+  box-shadow: 0 0 0 2px var(--violet-line), 0 0 60px var(--violet-glow);
+}
+
+.vinyl__label {
+  fill: var(--coral);
+  transition: fill 60ms linear;
+}
+
+.vinyl[data-flash='downbeat'] .vinyl__label {
+  fill: var(--paper);
+}
+
+.vinyl[data-flash='beat'] .vinyl__label {
+  fill: #ff8c6b;
+}
+
+.vinyl__readout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.vinyl__bpm {
+  min-width: 3.2ch;
+  font-family: var(--font-display);
+  font-size: var(--size-hero);
+  line-height: 0.9;
+  text-align: center;
+}
+
+.vinyl__bpm-unit {
+  display: block;
+  font: 600 var(--size-xs) / 1 var(--font-mono);
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.vinyl__beats {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.vinyl__beat {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--stage-3);
+  border: 1px solid var(--stage-line);
+}
+
+.vinyl__beat[data-on='true'] {
+  background: var(--accent-now);
+  border-color: var(--accent-now);
+}
+
+@keyframes vinyl-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Art placeholders ─── clearly marked frames until Baranay's artwork exists */
+.art-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  margin: 0;
+  padding: var(--space-4);
+  border: 2px dashed color-mix(in srgb, var(--accent-now) 70%, transparent);
+  border-radius: var(--radius);
+  background:
+    repeating-linear-gradient(-45deg, transparent 0 14px, rgba(255, 255, 255, 0.025) 14px 28px),
+    var(--stage-2);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.art-placeholder__label {
+  font-family: var(--font-display);
+  font-size: var(--size-lg);
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.art-placeholder__spec {
+  font: 500 var(--size-xs) / 1.4 var(--font-mono);
+}
+
+/* ─── Empty state ─── a character steps in where data is missing */
+.empty-state {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border: 1px solid var(--stage-line);
+  border-radius: var(--radius-lg);
+  background: var(--stage-2);
+}
+
+.empty-state__title {
+  font-family: var(--font-display);
+  font-size: var(--size-xl);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.empty-state__text {
+  margin: var(--space-2) 0 var(--space-4);
+  color: var(--text-muted);
+}
+
+/* ─── Reduced motion ─── the vinyl stops spinning and the ticker stops scrolling */
+@media (prefers-reduced-motion: reduce) {
+  .vinyl__disc,
+  .ticker__track {
+    animation: none !important;
+  }
+
+  .taped-card,
+  .button {
+    transition: none;
+  }
+}
+
+/* The component page can preview reduced motion without changing system settings. */
+.motion-off .vinyl__disc,
+.motion-off .ticker__track {
+  animation: none !important;
+}
+
+@media (max-width: 560px) {
+  .empty-state {
+    grid-template-columns: 1fr;
+  }
+
+  .stub {
+    grid-template-columns: 1fr;
+    -webkit-mask: none;
+    mask: none;
+  }
+
+  .stub__side {
+    flex-direction: row;
+    gap: var(--space-2);
+    border-left: 0;
+    border-top: 2px dashed rgba(13, 12, 14, 0.35);
+  }
+}
+
+/* ─── Chord diagram parts ─── (not scoped to .stage: the v1 Guitar page uses them too) */
+.cd-nut { fill: var(--paper); }
+.cd-fret { stroke: #4a444f; stroke-width: 1; }
+.cd-string { stroke: #8f867a; }
+.cd-open { fill: none; stroke: var(--text-muted); stroke-width: 1.6; }
+.cd-muted { fill: var(--text-muted); font-family: var(--font-text); }
+.cd-muted--damped { fill: var(--text-faint); }
+.cd-start-fret { fill: var(--text-muted); font-family: var(--font-mono); }
+.cd-barre { fill: var(--paper); }
+.cd-dot { fill: var(--paper); }
+.cd-dot--root { fill: var(--coral); }
+.cd-finger { fill: var(--ink); font-family: var(--font-mono); font-weight: 600; }
+.cd-interval { fill: var(--text-muted); font-family: var(--font-mono); }
+.cd-interval--root { fill: var(--coral); font-weight: 600; }
+.cd-string-name { fill: var(--text-faint); font-family: var(--font-mono); }
+
+/* ─── Neck parts ─── */
+.neck-board { fill: #1b1719; }
+.neck-nut { stroke: var(--paper); stroke-width: 6; }
+.neck-fret { stroke: #5a535f; stroke-width: 2; }
+.neck-inlay { fill: #2c272f; }
+.neck-string { stroke: #9a9083; }
+.neck-string-name { fill: var(--text-faint); font: 600 12px var(--font-mono); }
+.neck-fret-number { fill: var(--text-faint); font: 500 12px var(--font-mono); }
+.neck-fret-number--marked { fill: var(--text-muted); }
+
+.neck-note circle { fill: var(--stage-3); stroke: var(--text-muted); stroke-width: 1.2; }
+.neck-note text { fill: var(--text); font: 600 12px var(--font-mono); }
+.neck-note--root circle { fill: var(--coral); stroke: var(--coral); }
+.neck-note--root text { fill: var(--ink); }
+.neck-note--active circle { fill: var(--paper); stroke: var(--paper); }
+.neck-note--active text { fill: var(--ink); }
+.neck-note--active.neck-note--root circle { fill: var(--coral); stroke: var(--paper); stroke-width: 2.5; }
+.neck-note--dim { opacity: 0.32; }
+
+/* ─── Ticker without motion ─── a still, wrapped list instead of a scrolling one */
+@media (prefers-reduced-motion: reduce) {
+  .ticker__track { width: auto; }
+  .ticker__list { flex-wrap: wrap; }
+  .ticker__list[aria-hidden='true'] { display: none; }
+}
+
+.motion-off .ticker__track { width: auto; }
+.motion-off .ticker__list { flex-wrap: wrap; }
+.motion-off .ticker__list[aria-hidden='true'] { display: none; }

@@ -61,7 +61,7 @@ function groupChordsByCategory() {
 function renderChordCard(chordKey) {
   const chord = CHORDS_V1[chordKey];
   const selectedClass = selectedChord === chordKey ? ' sel' : '';
-  return `<div class="cc${selectedClass}" data-chord="${chordKey}"><div style="display:flex;justify-content:space-between;align-items:start"><div><div class="cn">${chord.name}</div><div class="ct">${chord.type}</div></div><span class="diff diff-${chord.difficulty}">${chord.difficulty}</span></div><div style="margin-top:8px">${renderChordDiagram(primaryVoicing(chordKey), 110)}</div></div>`;
+  return `<div class="cc${selectedClass}" data-chord="${chordKey}"><div style="display:flex;justify-content:space-between;align-items:start"><div><div class="cn">${chord.name}</div><div class="ct">${chord.type}</div></div><span class="diff diff-${chord.difficulty}">${chord.difficulty}</span></div><div style="margin-top:8px">${renderChordDiagram(primaryVoicing(chordKey), { size: 110, showIntervals: false })}</div></div>`;
 }
 
 // Draws the detail panel: big diagram, fret per string, notes, mastery, tip and songs.
