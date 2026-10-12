@@ -102,3 +102,12 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - New styles only apply inside `.stage`; set `data-theme="day"|"night"` on it. Pages set `--accent-now` and
   `--accent-text` for their section. Text on accent fills and paper is `--ink`. `tests/tokens.test.js` checks contrast in both themes.
 - Disc metronome: the playhead is steered by the audio clock (lands exactly on each beat); grooves turn via CSS.
+
+## Notes from Phase 4 (in progress)
+- App shell: sticky top bar (`src/components/top-bar.js`) with Today, Practice, Chords (A–G), Ear & theory, Progress, and ⚙
+  quick settings (day/night, left-handed, reduced motion; saved in `settings`). Production is hidden.
+- Routing is hash-based (`src/router.js`): `#/today`, `#/chords/C`, `#/chord/Cmaj7` (use `chordLink()`), `#/practice`, `#/progress`, `#/ear`, `#/theory`.
+- Chords page ✅: A–G categories (`src/chords/library.js`: sharps/flats under their letter), thumbnails show the most common
+  shape (open → E/A-form barre → E/A-string root → any full shape), chord view with tones, type switcher, neck, focus panel, strip.
+- 6 and m6 chords added (12 roots × 14 types).
+- Next: Practice (plan §6), Today, Progress, Settings; then delete v1 styles/tokens, chords-v1.js, legacy-ratings.js.

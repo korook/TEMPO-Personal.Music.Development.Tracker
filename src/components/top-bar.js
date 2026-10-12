@@ -1,30 +1,47 @@
 // The top bar: a sticky main menu with the page's sections grouped into categories, and a
-// ⚙ button in the right corner that opens the settings. Each category opens a small menu of
-// its sections; on phone width all categories sit in one "Menu" list instead.
+// ⚙ button in the right corner that opens the settings. A category either opens a small
+// menu of its items or, with no items, links straight to its page. On phone width all
+// categories sit in one "Menu" list instead. setTopBarCurrent() marks where you are.
 // Menus use the browser's popover feature, so Esc and clicking outside close them.
 
 import { escapeHtml } from '../utils/html.js';
 
 // ─── Rendering ───
 
-// Returns the bar. groups = [{ label, items: [{ label, href }] }];
-// settingsHtml = what the ⚙ menu holds (or '' for no ⚙ button).
-export function renderTopBar({ brand, groups, settingsHtml = '' }) {
-  const categoryMenus = groups.map((group, index) => renderMenu(`top-bar-group-${index}`, group.label, [group])).join('');
-  const phoneMenu = renderMenu('top-bar-all', 'Menu', groups);
+// Returns the bar. groups = [{ key, label, href } or { key, label, items: [{ label, href }] }];
+// settingsHtml = what the ⚙ menu holds (or '' for no ⚙ button); brandHref = where the name links.
+export function renderTopBar({ brand, brandHref = '#top', groups, settingsHtml = '' }) {
+  const categoryMenus = groups.map((group, index) => (
+    group.items ? renderMenu(`top-bar-group-${index}`, group.label, [group], group.key) : renderLink(group)
+  )).join('');
+  const phoneGroups = groups.map((group) => (group.items ? group : { label: group.label, items: [{ label: group.label, href: group.href }] }));
+  const phoneMenu = renderMenu('top-bar-all', 'Menu', mergeSingleLinks(phoneGroups));
   const settings = settingsHtml ? renderSettings(settingsHtml) : '';
 
   return `
     <nav class="top-bar" aria-label="Main menu">
-      <a class="top-bar__brand" href="#top">${escapeHtml(brand)}</a>
+      <a class="top-bar__brand" href="${escapeHtml(brandHref)}">${escapeHtml(brand)}</a>
       <div class="top-bar__groups">${categoryMenus}</div>
       <div class="top-bar__phone">${phoneMenu}</div>
       ${settings}
     </nav>`;
 }
 
+// Returns a category that links straight to its page.
+function renderLink(group) {
+  return `<a class="top-bar__button" href="${escapeHtml(group.href)}" data-top-key="${escapeHtml(group.key || '')}">${escapeHtml(group.label)}</a>`;
+}
+
+// For the phone menu: puts single-link categories together under one "Pages" heading.
+function mergeSingleLinks(groups) {
+  const singles = groups.filter((group) => group.items.length === 1 && group.items[0].label === group.label);
+  if (singles.length < 2) return groups;
+  const pages = { label: 'Pages', items: singles.map((group) => group.items[0]) };
+  return [pages, ...groups.filter((group) => !singles.includes(group))];
+}
+
 // Returns one menu button and the list it opens.
-function renderMenu(id, label, groups) {
+function renderMenu(id, label, groups, key = '') {
   const showHeadings = groups.length > 1;
   const lists = groups.map((group) => `
     ${showHeadings ? `<span class="top-bar__heading">${escapeHtml(group.label)}</span>` : ''}
@@ -32,7 +49,7 @@ function renderMenu(id, label, groups) {
       ${group.items.map((item) => `<li><a class="top-bar__link" href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join('')}
     </ul>`).join('');
   return `
-    <button class="top-bar__button" popovertarget="${id}" aria-haspopup="true">${escapeHtml(label)} <span aria-hidden="true">▾</span></button>
+    <button class="top-bar__button" popovertarget="${id}" aria-haspopup="true" data-top-key="${escapeHtml(key)}">${escapeHtml(label)} <span aria-hidden="true">▾</span></button>
     <div class="top-bar__menu" id="${id}" popover>${lists}</div>`;
 }
 
@@ -64,6 +81,18 @@ export function bindTopBar(container) {
     menu.querySelectorAll('.top-bar__link').forEach((link) => {
       link.addEventListener('click', () => menu.hidePopover());
     });
+  });
+}
+
+// Marks the current category and link (aria-current) so the bar shows where you are.
+export function setTopBarCurrent(container, { key, href }) {
+  container.querySelectorAll('[data-top-key]').forEach((element) => {
+    if (element.dataset.topKey && element.dataset.topKey === key) element.setAttribute('aria-current', 'page');
+    else element.removeAttribute('aria-current');
+  });
+  container.querySelectorAll('.top-bar__link').forEach((link) => {
+    if (link.getAttribute('href') === href) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
   });
 }
 

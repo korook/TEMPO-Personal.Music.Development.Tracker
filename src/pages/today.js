@@ -7,19 +7,18 @@ import { loadChordProgress } from '../state/legacy-ratings.js';
 import { totalMinutes, weeklyMinutes, countStreak } from '../practice/history.js';
 import { renderGreeting } from '../components/header.js';
 import { renderWeeklyChart, renderSkillRadar } from '../components/charts.js';
-import { navigate } from '../router.js';
-import { selectChord } from './chords.js';
+import { navigate, chordLink } from '../router.js';
 
 // ─── Rendering ───
 
 // Draws the whole Dashboard page from the stored sessions and chord progress.
 export function renderTodayPage() {
-  renderGreeting();
   const sessions = getState().sessions;
   const progress = loadChordProgress();
 
   const page = document.getElementById('pg-dashboard');
   page.innerHTML = `
+    <div class="greet" id="greetBox"></div>
     ${renderMetricTiles(sessions, progress)}
     <div class="two" style="margin-bottom:14px">
       <div class="card"><div class="card-t"><span class="dot"></span>Weekly practice</div><div class="chart-box"><canvas id="chW"></canvas></div><div class="legend"><span><i style="background:var(--accent)"></i>Minutes</span></div></div>
@@ -30,6 +29,7 @@ export function renderTodayPage() {
     <div class="sec">Quick actions</div>
     ${renderQuickActions()}`;
 
+  renderGreeting();
   bindEvents(page);
   renderWeeklyChart(sessions);
   renderSkillRadar(progress);
@@ -73,12 +73,11 @@ function renderQuickActions() {
 
 // ─── Events ───
 
-// Makes mastery squares open that chord on the Guitar page, and quick actions open their page.
+// Makes mastery squares open that chord's page, and quick actions open their page.
 function bindEvents(page) {
   page.querySelectorAll('[data-chord]').forEach((cell) => {
     cell.addEventListener('click', () => {
-      selectChord(cell.dataset.chord);
-      navigate('guitar');
+      navigate(chordLink(cell.dataset.chord));
     });
   });
   page.querySelectorAll('[data-go]').forEach((tile) => {

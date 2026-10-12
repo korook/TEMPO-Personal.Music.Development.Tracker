@@ -35,8 +35,9 @@ export function renderChordDiagram(voicing, options = {}) {
 // Works out sizes and positions for a diagram `size` pixels wide.
 function getLayout(size, leftHanded, voicing) {
   // Room on the left for a starting-fret label such as "12fr" (on the right when left-handed).
-  const padLeft = leftHanded ? size * 0.1 : size * 0.26;
-  const padRight = leftHanded ? size * 0.26 : size * 0.1;
+  const labelRoom = Math.max(size * 0.26, 38);
+  const padLeft = leftHanded ? size * 0.1 : labelRoom;
+  const padRight = leftHanded ? labelRoom : size * 0.1;
   const top = size * 0.2;
   const stringGap = (size - padLeft - padRight) / 5;
   const fretGap = stringGap * 1.25;

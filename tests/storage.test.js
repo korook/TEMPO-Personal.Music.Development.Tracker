@@ -44,7 +44,7 @@ describe('empty state', () => {
   it('matches the plan section 10 shape', () => {
     const state = createEmptyState(NOW);
     expect(state.schemaVersion).toBe(2);
-    expect(state.settings).toEqual({ name: 'Baranay', leftHanded: false, sound: 'clean', restDaysPerWeek: 1 });
+    expect(state.settings).toEqual({ name: 'Baranay', leftHanded: false, sound: 'clean', restDaysPerWeek: 1, theme: 'day', reduceMotion: false });
     expect(state.items).toEqual({});
     expect(state.reps).toEqual([]);
     expect(state.bests).toEqual({});

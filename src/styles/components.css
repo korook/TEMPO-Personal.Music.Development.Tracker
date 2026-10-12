@@ -408,6 +408,25 @@ html:has(> body.stage) {
   color: var(--text-faint);
 }
 
+a.top-bar__button {
+  text-decoration: none;
+}
+
+.top-bar__button[aria-current='page'] {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--body);
+}
+
+.top-bar__button[aria-current='page'] span {
+  color: var(--body);
+}
+
+.top-bar__link[aria-current='page'] {
+  background: var(--body-3);
+  font-weight: 650;
+}
+
 .top-bar__cog {
   width: var(--tap-target);
   justify-content: center;
