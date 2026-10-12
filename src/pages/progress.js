@@ -1,13 +1,18 @@
-// The Progress page: 28-day heatmap, cumulative minutes, mistake patterns (this week vs
-// last week), clean rate per chord shape, and the session log (receipts for new sessions).
-// The groove disc, personal-best lines and milestones come later in Phase 4.
+// The Progress page (TEMPO_PLAN.md 6.9). Hero: the groove disc of weekly minutes next to
+// the latest receipts. Then personal bests over time, milestones, mistake patterns (this
+// week vs last week), clean rate per chord shape, the 28-day heatmap, total minutes and
+// the session log. Always compared against your own past, never an "ideal".
 
 import { getState, updateState } from '../state/storage.js';
 import { minutesOnDay } from '../practice/history.js';
-import { cleanRate } from '../practice/measures.js';
+import { cleanRate, repsFor, cleanBpmBest } from '../practice/measures.js';
+import { milestoneBoard } from '../practice/milestones.js';
 import { describeMistake } from '../data/mistake-tips.js';
 import { renderGreeting } from '../components/header.js';
 import { renderStubStack } from '../components/stub.js';
+import { renderGrooveDisc, renderSparkline } from '../components/groove-disc.js';
+import { renderPolaroid } from '../components/taped-card.js';
+import { renderArtPlaceholder } from '../components/art-placeholder.js';
 import { renderCumulativeChart } from '../components/charts.js';
 import { daysBefore } from '../utils/time.js';
 import { escapeHtml } from '../utils/html.js';
@@ -23,17 +28,86 @@ export function renderProgressPage() {
   const state = getState();
   const sessions = state.sessions;
 
+  const receipts = sessions.filter((session) => session.stub).slice(-3).reverse().map((session) => session.stub);
+
   page.innerHTML = `
-    ${renderHeatmapCard(sessions)}
+    <header class="page-head">
+      <div class="section-head">
+        <span class="section-head__kicker">Progress</span>
+        <h1 class="section-head__title section-head__title--hero">Progress</h1>
+        <p class="section-head__lead">How your playing is moving, measured against your own past. There's no 100%: every best can be beaten.</p>
+      </div>
+    </header>
+    <section class="progress-hero">
+      ${renderGrooveDisc(sessions)}
+      <div class="progress-hero__receipts">
+        ${receipts.length ? renderStubStack(receipts) : '<p class="progress-empty">Your session receipts pile up here.</p>'}
+      </div>
+    </section>
+    ${renderBestsCard(state)}
+    ${renderMilestones(state)}
     <div class="two-eq" style="margin-bottom:14px">
-      <div class="card"><div class="card-t"><span class="dot"></span>Total minutes, last 14 days</div><div class="chart-box"><canvas id="chCu"></canvas></div></div>
       <div class="card"><div class="card-t"><span class="dot"></span>Mistake patterns</div>${renderMistakePatterns(state)}</div>
+      ${renderHeatmapCard(sessions)}
     </div>
     ${renderCleanRateCard(state)}
+    <div class="card"><div class="card-t"><span class="dot"></span>Total minutes, last 14 days</div><div class="chart-box"><canvas id="chCu"></canvas></div></div>
     ${renderSessionLogCard(sessions)}`;
 
   bindEvents(page);
   renderCumulativeChart(sessions);
+}
+
+// Personal bests with their trend: change counts, clean tempos and form times.
+function renderBestsCard(state) {
+  const rows = [];
+  for (const item of Object.values(state.items)) {
+    if (item.type === 'pair') {
+      const counts = repsFor(state.reps, item.id, 'changes').map((rep) => rep.count);
+      if (counts.length) rows.push(bestRow(item.label, 'changes / min', Math.max(...counts), counts, false));
+    } else if (item.type === 'progression' || item.type === 'exercise') {
+      const tempos = repsFor(state.reps, item.id, 'bpm-pass').filter((rep) => rep.clean).map((rep) => rep.bpm);
+      const best = cleanBpmBest(state.reps, item.id);
+      if (best !== null) rows.push(bestRow(item.label, 'clean BPM (3 in a row)', best, tempos, false));
+    } else if (item.type === 'voicing') {
+      const times = repsFor(state.reps, item.id, 'form-time').map((rep) => Math.round(rep.ms / 100) / 10);
+      if (times.length) rows.push(bestRow(item.label, 'seconds to form', Math.min(...times), times, true));
+    }
+  }
+  return `
+    <div class="card"><div class="card-t"><span class="dot"></span>Personal bests</div>
+      ${rows.length ? `<ul class="bests-list">${rows.join('')}</ul>` : '<p class="progress-empty">Bests appear after a one-minute changes test, three clean passes at a tempo, or a timed chord change.</p>'}
+    </div>`;
+}
+
+// One personal-best row: item, metric, best value and its trend line.
+function bestRow(label, metric, best, history, lowerIsBetter) {
+  return `
+    <li>
+      <span class="bests-list__item">${escapeHtml(label)}<span class="label">${metric}</span></span>
+      <span class="bests-list__value">${best}</span>
+      ${renderSparkline(history, { lowerIsBetter, label: `${label} ${metric}: ${history.join(', ')}` })}
+    </li>`;
+}
+
+// Milestones as polaroids: reached ones with their date, the rest showing what they need.
+function renderMilestones(state) {
+  const board = milestoneBoard(state);
+  const reached = board.filter((milestone) => milestone.at).length;
+  const polaroids = board.map((milestone, index) => `
+    <div class="milestone${milestone.at ? '' : ' milestone--locked'}">
+      ${renderPolaroid({
+        pictureHtml: renderArtPlaceholder('stamp', milestone.title),
+        caption: milestone.title,
+        date: milestone.at ? new Date(milestone.at).toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' }) : milestone.needs,
+        index,
+      })}
+    </div>`).join('');
+  return `
+    <section class="milestones" aria-labelledby="milestones-title">
+      <div class="root-row__head"><h2 class="root-row__title" id="milestones-title">Milestones</h2><span class="label">${reached} of ${board.length}</span></div>
+      <div class="milestones__grid">${polaroids}</div>
+    </section>`;
 }
 
 // The mistakes logged this week, most frequent first, next to last week's count.
@@ -100,7 +174,6 @@ function renderHeatmapCard(sessions) {
 // The session log: the latest receipts, then a plain list of every session (newest first),
 // with a "Clear history" button.
 function renderSessionLogCard(sessions) {
-  const receipts = sessions.filter((session) => session.stub).slice(-4).reverse().map((session) => session.stub);
   const log = sessions.length === 0
     ? '<p class="progress-empty">No sessions yet. Your first one prints a receipt here.</p>'
     : sessions.slice().reverse().slice(0, 30).map((session) => {
@@ -115,7 +188,6 @@ function renderSessionLogCard(sessions) {
 
   return `
     <div class="card"><div class="card-t"><span class="dot"></span>Session log</div>
-      ${receipts.length ? renderStubStack(receipts) : ''}
       <div class="slog">${log}</div>
       ${clearButton}
     </div>`;

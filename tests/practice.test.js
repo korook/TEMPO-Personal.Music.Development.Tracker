@@ -18,6 +18,7 @@ import { buildSetlist, finishSession } from '../src/practice/session.js';
 import { voicingItem, pairItem, pairItemId, ensureItem, voicingForItem } from '../src/practice/items.js';
 import { getVoicingsForSymbol } from '../src/chords/voicings.js';
 import { describeMistake, tipForMistake } from '../src/data/mistake-tips.js';
+import { checkMilestones, milestoneBoard } from '../src/practice/milestones.js';
 
 const NOW = new Date('2026-10-12T18:00:00Z');
 const DAY_MS = 864e5;
@@ -231,5 +232,37 @@ describe('sessions', () => {
     const openingsAfter = generateOpenings(state, NOW).map((opening) => opening.text);
     expect(openingsAfter).not.toEqual(openingsBefore);
     expect(openingsAfter.some((text) => text.includes('G string buzzed 3/10'))).toBe(true);
+  });
+});
+
+// ─── Milestones ───
+
+describe('milestones', () => {
+  it('stamps the first session and a first clean chord once, with the date they happened', () => {
+    const state = createEmptyState(NOW);
+    const start = new Date(NOW.getTime() - 10 * 60000);
+    const session = { id: 's1', start: start.toISOString(), blocks: buildSetlist(state, start) };
+    const shape = session.blocks.find((block) => block.kind === 'fix');
+    for (let index = 0; index < 8; index++) state.reps.push(rep(shape.itemId, 'clean-check', { clean: true, mistakes: [] }, 's1'));
+    const stub = finishSession(state, session, NOW);
+    expect(stub.milestones).toEqual(['First session', 'First clean chord']);
+    expect(checkMilestones(state, new Date(NOW.getTime() + DAY_MS))).toEqual([]);
+    const board = milestoneBoard(state);
+    expect(board.find((milestone) => milestone.id === 'first-session').at).toBe(NOW.toISOString());
+    expect(board.find((milestone) => milestone.id === 'changes-60').at).toBeNull();
+  });
+
+  it('counts one chord in all five CAGED shapes', () => {
+    const state = createEmptyState(NOW);
+    const shapes = getVoicingsForSymbol('C', { found: false });
+    const picks = [
+      shapes.find((voicing) => voicing.shape === 'open'),
+      ...['A', 'G', 'E', 'D'].map((form) => shapes.find((voicing) => voicing.form === form)),
+    ];
+    for (const voicing of picks) {
+      const item = ensureItem(state, voicingItem(voicing, NOW));
+      state.reps.push(rep(item.id, 'clean-check', { clean: true, mistakes: [] }));
+    }
+    expect(checkMilestones(state, NOW).map((milestone) => milestone.id)).toContain('all-caged');
   });
 });

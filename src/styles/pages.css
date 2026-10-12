@@ -1548,3 +1548,87 @@ a.chip[aria-current='page'] {
 .storage-notice a {
   color: var(--text);
 }
+
+/* ═══════════════ Progress: groove disc, bests, milestones ═══════════════ */
+.progress-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: var(--space-6);
+  align-items: start;
+  margin-bottom: var(--space-6);
+}
+
+.groove {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.groove__disc {
+  width: min(100%, 380px);
+  height: auto;
+}
+
+.groove__body { fill: var(--body-2); stroke: var(--line); }
+.groove__ring { fill: none; stroke: var(--text-faint); }
+.groove__ring--now { stroke: var(--accent-text); }
+.groove__ring--empty { stroke: var(--line); }
+.groove__label { fill: var(--screen); }
+.groove__minutes { fill: var(--accent-now); font-family: var(--font-dots); font-weight: 800; }
+.groove__unit { fill: var(--screen-muted); font-family: var(--font-mono); }
+
+.progress-hero__receipts .stub-stack {
+  flex-direction: column;
+}
+
+.bests-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bests-list li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.bests-list__item {
+  display: grid;
+}
+
+.bests-list__value {
+  font: 800 var(--size-xl) / 1 var(--font-dots);
+  color: var(--accent-text);
+}
+
+.sparkline polyline { fill: none; stroke: var(--accent-text); stroke-width: 2; }
+.sparkline circle { fill: var(--accent-text); }
+
+.milestones {
+  margin: var(--space-6) 0;
+}
+
+.milestones__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: var(--space-5);
+  justify-items: center;
+}
+
+.milestone--locked .polaroid {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+@media (max-width: 760px) {
+  .progress-hero {
+    grid-template-columns: 1fr;
+  }
+}

@@ -7,7 +7,7 @@ import { escapeHtml } from '../utils/html.js';
 // ─── Rendering ───
 
 // Returns one receipt. `stub` = { number, date (Date or ISO), minutes, title, bests: [text],
-// mistake: text | null, nextOpening: text | null }.
+// mistake: text | null, milestones: [text], nextOpening: text | null }.
 export function renderStub(stub) {
   const date = new Date(stub.date);
   const dateText = date.toLocaleDateString('en', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -15,6 +15,7 @@ export function renderStub(stub) {
   const rows = [];
   if (stub.bests && stub.bests.length) rows.push(['New bests', stub.bests.join(' · ')]);
   if (stub.mistake) rows.push(['Watch', stub.mistake]);
+  if (stub.milestones && stub.milestones.length) rows.push(['Milestone', stub.milestones.join(' · ')]);
   if (rows.length === 0) rows.push(['Played', 'No new bests or mistakes logged. The minutes still count.']);
 
   return `

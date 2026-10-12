@@ -8,6 +8,7 @@ import { exerciseItem, ensureItem } from './items.js';
 import { FINGER_EXERCISES } from '../data/exercises.js';
 import { describeMistake } from '../data/mistake-tips.js';
 import { makeId } from '../state/storage.js';
+import { checkMilestones } from './milestones.js';
 
 // ─── Measuring tools ───
 
@@ -94,6 +95,7 @@ export function finishSession(state, session, now = new Date()) {
   const minutes = Math.max(1, Math.round((now.getTime() - new Date(session.start).getTime()) / 60000));
   const [next] = generateOpenings(state, now);
   const stub = {
+    milestones: [],
     number: state.sessions.length + 1,
     date: now.toISOString(),
     minutes,
@@ -111,6 +113,7 @@ export function finishSession(state, session, now = new Date()) {
     blocks: session.blocks.map(({ kind, label, title, itemId, minutes: planned }) => ({ kind, label: label || BLOCK_LABELS[kind], title, itemId, minutes: planned })),
     stub,
   });
+  stub.milestones = checkMilestones(state, now).map((milestone) => milestone.title);
   return stub;
 }
 
