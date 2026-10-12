@@ -16,10 +16,36 @@ import {
 // Live chart instances, so a chart can be destroyed before it is drawn again.
 const charts = {};
 
-const AXIS_TEXT = '#6a6862';
-const GRID_LINE = 'rgba(255,255,255,.04)';
-
 // ─── Helpers ───
+
+// Reads a design-system colour (e.g. "bronze" → the value of --bronze) from the page,
+// so charts follow the current theme.
+function colour(name) {
+  return getComputedStyle(document.body).getPropertyValue(`--${name}`).trim();
+}
+
+// Turns "#c9813f" into "rgba(201, 129, 63, 0.15)" for see-through fills.
+function withAlpha(hex, alpha) {
+  const [red, green, blue] = [1, 3, 5].map((start) => parseInt(hex.slice(start, start + 2), 16));
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+// The shared look for axis labels, grid lines and tooltips.
+function chartStyle() {
+  return {
+    axisText: colour('text-faint'),
+    gridLine: colour('line'),
+    font: 'Martian Mono',
+    tooltip: {
+      backgroundColor: colour('screen'),
+      titleColor: colour('screen-text'),
+      bodyColor: colour('screen-text'),
+      borderColor: colour('screen-line'),
+      borderWidth: 1,
+      cornerRadius: 8,
+    },
+  };
+}
 
 // Destroys the previous chart stored under `name`, if there is one.
 function destroyChart(name) {
@@ -40,6 +66,7 @@ export function renderWeeklyChart(sessions) {
   if (!canvas) return;
   destroyChart('weekly');
 
+  const style = chartStyle();
   const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const minutes = labels.map((_, index) => minutesOnDay(sessions, daysBefore(new Date(), 6 - index)));
 
@@ -49,7 +76,7 @@ export function renderWeeklyChart(sessions) {
       labels,
       datasets: [{
         data: minutes,
-        backgroundColor: minutes.map((value) => (value > 0 ? '#e85c3a' : '#2a2a2e')),
+        backgroundColor: minutes.map((value) => (value > 0 ? colour('bronze') : colour('body-3'))),
         borderRadius: 5,
         barThickness: 28,
       }],
@@ -59,24 +86,17 @@ export function renderWeeklyChart(sessions) {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: {
-          backgroundColor: '#222',
-          titleColor: '#f0ede6',
-          bodyColor: '#f0ede6',
-          borderColor: '#3a3a3e',
-          borderWidth: 1,
-          cornerRadius: 8,
-        },
+        tooltip: style.tooltip,
       },
       scales: {
         y: {
           beginAtZero: true,
-          grid: { color: GRID_LINE },
-          ticks: { color: AXIS_TEXT, font: { size: 11, family: 'DM Mono' } },
+          grid: { color: style.gridLine },
+          ticks: { color: style.axisText, font: { size: 12, family: style.font } },
         },
         x: {
           grid: { display: false },
-          ticks: { color: AXIS_TEXT, font: { size: 11, family: 'DM Mono' } },
+          ticks: { color: style.axisText, font: { size: 12, family: style.font } },
         },
       },
     },
@@ -89,6 +109,7 @@ export function renderSkillRadar(progress) {
   if (!canvas) return;
   destroyChart('radar');
 
+  const style = chartStyle();
   const openAverage = averageProgress(progress, OPEN_CHORD_KEYS);
   const barreAverage = progress['F'] || 0;
   const seventhAverage = averageProgress(progress, SEVENTH_CHORD_KEYS);
@@ -107,9 +128,9 @@ export function renderSkillRadar(progress) {
       labels: ['Open chords', 'Barre', '7th chords', 'Strumming', 'Rhythm', 'Ear'],
       datasets: [{
         data: values,
-        backgroundColor: 'rgba(232,92,58,.1)',
-        borderColor: '#e85c3a',
-        pointBackgroundColor: '#e85c3a',
+        backgroundColor: withAlpha(colour('bronze'), 0.15),
+        borderColor: colour('bronze'),
+        pointBackgroundColor: colour('bronze'),
         pointRadius: 3,
         borderWidth: 1.5,
       }],
@@ -123,8 +144,9 @@ export function renderSkillRadar(progress) {
           beginAtZero: true,
           max: 100,
           ticks: { display: false, stepSize: 25 },
-          grid: { color: 'rgba(255,255,255,.06)' },
-          pointLabels: { color: '#9c9a92', font: { size: 10, family: 'Plus Jakarta Sans' } },
+          grid: { color: style.gridLine },
+          angleLines: { color: style.gridLine },
+          pointLabels: { color: colour('text-muted'), font: { size: 12, family: 'Archivo' } },
         },
       },
     },
@@ -139,6 +161,7 @@ export function renderCumulativeChart(sessions) {
   if (!canvas) return;
   destroyChart('cumulative');
 
+  const style = chartStyle();
   const days = Array.from({ length: 14 }).map((_, index) => {
     const day = daysBefore(new Date(), 13 - index);
     const upToDay = sessions.filter((session) => new Date(session.end) <= day);
@@ -154,12 +177,12 @@ export function renderCumulativeChart(sessions) {
       labels: days.map((day) => day.label),
       datasets: [{
         data: days.map((day) => day.minutes),
-        borderColor: '#e85c3a',
-        backgroundColor: 'rgba(232,92,58,.06)',
+        borderColor: colour('bronze'),
+        backgroundColor: withAlpha(colour('bronze'), 0.12),
         fill: true,
         tension: 0.35,
         pointRadius: 2,
-        pointBackgroundColor: '#e85c3a',
+        pointBackgroundColor: colour('bronze'),
         borderWidth: 1.5,
       }],
     },
@@ -170,12 +193,12 @@ export function renderCumulativeChart(sessions) {
       scales: {
         y: {
           beginAtZero: true,
-          grid: { color: GRID_LINE },
-          ticks: { color: AXIS_TEXT, font: { size: 10, family: 'DM Mono' } },
+          grid: { color: style.gridLine },
+          ticks: { color: style.axisText, font: { size: 12, family: style.font } },
         },
         x: {
           grid: { display: false },
-          ticks: { color: AXIS_TEXT, font: { size: 9, family: 'DM Mono' }, maxRotation: 45 },
+          ticks: { color: style.axisText, font: { size: 12, family: style.font }, maxRotation: 45 },
         },
       },
     },
@@ -200,8 +223,8 @@ export function renderChordTypeDonut(progress) {
       labels: ['Major', 'Minor', '7th'],
       datasets: [{
         data: values,
-        backgroundColor: ['#e85c3a', '#4a8fe8', '#e8a832'],
-        borderColor: '#131315',
+        backgroundColor: [colour('bronze'), colour('sonic'), colour('verdigris')],
+        borderColor: colour('body-2'),
         borderWidth: 3,
       }],
     },

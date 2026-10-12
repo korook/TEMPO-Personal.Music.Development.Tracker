@@ -107,7 +107,7 @@ function renderChordDetail() {
 function renderFretPerString(voicing) {
   return STRING_NAMES.map((_, string) => {
     const fret = voicing.frets[string];
-    const background = fret === null ? '#333' : STRING_COLOURS[string];
+    const background = fret === null ? 'var(--line)' : STRING_COLOURS[string];
     const opacity = fret === null ? '.4' : '.85';
     return `<div class="sdot" style="background:${background};opacity:${opacity}">${fret === null ? '✕' : fret}</div>`;
   }).join('');

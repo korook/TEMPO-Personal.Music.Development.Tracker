@@ -153,3 +153,32 @@
   --accent-text: var(--bronze-text);
   --dot-grid: radial-gradient(circle at 1px 1px, rgba(26, 24, 22, 0.07) 1px, transparent 1.4px) 0 0 / 14px 14px;
 }
+
+/* ─── Old pages in the new design ───
+   Until Phase 4 rebuilds each page, the v1 tokens point at the design system, so the
+   current pages already wear the new look. Delete this block with the v1 styles. */
+.stage {
+  --bg: var(--body);
+  --s1: var(--body-2);
+  --s2: var(--body-3);
+  --s3: var(--body-3);
+  --s4: var(--line);
+  --s5: var(--line);
+  --accent: var(--bronze);
+  --accent2: var(--bronze);
+  --glow: transparent;
+  --green: var(--verdigris-text);
+  --amber: var(--bronze-text);
+  --blue: var(--sonic-text);
+  --purple: var(--shell-text);
+  --pink: var(--shell-text);
+  --teal: var(--verdigris-text);
+  --tx: var(--text);
+  --tx2: var(--text-muted);
+  --tx3: var(--text-faint);
+  --bd: var(--line);
+  --bd2: var(--line);
+  --serif: var(--font-ui);
+  --sans: var(--font-ui);
+  --mono: var(--font-mono);
+}

@@ -111,8 +111,8 @@ export const CHORDS_V1 = {
 // String names from low E to high e.
 export const STRING_NAMES = ['E', 'A', 'D', 'G', 'B', 'e'];
 
-// One dot colour per string, low E to high e.
-export const STRING_COLOURS = ['#e85c3a', '#e8a832', '#3dba7a', '#4a8fe8', '#9b6dd7', '#d4537e'];
+// One dot colour per string, low E to high e (design-system accents).
+export const STRING_COLOURS = ['var(--bronze)', 'var(--sonic)', 'var(--verdigris)', 'var(--shell)', 'var(--bronze)', 'var(--sonic)'];
 
 // ─── Chord groups used by the v1 charts ───
 

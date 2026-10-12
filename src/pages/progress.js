@@ -22,7 +22,7 @@ export function renderProgressPage() {
     ${renderHeatmapCard(sessions)}
     <div class="two-eq" style="margin-bottom:14px">
       <div class="card"><div class="card-t"><span class="dot" style="background:var(--green)"></span>Cumulative</div><div class="chart-box"><canvas id="chCu"></canvas></div></div>
-      <div class="card"><div class="card-t"><span class="dot" style="background:var(--blue)"></span>Chord types</div><div class="chart-box"><canvas id="chDo"></canvas></div><div class="legend"><span><i style="background:#e85c3a"></i>Major</span><span><i style="background:#4a8fe8"></i>Minor</span><span><i style="background:#e8a832"></i>7th</span></div></div>
+      <div class="card"><div class="card-t"><span class="dot" style="background:var(--blue)"></span>Chord types</div><div class="chart-box"><canvas id="chDo"></canvas></div><div class="legend"><span><i style="background:var(--bronze)"></i>Major</span><span><i style="background:var(--sonic)"></i>Minor</span><span><i style="background:var(--verdigris)"></i>7th</span></div></div>
     </div>
     ${renderMasteryCard(progress)}
     ${renderSessionLogCard(sessions)}`;
@@ -53,7 +53,7 @@ function renderHeatmapCard(sessions) {
 function renderMasteryCard(progress) {
   const rows = Object.entries(CHORDS_V1).map(([chordKey, chord]) => {
     const percent = progress[chordKey] || 0;
-    const colour = percent >= 80 ? '#3dba7a' : percent >= 40 ? '#e8a832' : percent >= 10 ? '#4a8fe8' : '#3a3a3e';
+    const colour = percent >= 80 ? 'var(--verdigris)' : percent >= 40 ? 'var(--bronze)' : percent >= 10 ? 'var(--sonic)' : 'var(--line)';
     return `<div class="pi"><div class="pbadge" style="background:${colour}">${chordKey}</div><div class="pbw"><div class="pbl"><span>${chord.name} ${chord.type}</span><span style="font-family:var(--mono)">${percent}%</span></div><div class="pb"><div class="pf" style="width:${percent}%;background:${colour}"></div></div></div></div>`;
   }).join('');
 

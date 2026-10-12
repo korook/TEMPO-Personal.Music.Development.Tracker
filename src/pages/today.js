@@ -65,9 +65,9 @@ function renderMasteryGrid(progress) {
 function renderQuickActions() {
   return `
     <div class="sg">
-      <div class="sug" style="background:rgba(232,92,58,.08)" data-go="practice"><div class="st" style="color:var(--accent)">Start practice</div><div class="sd" style="color:var(--accent)">Timer + metronome</div></div>
-      <div class="sug" style="background:rgba(74,143,232,.08)" data-go="guitar"><div class="st" style="color:var(--blue)">Chord library</div><div class="sd" style="color:var(--blue)">16 chords with diagrams</div></div>
-      <div class="sug" style="background:rgba(61,186,122,.08)" data-go="progress"><div class="st" style="color:var(--green)">View progress</div><div class="sd" style="color:var(--green)">Charts and history</div></div>
+      <div class="sug" data-go="practice"><div class="st" style="color:var(--accent)">Start practice</div><div class="sd" style="color:var(--accent)">Timer + metronome</div></div>
+      <div class="sug" data-go="guitar"><div class="st" style="color:var(--blue)">Chord library</div><div class="sd" style="color:var(--blue)">16 chords with diagrams</div></div>
+      <div class="sug" data-go="progress"><div class="st" style="color:var(--green)">View progress</div><div class="sd" style="color:var(--green)">Charts and history</div></div>
     </div>`;
 }
 
