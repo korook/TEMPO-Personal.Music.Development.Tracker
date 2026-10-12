@@ -9,6 +9,7 @@ import './styles/pages.css';
 import { registerRoute, startRouter } from './router.js';
 import { renderTopBar, bindTopBar, setTopBarCurrent } from './components/top-bar.js';
 import { getSettings, updateSettings } from './state/settings.js';
+import { isUsingMemoryStorage } from './state/storage.js';
 import { CATEGORY_LETTERS } from './chords/library.js';
 import { renderTodayPage } from './pages/today.js';
 import { renderChordsPage, renderChordPage } from './pages/chords.js';
@@ -71,6 +72,18 @@ function applySettings() {
   document.body.classList.toggle('motion-off', Boolean(settings.reduceMotion));
 }
 
+// ─── Storage notice ───
+
+// Warns, once at the top of the page, when the browser won't let Tempo save anything.
+function showStorageNotice() {
+  if (!isUsingMemoryStorage()) return;
+  const notice = document.createElement('p');
+  notice.className = 'storage-notice';
+  notice.setAttribute('role', 'status');
+  notice.textContent = "This window isn't letting Tempo save, so anything you log will be gone when you close it. Open the file straight from the Finder in Chrome, or use the GitHub link, to keep your progress.";
+  document.querySelector('.app').prepend(notice);
+}
+
 // ─── Start ───
 
 // Applies settings, draws the top bar, connects every route and shows the current page.
@@ -80,6 +93,7 @@ function startApp() {
   topBar.innerHTML = renderTopBar({ brand: 'Tempo', brandHref: '#/today', groups: MENU_GROUPS, settingsHtml: renderQuickSettings() });
   bindTopBar(topBar);
   bindQuickSettings(topBar);
+  showStorageNotice();
 
   registerRoute({ pattern: /^#\/today$/, pageId: 'dashboard', render: renderTodayPage, menuKey: 'today' });
   registerRoute({ pattern: /^#\/chords(?:\/([A-G]))?$/, pageId: 'chords', render: renderChordsPage, menuKey: 'chords' });

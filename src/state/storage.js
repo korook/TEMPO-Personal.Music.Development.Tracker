@@ -75,9 +75,14 @@ export function loadState(storage = defaultStorage(), now = new Date()) {
   return state;
 }
 
-// Writes the state to storage as JSON.
+// Writes the state to storage as JSON. If the browser refuses (for example, storage is
+// full), the app keeps running with the data it has in memory.
 export function saveState(state, storage = defaultStorage()) {
-  storage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    storage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.warn('Tempo could not save your data:', error);
+  }
 }
 
 // Keeps a copy of data that can't be read, then starts empty so the app still opens.
@@ -89,9 +94,45 @@ function recoverFromUnreadableData(storage, savedText, now, error) {
   return state;
 }
 
-// Returns the browser's localStorage.
-function defaultStorage() {
-  return globalThis.localStorage;
+// Returns the browser's localStorage, or an in-memory stand-in when the browser won't
+// allow it (private windows, locked-down previews, blocked site data). The app then
+// still works; it just forgets everything when the page closes.
+export function defaultStorage() {
+  if (!browserStorage) browserStorage = findWorkingStorage();
+  return browserStorage;
+}
+
+let browserStorage = null;
+let usingMemory = false;
+
+// Tries localStorage with a test write; falls back to memory if anything throws.
+// (In a locked-down page even reading `localStorage` throws, so it all sits in the try.)
+function findWorkingStorage() {
+  try {
+    const storage = globalThis.localStorage;
+    storage.setItem('tempo_check', '1');
+    storage.removeItem('tempo_check');
+    return storage;
+  } catch {
+    usingMemory = true;
+    return createMemoryStorage();
+  }
+}
+
+// A storage object that keeps everything in memory, with the same methods as localStorage.
+export function createMemoryStorage() {
+  const data = new Map();
+  return {
+    getItem: (key) => (data.has(key) ? data.get(key) : null),
+    setItem: (key, value) => data.set(key, String(value)),
+    removeItem: (key) => data.delete(key),
+  };
+}
+
+// True when data is only kept in memory for this visit.
+export function isUsingMemoryStorage() {
+  defaultStorage();
+  return usingMemory;
 }
 
 // ─── Checking and repairing ───

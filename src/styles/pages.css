@@ -1342,3 +1342,15 @@ a.chip[aria-current='page'] {
   padding: 0 var(--space-2);
   color: var(--verdigris-text);
 }
+
+/* ─── Notice when nothing can be saved ─── */
+.storage-notice {
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--bronze);
+  border-radius: var(--radius-sm);
+  background: var(--body-2);
+  color: var(--text-muted);
+  font-size: var(--size-sm);
+}

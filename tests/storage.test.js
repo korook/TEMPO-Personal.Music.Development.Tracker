@@ -146,6 +146,15 @@ describe('reading saved data', () => {
   });
 });
 
+// ─── No storage available ───
+
+describe('when the browser blocks storage', () => {
+  it('keeps working with storage that throws on every call', () => {
+    const blocked = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } };
+    expect(() => saveState(createEmptyState(NOW), blocked)).not.toThrow();
+  });
+});
+
 // ─── Backup ───
 
 describe('backup', () => {
