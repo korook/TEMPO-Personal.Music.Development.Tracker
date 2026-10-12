@@ -200,6 +200,12 @@ Regression tests: C open = `x32010`, F barre = `133211`, G = `320003`, Am = `x02
 
 ### 5.5 Chords page UI
 *(Built in Phase 4 with the rev. 2 components: neck on a screen, chord diagrams with a drawn barre and intervals.)*
+
+**Library layout (Baranay, 12 Oct 2026):**
+- **Seven categories, A to G.** Each letter is a category, reachable from the top-bar menu and an A–G picker, so any chord is one or two clicks away. Sharps and flats sit in the category of their letter: Ab and A in A, Bb and B in B, C# and C in C, and so on, using the root spelling from `notes.js`.
+- **Every variation inside a category:** each root shows all its chord types as a grid of thumbnails (rows by root, columns by type, like Baranay's "chords chart.jpg").
+- **Thumbnails show only the most common shape:** the open-string version when one exists, otherwise the first standard shape (usually the E- or A-form barre).
+- **Opening a thumbnail shows all variations:** the neck view, then every voicing in the strip from the nut up (standard shapes first, then "found" ones).
 - **Pick:** root (12 buttons) × quality (chips).
 - **Neck view (hero):** the full fretboard (0–15) showing every chord tone, roots highlighted and other tones labelled by interval (R, 3, 5, b7...). This shows that the chord lives all over the neck.
 - **Voicing strip:** voicing cards ordered from the nut up the neck. Use arrow keys (← →) to step through them; the neck view highlights the current voicing.
