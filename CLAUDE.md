@@ -145,4 +145,11 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - Runner: `mountExerciseRun` / `mountQuizRun` in `src/components/lesson-run.js`. Neck answers use `renderNeckMarks(..., { inputStrings })`.
 - Progress: `state.theory.results` (lecture read, best runs; 80% is a pass). A topic is done when the lecture, every exercise and the quiz pass.
 - Routes: `#/theory`, `#/theory/<topic>`, `.../exercises`, `.../exercises/<id>`, `.../quiz`.
+
+## Pixel-art stand-ins (13 Oct 2026, Baranay's request)
+- Art frames show hand-coded pixel sprites until Baranay's own art exists (not stock, not AI): engine `src/art/pixel.js`
+  (canvas with rect/disc/ring/line/glyph, flip-book frames, CSS motions), sprites in `src/art/sprites.js` keyed like
+  `hero:today`, `cover:<ear game>`, `cover:theory-<topic>`, `stamp:<milestone id>`. `renderArtPlaceholder(kind, subject, artKey)`
+  falls back to the dashed frame when no sprite exists. Colours are theme tokens; animation stops with Reduced motion.
+- 19 sprites: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps (locked ones show grey).
 - Next: write topics 2–10 (content), then the "Later" list in plan §12.
