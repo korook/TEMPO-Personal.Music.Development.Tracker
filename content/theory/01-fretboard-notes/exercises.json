@@ -1,0 +1,48 @@
+{
+  "exercises": [
+    {
+      "id": "name-low-e",
+      "title": "Name the note: low E string",
+      "type": "name-note",
+      "strings": ["E"],
+      "frets": [0, 12],
+      "naturalOnly": true,
+      "questions": 8
+    },
+    {
+      "id": "name-a",
+      "title": "Name the note: A string",
+      "type": "name-note",
+      "strings": ["A"],
+      "frets": [0, 12],
+      "naturalOnly": true,
+      "questions": 8
+    },
+    {
+      "id": "find-low-strings",
+      "title": "Find it on the low E and A strings",
+      "type": "find-note",
+      "strings": ["E", "A"],
+      "frets": [0, 12],
+      "naturalOnly": true,
+      "questions": 8
+    },
+    {
+      "id": "sharps-and-flats",
+      "title": "Sharps and flats too",
+      "type": "name-note",
+      "strings": ["E", "A"],
+      "frets": [1, 11],
+      "naturalOnly": false,
+      "questions": 8
+    },
+    {
+      "id": "octaves",
+      "title": "Octave partners",
+      "type": "octave",
+      "strings": ["E", "A"],
+      "frets": [0, 10],
+      "questions": 6
+    }
+  ]
+}

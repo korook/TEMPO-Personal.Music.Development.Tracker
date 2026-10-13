@@ -369,18 +369,26 @@ a.top-bar__button {
 .chip--hard { --dot: var(--bronze); }
 .chip--picked { --dot: var(--accent-now); color: var(--text); }
 
-button.chip {
+button.chip,
+a.chip {
   min-height: var(--tap-target);
   font-size: var(--size-xs);
   cursor: pointer;
   box-shadow: 0 2px 0 var(--key-shadow);
 }
 
-button.chip:hover {
+button.chip:hover,
+a.chip:hover {
   background: var(--body-3);
 }
 
-button.chip[aria-pressed='true'] {
+a.chip {
+  color: var(--text);
+  text-decoration: none;
+}
+
+button.chip[aria-pressed='true'],
+a.chip[aria-current='page'] {
   background: var(--text);
   border-color: var(--text);
   color: var(--body);
@@ -1018,4 +1026,28 @@ button.chip[aria-pressed='true'] {
   margin: 0 0 var(--space-2) var(--space-3);
   padding-left: var(--space-2);
   border-left: 1px solid var(--line);
+}
+
+/* Neck marks for theory exercises, and tappable frets. */
+.neck-note--question circle { fill: var(--accent-now); stroke: var(--screen-text); stroke-width: 2.5; }
+.neck-note--question text { fill: var(--ink); }
+.neck-note--right circle { fill: var(--verdigris); stroke: var(--verdigris); }
+.neck-note--right text { fill: var(--ink); }
+.neck-note--wrong circle { fill: var(--shell); stroke: var(--shell); }
+.neck-note--wrong text { fill: var(--ink); }
+.neck-hit { fill: rgba(255, 255, 255, 0.06); stroke: rgba(255, 255, 255, 0.04); cursor: pointer; outline: none; }
+.neck-hit:hover { fill: rgba(255, 255, 255, 0.18); }
+.neck-hit:focus-visible { fill: rgba(255, 255, 255, 0.14); stroke: var(--screen-text); stroke-width: 2; }
+.neck-note { pointer-events: none; }
+
+.neck-hint {
+  display: none;
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .neck-hint {
+    display: block;
+  }
 }

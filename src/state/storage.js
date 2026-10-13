@@ -27,6 +27,7 @@ export function createEmptyState(now = new Date()) {
     sessions: [],
     milestones: [],
     ear: { results: [] },
+    theory: { results: [] },
     meta: { createdAt: now.toISOString(), lastExportAt: null, notices: {} },
   };
 }
@@ -160,6 +161,7 @@ export function normalizeState(raw) {
     sessions: arrayOr(raw.sessions),
     milestones: arrayOr(raw.milestones),
     ear: { results: arrayOr(raw.ear && raw.ear.results) },
+    theory: { results: arrayOr(raw.theory && raw.theory.results) },
     meta: { ...empty.meta, ...objectOr(raw.meta), notices: objectOr(raw.meta && raw.meta.notices) },
   };
 }

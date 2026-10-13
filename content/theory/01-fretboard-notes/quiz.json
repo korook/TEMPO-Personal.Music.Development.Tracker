@@ -1,0 +1,67 @@
+{
+  "questions": [
+    {
+      "id": "alphabet",
+      "question": "Which letters does the musical alphabet use?",
+      "options": ["A to G", "A to H", "C to B, with no A", "A to Z"],
+      "answer": 0,
+      "explanation": "Seven letters, A B C D E F G. After G it starts again at A, an octave higher."
+    },
+    {
+      "id": "one-fret",
+      "question": "How far does the note move when you go up one fret?",
+      "options": ["A whole step", "A half step", "An octave", "It depends on the string"],
+      "answer": 1,
+      "explanation": "One fret is always a half step, on every string. Two frets make a whole step."
+    },
+    {
+      "id": "no-gap",
+      "question": "Which two pairs of letters have no note between them?",
+      "options": ["A–B and D–E", "C–D and F–G", "B–C and E–F", "G–A and A–B"],
+      "answer": 2,
+      "explanation": "B to C and E to F are only one fret apart. Every other pair of letters is two frets apart, with a sharp or flat between."
+    },
+    {
+      "id": "open-strings",
+      "question": "What are the open strings, from thickest to thinnest?",
+      "options": ["E B G D A E", "E A D G B E", "E A D G C F", "A D G C E A"],
+      "answer": 1,
+      "explanation": "E A D G B E. Eddie Ate Dynamite, Good Bye Eddie."
+    },
+    {
+      "id": "fret-5-low-e",
+      "question": "What note is at fret 5 on the low E string?",
+      "options": ["G", "A", "B", "C"],
+      "answer": 1,
+      "explanation": "E, F (fret 1), G (fret 3), A (fret 5). It is also the open A string, the next string up."
+    },
+    {
+      "id": "c-on-a",
+      "question": "Where is C on the A string?",
+      "options": ["Fret 2", "Fret 3", "Fret 4", "Fret 5"],
+      "answer": 1,
+      "explanation": "A, then B at fret 2, then C one fret later at fret 3, because B to C is a half step."
+    },
+    {
+      "id": "fret-12",
+      "question": "What happens at fret 12?",
+      "options": ["Every string plays its open note again, an octave higher", "The notes switch to flats", "Each string plays the note of the next string", "Nothing special"],
+      "answer": 0,
+      "explanation": "Twelve half steps make an octave, so fret 12 repeats the open strings an octave up, and the pattern starts over."
+    },
+    {
+      "id": "same-note",
+      "question": "F♯ and G♭ are…",
+      "options": ["Two different notes a half step apart", "The same note with two names", "Only found on the high e string", "Notes that guitars can't play"],
+      "answer": 1,
+      "explanation": "Both names point to the same fret. F raised by a half step and G lowered by a half step land in the same place."
+    },
+    {
+      "id": "octave-shape",
+      "question": "G is at fret 3 on the low E string. Where is the G one octave higher, two strings up?",
+      "options": ["D string, fret 3", "D string, fret 5", "G string, fret 5", "D string, fret 7"],
+      "answer": 1,
+      "explanation": "From the low E or A string, the octave is two strings up and two frets higher: fret 5 on the D string."
+    }
+  ]
+}

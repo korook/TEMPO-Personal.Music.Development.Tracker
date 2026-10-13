@@ -1,0 +1,14 @@
+{
+  "topics": [
+    { "id": "01-fretboard-notes", "title": "Notes on the fretboard", "summary": "The musical alphabet, half and whole steps, and how to find any note on the low E and A strings." },
+    { "id": "02-intervals", "title": "Intervals", "summary": "The distance between two notes, named and found on the neck." },
+    { "id": "03-major-scale-and-keys", "title": "Major scale and keys", "summary": "The whole and half step pattern behind every major key." },
+    { "id": "04-chord-construction", "title": "Chord construction", "summary": "How triads and seventh chords are stacked from a scale." },
+    { "id": "05-chords-in-a-key", "title": "Chords in a key and common progressions", "summary": "Roman numerals, I–IV–V and the progressions you hear everywhere." },
+    { "id": "06-minor-scales", "title": "Minor scales", "summary": "Natural, harmonic and melodic minor, and relative keys." },
+    { "id": "07-pentatonic-and-blues", "title": "Pentatonic and blues", "summary": "The five-note scales most solos start from, plus the blue note." },
+    { "id": "08-circle-of-fifths", "title": "Circle of fifths", "summary": "A map of every key and how close they are to each other." },
+    { "id": "09-modes", "title": "Modes", "summary": "Seven moods from one scale, from Ionian to Locrian." },
+    { "id": "10-caged-system", "title": "CAGED system", "summary": "Five open chord shapes that link the whole neck together." }
+  ]
+}

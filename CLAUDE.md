@@ -62,7 +62,7 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 | 3. Design system ✅ | Tokens, fonts, components, art placeholders | One component page shows every component in its states |
 | 4. Pages ✅ | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
 | 5. Ear training ✅ | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
-| 6. Theory scaffold | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
+| 6. Theory scaffold ✅ | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
 
 ## Known v1 issues still in the code (fixed in later phases)
 Unverified song lists, self-rated mastery
@@ -133,4 +133,16 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - One quiz player for everything: `mountEarQuiz(container, { drills, compact })` in `src/components/ear-quiz.js` (Ear page, workout, practice ear block).
 - Routes: `#/ear`, `#/ear/<game>`, `#/ear/workout`, `#/ear/duel/<game>/<expected>~<heard>`.
 - Song anchors for intervals are in `src/ear/common.js` (SONG_ANCHORS): Baranay to check them.
-- Next: Phase 6, theory scaffold (plan §9).
+
+## Notes from Phase 6
+- Lessons live in `content/theory/<NN-topic>/`: `lecture.md`, `exercises.json`, `quiz.json`. `content/theory/topics.json` lists all ten
+  topics in order; a topic without its three files shows as "Being written". Files are bundled at build time (`import.meta.glob`),
+  so lessons work offline and in the single-file preview. Topic 1 (Notes on the fretboard) is written; topics 2–10 are empty folders.
+- Engine in `src/lessons/`: `content.js` (load + `findTopicProblems` checks), `markdown.js` (safe subset; `::neck` embed lines),
+  `embeds.js`, `exercises.js` (types `name-note`, `find-note`, `octave`, generated from the theory engine), `progress.js`.
+- Writing a new topic: add the three files, then `npm test` (tests/theory-lessons.test.js checks every ready topic).
+  Lecture embeds: `::neck strings=E,A notes=C,D frets=0-12 caption="..."` or `::neck marks="E:3:G,D:5:G"`.
+- Runner: `mountExerciseRun` / `mountQuizRun` in `src/components/lesson-run.js`. Neck answers use `renderNeckMarks(..., { inputStrings })`.
+- Progress: `state.theory.results` (lecture read, best runs; 80% is a pass). A topic is done when the lecture, every exercise and the quiz pass.
+- Routes: `#/theory`, `#/theory/<topic>`, `.../exercises`, `.../exercises/<id>`, `.../quiz`.
+- Next: write topics 2–10 (content), then the "Later" list in plan §12.

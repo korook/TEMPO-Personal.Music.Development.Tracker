@@ -39,25 +39,65 @@ export function renderNeck(root, quality, { voicing = null, leftHanded = false }
 // Returns the neck with specific notes marked wherever they can be played on frets 0–15
 // (used by ear training to show where an interval lives). notes = [{ midi, label }].
 export function renderNeckForNotes(notes, { leftHanded = false, description = 'Where the notes are on the neck' } = {}) {
-  const layout = getLayout(leftHanded);
-  let marks = '';
+  const marks = [];
   for (let string = 0; string < 6; string++) {
     for (let fret = 0; fret <= LAST_FRET; fret++) {
       const note = notes.find((candidate) => candidate.midi === STANDARD_TUNING[string] + fret);
-      if (!note) continue;
-      const classes = note.label === 'R' ? 'neck-note neck-note--root neck-note--active' : 'neck-note neck-note--active';
-      const x = noteX(layout, fret);
-      const y = stringY(layout, string);
-      marks += `<g class="${classes}"><circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central">${escapeHtml(note.label)}</text></g>`;
+      if (note) marks.push({ string, fret, label: note.label, kind: note.label === 'R' ? 'root' : 'active' });
     }
   }
-  const parts = [renderBoard(layout), renderInlays(layout), renderFrets(layout), renderStrings(layout), marks, renderFretNumbers(layout)];
+  return renderNeckMarks(marks, { leftHanded, description });
+}
+
+// Returns the neck with marks at exact places, and optionally tappable frets for answers.
+// marks = [{ string, fret, label, kind: 'root' | 'active' | 'plain' | 'question' | 'right' | 'wrong' }];
+// inputStrings = strings (0 = low E) whose frets 0..maxFret can be tapped (data-string, data-fret).
+export function renderNeckMarks(marks, { leftHanded = false, description = 'Fretboard', inputStrings = [], maxFret = LAST_FRET } = {}) {
+  const layout = getLayout(leftHanded);
+  const markSvg = marks.map((mark) => renderMark(layout, mark)).join('');
+  const parts = [renderBoard(layout), renderInlays(layout), renderFrets(layout), renderStrings(layout), renderHitAreas(layout, inputStrings, maxFret), markSvg, renderFretNumbers(layout)];
+  // Answer necks only show the frets in play (plus one), so they need less sideways scrolling.
+  const isInput = inputStrings.length > 0;
+  const shownWidth = isInput && maxFret < LAST_FRET ? layout.wires[maxFret + 1] + 8 : layout.width;
+  const viewX = layout.leftHanded ? layout.width - shownWidth : 0;
   return `
-    <div class="neck">
-      <svg viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="${escapeHtml(description)}" xmlns="http://www.w3.org/2000/svg">
+    <div class="neck${isInput ? ' neck--input' : ''}">
+      <svg viewBox="${viewX} 0 ${shownWidth} ${layout.height}" role="${isInput ? 'group' : 'img'}" aria-label="${escapeHtml(description)}" xmlns="http://www.w3.org/2000/svg"${isInput ? ` style="min-width: ${Math.round(shownWidth * 0.8)}px"` : ''}>
         ${parts.join('')}
       </svg>
-    </div>`;
+    </div>
+    ${isInput ? '<p class="neck-hint label">Swipe the neck sideways for higher frets</p>' : ''}`;
+}
+
+// Draws one exact mark (see renderNeckMarks for the kinds).
+function renderMark(layout, { string, fret, label, kind = 'active' }) {
+  const kindClasses = {
+    root: 'neck-note--root neck-note--active',
+    active: 'neck-note--active',
+    plain: '',
+    question: 'neck-note--question',
+    right: 'neck-note--right',
+    wrong: 'neck-note--wrong',
+  };
+  const x = noteX(layout, fret);
+  const y = stringY(layout, string);
+  return `<g class="neck-note ${kindClasses[kind] || ''}"><circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central">${escapeHtml(label)}</text></g>`;
+}
+
+// Draws invisible, focusable tap areas over each fret of the answer strings.
+function renderHitAreas(layout, strings, maxFret) {
+  let svg = '';
+  for (const string of strings) {
+    for (let fret = 0; fret <= maxFret; fret++) {
+      const left = fret === 0 ? layout.nameColumn : layout.wires[fret - 1];
+      const right = fret === 0 ? layout.openColumn : layout.wires[fret];
+      const x = Math.min(mirror(layout, left), mirror(layout, right));
+      const y = stringY(layout, string) - layout.stringGap / 2;
+      const name = `${STRING_NAMES[string]} string, ${fret === 0 ? 'open' : `fret ${fret}`}`;
+      svg += `<rect class="neck-hit" x="${x}" y="${y}" width="${right - left}" height="${layout.stringGap}" data-string="${string}" data-fret="${fret}" role="button" tabindex="0" aria-label="${name}"/>`;
+    }
+  }
+  return svg;
 }
 
 // ─── Layout ───
