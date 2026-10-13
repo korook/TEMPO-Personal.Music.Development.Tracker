@@ -1,6 +1,8 @@
 // The metronome on the Practice page: the disc metronome (start/stop, ±1 BPM, beat lights)
 // plus a panel with the tempo slider, time signature, clicks per beat, sound, accent,
 // tap tempo, speed trainer and the chord-change display, and the keyboard shortcuts.
+// During a session it folds into a slim bar (LED, BPM, beat lights, − / start / +) that can
+// be opened into the full panel (TEMPO_PLAN.md 17.4, item 3).
 
 import { renderVinylMetronome, bindVinylMetronome, refreshVinylMetronome } from './vinyl-metronome.js';
 import {
@@ -35,8 +37,8 @@ export function renderMetronomePanel({ hero = false } = {}) {
       ${renderVinylMetronome()}
       <div class="panel metro-controls">
         <div class="section-head">
-          <span class="section-head__kicker">${hero ? 'Practice · metronome' : 'Metronome'}</span>
-          ${hero ? '<h1 class="section-head__title section-head__title--hero">Tempo</h1>' : '<h2 class="section-head__title">Tempo &amp; feel</h2>'}
+          <span class="section-head__kicker">${hero ? 'Practice' : 'Metronome'}</span>
+          ${hero ? '<h1 class="section-head__title section-head__title--hero">Metronome</h1>' : '<h2 class="section-head__title">Tempo &amp; feel</h2>'}
         </div>
         <label class="metro-slider">
           <span class="label">Tempo · <span id="bN">${settings.bpm}</span> BPM</span>
@@ -58,6 +60,28 @@ export function renderMetronomePanel({ hero = false } = {}) {
         ${renderChordChangeDisplay(settings.chordChange)}
         <p class="label metro-keys">Keys: Space start/stop · ↑ ↓ ±1 BPM · ⇧↑ ⇧↓ ±5 · T tap</p>
       </div>
+    </section>`;
+}
+
+// Returns the folded metronome: one slim bar with the LED, BPM, beat lights, − / start / +,
+// and a key that opens the full panel (`expanded` says whether it is open).
+export function renderMetronomeBar({ expanded = false } = {}) {
+  const metronome = getMetronome();
+  const settings = metronome.getSettings();
+  const running = metronome.isRunning();
+  const beats = TIME_SIGNATURES[settings.timeSignature].beats;
+  const dots = Array.from({ length: beats }, (_, index) => `<span class="metro-bar__beat" data-beat-dot="${index}"></span>`).join('');
+  return `
+    <section class="metro-bar" data-running="${running}" aria-label="Metronome">
+      <span class="metro-bar__led" aria-hidden="true"></span>
+      <span class="metro-bar__bpm"><span data-bar-bpm>${settings.bpm}</span> <span class="label">BPM · ${settings.timeSignature}</span></span>
+      <span class="metro-bar__beats" aria-hidden="true">${dots}</span>
+      <span class="metro-bar__keys">
+        <button class="button button--icon button--round" data-bar-step="-1" aria-label="Slower by 1 BPM">−</button>
+        <button class="button ${running ? 'button--live' : 'button--primary'}" data-bar-toggle>${running ? 'Stop' : 'Start'}</button>
+        <button class="button button--icon button--round" data-bar-step="1" aria-label="Faster by 1 BPM">+</button>
+      </span>
+      <button class="button metro-bar__more" data-bar-expand aria-expanded="${expanded}">${expanded ? 'Hide settings' : 'Settings'}</button>
     </section>`;
 }
 
@@ -96,9 +120,9 @@ function mapNames(entries) {
 // Lights the dot for the beat that is sounding, and updates the chord display.
 function showPulse(pulse) {
   if (pulse.isBeat) {
-    document.querySelectorAll('.bd').forEach((dot, index) => {
-      dot.classList.remove('on', 'down');
-      if (index === pulse.beatInBar) dot.classList.add(pulse.kind === 'accent' ? 'down' : 'on');
+    document.querySelectorAll('[data-beat-dot]').forEach((dot) => {
+      const isNow = Number(dot.dataset.beatDot) === pulse.beatInBar;
+      dot.dataset.on = isNow ? (pulse.kind === 'accent' ? 'accent' : 'beat') : 'false';
     });
   }
   if (pulse.chord) {
@@ -106,6 +130,7 @@ function showPulse(pulse) {
     setText('chordNext', pulse.chord.next);
   }
   setText('bN', pulse.bpm);
+  document.querySelectorAll('[data-bar-bpm]').forEach((element) => { element.textContent = pulse.bpm; });
   const slider = document.getElementById('bpmSlider');
   if (slider && Number(slider.value) !== pulse.bpm) slider.value = pulse.bpm;
 }
@@ -114,6 +139,7 @@ function showPulse(pulse) {
 function showBpm() {
   const bpm = getMetronome().getSettings().bpm;
   setText('bN', bpm);
+  document.querySelectorAll('[data-bar-bpm]').forEach((element) => { element.textContent = bpm; });
   const slider = document.getElementById('bpmSlider');
   if (slider) slider.value = bpm;
   refreshVinylMetronome();
@@ -127,17 +153,23 @@ function setText(id, text) {
 
 // ─── Events ───
 
-// Connects every control in the card. `redraw` redraws the whole page after big changes.
-export function bindMetronomePanel(page, redraw) {
+// Connects every metronome control on the page (the full panel, the folded bar, or both).
+// `redraw` redraws the whole page after big changes; `onExpand` opens or closes the panel.
+export function bindMetronomePanel(page, redraw, { onExpand = () => {} } = {}) {
   redrawPage = redraw;
   const metronome = getMetronome();
 
   bindVinylMetronome(page);
-  page.querySelector('#bpmSlider').addEventListener('input', (event) => {
-    metronome.setBpm(Number(event.target.value));
-    showBpm();
-  });
-  page.querySelector('#tapTempo').addEventListener('click', tap);
+  bindMetronomeBar(page, onExpand);
+  const slider = page.querySelector('#bpmSlider');
+  if (slider) {
+    slider.addEventListener('input', (event) => {
+      metronome.setBpm(Number(event.target.value));
+      showBpm();
+    });
+  }
+  const tapButton = page.querySelector('#tapTempo');
+  if (tapButton) tapButton.addEventListener('click', tap);
   page.querySelectorAll('[data-option]').forEach((control) => {
     control.addEventListener('change', () => applyOption(control));
   });
@@ -146,6 +178,17 @@ export function bindMetronomePanel(page, redraw) {
   });
   const endDrill = page.querySelector('#chordChangeOff');
   if (endDrill) endDrill.addEventListener('click', () => stopChordDrill());
+}
+
+// Connects the folded bar's keys.
+function bindMetronomeBar(page, onExpand) {
+  const bar = page.querySelector('.metro-bar');
+  if (!bar) return;
+  bar.querySelectorAll('[data-bar-step]').forEach((button) => {
+    button.addEventListener('click', () => changeBpm(Number(button.dataset.barStep)));
+  });
+  bar.querySelector('[data-bar-toggle]').addEventListener('click', startOrStop);
+  bar.querySelector('[data-bar-expand]').addEventListener('click', onExpand);
 }
 
 // Starts or stops the metronome and redraws the button.

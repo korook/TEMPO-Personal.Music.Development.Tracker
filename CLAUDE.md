@@ -118,7 +118,9 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - Practice ✅: practice model in `src/practice/` (items, measures, spacing, openings, session; tested in tests/practice.test.js),
   mistake tips in `src/data/mistake-tips.js`, measuring tools in `src/components/measure-tools.js`. Page flow:
   setlist (taped cards, reorder/remove) → blocks with timer + tool (⏎ = clean / tap / clean pass) → receipt.
-  The metronome (disc + Tempo controls) is the hero at the top of the page, above the setlist. Chord pages have "+ Add to practice".
+  Practice layout (Phase 7.3): planning = metronome hero (H1 "Metronome") above the setlist; during a session the block is
+  the hero and the metronome folds into `renderMetronomeBar` (LED, BPM, beat lights, − / start / +, Settings opens the panel);
+  after finishing the receipt is the hero. Chord pages have "+ Add to practice".
 - Today ✅ (ticker, hero with tonight's setlist built on a copy of the state, real tiles, next steps, chord clean rates),
   Progress ✅ (groove disc, receipts, personal bests with sparklines, milestones in `src/practice/milestones.js`,
   mistake patterns, clean rates, heatmap, log), Settings ✅ (`#/settings`: name, handedness, rest days, look, backup).

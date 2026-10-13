@@ -8,7 +8,7 @@ import { buildSetlist, finishSession, blockLabel } from '../practice/session.js'
 import { renderTapedCard } from '../components/taped-card.js';
 import { renderStub } from '../components/stub.js';
 import { renderMeasureTool, bindMeasureTool, resetMeasureTool, handleMeasureKey } from '../components/measure-tools.js';
-import { renderMetronomePanel, bindMetronomePanel, handleMetronomeKey } from '../components/metronome-panel.js';
+import { renderMetronomePanel, renderMetronomeBar, bindMetronomePanel, handleMetronomeKey } from '../components/metronome-panel.js';
 import { formatClock } from '../utils/time.js';
 import { escapeHtml } from '../utils/html.js';
 
@@ -37,14 +37,28 @@ document.addEventListener('keydown', (event) => {
 
 // ─── Rendering ───
 
-// Draws the page for the current step, under the metronome (the page's hero).
+// Whether the full metronome panel is open while it is folded into the bar.
+let metronomeOpen = false;
+
+// Draws the page for the current step (TEMPO_PLAN.md 17.4, item 3). Planning: the metronome
+// is the hero above the setlist. During a session the current block is the hero and the
+// metronome folds into a bar at the top; after finishing, the receipt is the hero.
 export function renderPracticePage() {
   const page = document.getElementById('pg-practice');
   if (session.phase === 'plan' && session.blocks.length === 0) proposeSetlist();
 
   const body = { plan: renderPlan, play: renderPlay, done: renderDone }[session.phase]();
-  page.innerHTML = `${renderMetronomePanel({ hero: true })}${body}`;
+  const folded = `${renderMetronomeBar({ expanded: metronomeOpen })}${metronomeOpen ? renderMetronomePanel() : ''}`;
+  if (session.phase === 'plan') page.innerHTML = `${renderMetronomePanel({ hero: true })}${body}`;
+  if (session.phase === 'play') page.innerHTML = `${folded}${body}`;
+  if (session.phase === 'done') page.innerHTML = `${body}${folded}`;
   bindEvents(page);
+}
+
+// Opens or closes the full metronome panel under the bar.
+function toggleMetronomePanel() {
+  metronomeOpen = !metronomeOpen;
+  renderPracticePage();
 }
 
 // Step 1: the proposed setlist as cards with move / remove keys.
@@ -94,7 +108,7 @@ function renderPlay() {
       <div class="play-head">
         <div class="section-head">
           <span class="section-head__kicker">Block ${session.current + 1} of ${session.blocks.length} · ${blockLabel(block)}</span>
-          <h2 class="section-head__title">${escapeHtml(block.title)}</h2>
+          <h1 class="section-head__title">${escapeHtml(block.title)}</h1>
           <p class="section-head__lead">${escapeHtml(block.note)}</p>
         </div>
         <div class="readout play-clock">
@@ -118,7 +132,7 @@ function renderDone() {
     <header class="page-head">
       <div class="section-head">
         <span class="section-head__kicker">Practice · session saved</span>
-        <h2 class="section-head__title">Session saved</h2>
+        <h1 class="section-head__title section-head__title--hero">Session saved</h1>
         <p class="section-head__lead">Here's your receipt. It also goes into your session log on the Progress page.</p>
       </div>
     </header>
@@ -137,7 +151,7 @@ function blockKicker(block) {
 
 // Connects the buttons for the current step, the measuring tool and the metronome.
 function bindEvents(page) {
-  bindMetronomePanel(page, renderPracticePage);
+  bindMetronomePanel(page, renderPracticePage, { onExpand: toggleMetronomePanel });
   page.querySelectorAll('[data-move]').forEach((button) => {
     button.addEventListener('click', () => moveBlock(Number(button.dataset.move), Number(button.dataset.by)));
   });
