@@ -1876,3 +1876,14 @@ a.theory-topic:hover {
 .practice-metronome:not(.practice-metronome--hero) {
   margin-bottom: var(--space-5);
 }
+
+/* The hero title sits in a half-width panel: size it to the panel so it never spills out,
+   and keep the panel from growing with its contents (the slider follows the panel width). */
+.practice-metronome > * {
+  min-width: 0;
+}
+
+.practice-metronome--hero .section-head__title--hero {
+  font-size: clamp(2.25rem, 4.6vw, 4.25rem);
+  overflow-wrap: anywhere;
+}
