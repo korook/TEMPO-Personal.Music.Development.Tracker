@@ -353,14 +353,14 @@ function hourglassStamp() {
 
 const BUILDERS = {
   'hero:today': todayHero,
-  'cover:scale-degrees': scaleDegreesCover,
-  'cover:intervals': intervalsCover,
-  'cover:play-back': playBackCover,
-  'cover:chord-quality': chordQualityCover,
-  'cover:progressions': progressionsCover,
-  'cover:call-response': callResponseCover,
-  'cover:rhythm': rhythmCover,
-  'cover:producer': producerCover,
+  'cover:ear-scale-degrees': scaleDegreesCover,
+  'cover:ear-intervals': intervalsCover,
+  'cover:ear-play-back': playBackCover,
+  'cover:ear-chord-quality': chordQualityCover,
+  'cover:ear-progressions': progressionsCover,
+  'cover:ear-call-response': callResponseCover,
+  'cover:ear-rhythm': rhythmCover,
+  'cover:ear-producer': producerCover,
   'cover:theory-01-fretboard-notes': fretboardNotesCover,
   'stamp:first-session': firstSessionStamp,
   'stamp:first-clean-shape': cleanShapeStamp,
@@ -373,9 +373,12 @@ const BUILDERS = {
   'stamp:ten-hours': hourglassStamp,
 };
 
+// The keys that have a pixel stand-in.
+export const SPRITE_KEYS = Object.keys(BUILDERS);
+
 const cache = new Map();
 
-// Returns the sprite for a key such as "cover:intervals" (null if none is drawn yet).
+// Returns the sprite for a key such as "cover:ear-intervals" (null if none is drawn yet).
 export function getSprite(key) {
   if (!BUILDERS[key]) return null;
   if (!cache.has(key)) cache.set(key, BUILDERS[key]());

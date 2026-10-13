@@ -1,10 +1,10 @@
 # Tempo — Claude Code Handover Brief
 
-**Repo:** `korook/TEMPO-Personal.Music.Development.Tracker` (currently one `index.html`, 388 lines)
+**Repo:** `korook/TEMPO-Personal.Music.Development.Tracker` (Vite app; see section 11)
 **Owner:** Baranay — Industrial + Communication Design student, guitarist, illustrator
 **Purpose:** a personal guitar practice website that looks professional, feels encouraging and carries Baranay's own artwork. Personal use first, possibly published later.
 **Live site:** https://korook.github.io/TEMPO-Personal.Music.Development.Tracker/ (design system: `/components.html`)
-**Version:** 2.1, revised 12 Oct 2026 after Phases 0–3 and Baranay's feedback (see the change log at the end). Replaces 2.0.
+**Version:** 2.5, revised 13 Oct 2026 after the review of v2.4 (section 17; see the change log at the end). Replaces 2.4.
 
 > **For Claude Code:** read this whole file before writing code. Work phase by phase (section 12). Show every change as a preview file first and push to `main` only after approval (section 12, "Review flow"). At the end of each phase, stop, summarize what changed and wait for approval. Ask before deciding anything this brief leaves open.
 
@@ -475,6 +475,7 @@ tempo/
 | **4. Pages** | Top bar + ⚙ menu, then Chords → Practice (section 6) → Today → Progress → Settings, built from the component page parts only. Remove the v1 styles, tokens, chord list and +10% ratings. | A full session runs: setlist → measured reps → receipt, and openings change with the data. | ✅ |
 | **5. Ear training** | Section 8, linked to the practice model. | All 8 exercises play; confusion duels appear after repeated mix-ups. | ✅ |
 | **6. Theory scaffold** | Section 9 folders, renderers for lecture / exercise / quiz, topic 1 as a sample. | Topic 1 lecture, exercise and quiz work end to end. | ✅ |
+| **7. Review fixes** | Updates and fixes only, no redesign. Section 17: art drop-in pipeline, Today restructure, session-first Practice, finger-aware fix tips, receipt and copy fixes, phone layout pass. Work in the order of 17.4. | Every item in 17.4 is ticked, and a full session on a phone at 390 px wide needs no scrolling to reach the current block. | |
 | **Later** | Microphone (tuner, buzz detection, weekly recordings), Production tab, Baranay's own palette and handwriting font. | — | |
 
 ### Review flow (Baranay's rule, 12 Oct 2026)
@@ -505,13 +506,57 @@ tempo/
 
 ## 15. Starter prompt for Claude Code
 
-> Read `TEMPO_PLAN.md` and `CLAUDE.md` fully. Phases 0–6 are done. Continue with the next topic in section 9 in section 12, following the design direction in section 3 and the code conventions in section 11. Use the review flow: show each change as a preview file and push to `main` only after approval. Stop at the end of the phase, summarize what changed, and wait for approval.
+> Read `TEMPO_PLAN.md` and `CLAUDE.md` fully. Phases 0–6 are done. Start Phase 7 (section 17): work through 17.4 in order, following the design direction in section 3 and the code conventions in section 11. Use the review flow: show each change as a preview file and push to `main` only after approval. Stop after each numbered item in 17.4, summarize what changed, and wait for approval.
 
 ---
 
 ## 16. Change log
+- **2.5 (13 Oct 2026):** Review of v2.4 added as section 17 (what works, 10 problems, what's missing). New Phase 7 (review fixes) with an ordered work list: art drop-in manifest, Today restructure, session-first Practice, finger-aware fix tips, receipt fixes, merged minutes views, phone layout pass. Starter prompt updated.
 - **2.4 (13 Oct 2026):** Hand-coded pixel-art stand-ins (not stock, not AI) fill every art frame until Baranay's own art exists: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps, gently animated (off with Reduced motion). Practice page: the metronome is the hero at the top.
 - **2.3 (13 Oct 2026):** Phase 6 (theory scaffold) marked done: ten topic folders, lesson / exercise / quiz renderers, topic 1 written, theory progress in the data model.
 - **2.2 (13 Oct 2026):** Phase 5 (ear training) marked done: eight games, four sounds, stars and levels, ear map, confusion duels, daily workout, ear blocks inside practice sessions. After Baranay's review: Ear gets its own menu listing each game (Theory its own tab), the phone menu folds categories out, the current page has its own colour, and links work inside the Claude app viewer.
 - **2.1 (12 Oct 2026):** Phases 0–3 marked done with results. Design direction rewritten after Baranay's feedback: Teenage Engineering / Nothing analog-modern language, sans-serif only (Archivo, Doto, Martian Mono; Caveat as handwriting stand-in), guitar-materials colours instead of coral/mint/mustard/pink, day theme default plus night, abstract disc metronome, receipts and label-maker strips, sticky categorized menu with ⚙ settings. Review flow added (preview file → approval → push). Audit items marked fixed. Architecture tree updated. Open question added about the chord chart and 6/m6 chords.
 - **2.0 (12 Oct 2026):** rewrite of v1 (audit, chord engine, practice model, ear training, phases).
+
+---
+
+## 17. Review of v2.4 (13 Oct 2026)
+
+Reviewed from commit `6764847`, run headless at 1440 px and 390 px wide, with one full session played through. Fonts and Chart.js were not available in the review environment, so typography and the two Chart.js charts were not judged.
+
+### 17.1 What works (keep)
+- **Chord engine.** Independent check: 168 chords (12 roots × 14 types), 3,741 voicings, zero wrong notes, at least 13 voicings per chord. The neck view with every chord tone plus the highlighted shape is the strongest screen.
+- **Practice loop.** Logged reps change the data as planned: after 4 B-string buzzes in C open, Today's setlist turned "Learn C open" into "Fix C open", and the ticker added "String skipping: try 84 BPM" and "C from memory". There is always a next step.
+- **Measuring tools.** String strip for buzzes/mutes, mistake chips, form timer, "Hide for recall", clean-pass counter, running block timer.
+- **Design language.** Keycaps, mono spec labels, label-maker strips, the receipt (torn edges, barcode) and the abstract disc metronome read as one system.
+- **Scope.** Phases 0–6 delivered: 8 ear games with levels, confusion duels, sound rotation, daily workout; 10 theory topics scaffolded, topic 1 written; reduced motion respected; no text under 12 px.
+
+### 17.2 Problems found (by impact)
+1. **Today breaks section 3 "Avoid".** A row of four identical KPI tiles (Total, Streak, Shapes, This week) and equal-weight cards below the hero.
+2. **Repeated information.** The same openings appear three times on Today (ticker, setlist, Next steps). Practice minutes appear four ways (Last 7 days on Today; Total minutes last 14 days, 28-day heatmap, groove disc on Progress). "Start practice" and "Plan a session" lead to the same place.
+3. **v1 leftover.** "Your chords · clean rate" on Today is the old 16-chord list as large empty tiles, not linked to the new library or to what was practised.
+4. **Metronome pushes the session down.** During a session the disc and controls fill the first screen; after finishing, the receipt sits below them. On a phone "Start session" is about 1,100 px down.
+5. **"Tempo" as the Practice H1.** It is the app's name, used as the tempo control's title.
+6. **Generic fix tips.** Any buzz on any string gives the same tip.
+7. **No drop-in path for art.** `art-placeholder.js` shows a pixel sprite or a dashed frame; nothing loads a file placed in `assets/art/`. Adding each drawing needs a code change.
+8. **Receipt and copy.** "1 MINUTES PLAYED"; about 5 seconds rounds up to 1 minute; "Setlist: 6 blocks" when 2 were played; the first pass at the default 80 BPM counts as a "new best".
+9. **Phone layout.** Ear cover tiles are full width (~330 px each, ~3,500 px for 8 games). The neck shows frets 0–5 with no hint that it scrolls.
+10. **Small inconsistencies.** "Read the lesson" on Theory is an underlined link inside a button. The empty receipt pile on Progress is one line of text, not an illustrated empty state.
+
+### 17.3 Still missing vs. the plan
+- Baranay's own art, palette and handwriting font (placeholders, as expected).
+- Theory topics 2–10 content.
+- Not yet confirmed with real data: buzz/mute fretboard heatmap, mistake patterns this week vs last week.
+- Microphone features (still "Later").
+
+### 17.4 Phase 7 work list (in order)
+Phase 7 is updates and fixes, not a redesign. The design direction in section 3 stays as it is: same colours, fonts, components and motifs. Layout changes only rearrange or remove existing parts from the component page; no new visual style.
+
+1. **Art drop-in pipeline.** `assets/art/manifest.js` maps art keys (e.g. `hero:today`, `cover:ear-intervals`, `stamp:first-session`) to files. If the file exists it is shown; otherwise the pixel sprite, otherwise the dashed placeholder. Adding a drawing = drop the file in its folder + one manifest line. Show the full list of keys on the component page.
+2. **Today restructure.** One hero (setlist + art). One openings list (keep the ticker for the top 3, remove Next steps or vice versa; decide with Baranay). Replace the four KPI tiles with one slim stats strip (e.g. a single line in dot-matrix type on a screen). Remove the v1 "Your chords" grid; if a chord block stays, show only chords that have been practised, with clean rate and status label. One CTA.
+3. **Session-first Practice.** While a session runs, the current block is the hero and the metronome folds into a compact bar (BPM, start/stop, LED) that can be expanded. After finishing, the receipt is the hero. Rename the H1 from "Tempo" to "Metronome" (or similar).
+4. **Finger-aware fix tips.** The voicing data knows which finger frets each string. A buzz or mute tag names the finger and position, e.g. "Index finger on B fret 1 is buzzing: roll it slightly toward the headstock and press just behind the fret." Mutes name the neighbouring finger that likely touches the string. Progress adds "which finger causes most buzzes" next to the fretboard heatmap. Baranay reviews the wording.
+5. **Receipt and copy fixes.** Singular/plural ("1 minute"); round to the nearest minute and show seconds under 1 minute; list only the blocks actually played ("2 of 6 blocks"); a first pass is "first clean pass", not a "new best".
+6. **Merge the minutes views.** Keep the groove disc and the 28-day heatmap on Progress; remove "Last 7 days" from Today and "Total minutes, last 14 days" from Progress, or merge them into one chart.
+7. **Phone layout pass.** Ear covers in a 2-column grid on phones; neck view shows a scroll hint (fade at the edge plus fret range label) and centres on the selected voicing.
+8. **Small fixes.** Theory "Read the lesson" uses the standard button style; Progress empty receipt pile gets an illustrated empty state (placeholder until the art exists).

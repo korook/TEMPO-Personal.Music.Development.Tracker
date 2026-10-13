@@ -1814,3 +1814,41 @@ a.theory-topic:hover {
 .practice-metronome--hero .metro-controls {
   align-content: center;
 }
+
+/* Component page: the list of every art key. */
+.art-keys__scroll {
+  overflow-x: auto;
+}
+
+.art-keys {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--size-sm);
+}
+
+.art-keys th,
+.art-keys td {
+  padding: var(--space-2);
+  border-bottom: 1px dashed var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.art-keys th {
+  font: 500 var(--size-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.art-keys__thumb {
+  width: 72px;
+}
+
+.art-keys__thumb .art-placeholder {
+  padding: 0;
+}
+
+.art-keys__thumb .art-placeholder span {
+  display: none;
+}

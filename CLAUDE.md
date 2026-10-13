@@ -63,6 +63,7 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 | 4. Pages ✅ | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
 | 5. Ear training ✅ | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
 | 6. Theory scaffold ✅ | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
+| 7. Review fixes | §17.4 items 1–8 in order, updates and fixes only (no redesign); stop after each item | Every 17.4 item ticked; a phone session at 390 px reaches the current block without scrolling |
 
 ## Known v1 issues still in the code (fixed in later phases)
 Unverified song lists, self-rated mastery
@@ -149,7 +150,9 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 ## Pixel-art stand-ins (13 Oct 2026, Baranay's request)
 - Art frames show hand-coded pixel sprites until Baranay's own art exists (not stock, not AI): engine `src/art/pixel.js`
   (canvas with rect/disc/ring/line/glyph, flip-book frames, CSS motions), sprites in `src/art/sprites.js` keyed like
-  `hero:today`, `cover:<ear game>`, `cover:theory-<topic>`, `stamp:<milestone id>`. `renderArtPlaceholder(kind, subject, artKey)`
-  falls back to the dashed frame when no sprite exists. Colours are theme tokens; animation stops with Reduced motion.
+  `hero:today`, `cover:ear-<game>`, `cover:theory-<topic>`, `stamp:<milestone id>`.
+- Art drop-in (Phase 7.1): `assets/art/manifest.js` lists every art key; filling in `file:` shows Baranay's file
+  (bundled via `import.meta.glob`, works in previews). Order: file → pixel sprite → dashed frame (`src/art/resolve.js`).
+  tests/art.test.js fails if a frame has no manifest line or a named file is missing. components.html lists every key. Colours are theme tokens; animation stops with Reduced motion.
 - 19 sprites: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps (locked ones show grey).
 - Next: write topics 2–10 (content), then the "Later" list in plan §12.

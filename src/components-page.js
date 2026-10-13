@@ -15,6 +15,8 @@ import { renderStub, renderStubStack } from './components/stub.js';
 import { renderTicker } from './components/ticker.js';
 import { renderTapedCard, renderPolaroid } from './components/taped-card.js';
 import { renderArtPlaceholder, ART_SPECS } from './components/art-placeholder.js';
+import { listArt } from './art/resolve.js';
+import { escapeHtml } from './utils/html.js';
 import { renderTopBar, bindTopBar } from './components/top-bar.js';
 import { getMetronome } from './audio/metronome.js';
 
@@ -342,7 +344,31 @@ function renderNecks() {
 function renderArtFrames() {
   const subjects = { hero: 'Practice', character: 'Waving', cover: 'Open chords', texture: 'Paper grain', stamp: 'First barre', icon: 'Metronome' };
   return `<div class="kit__grid kit__grid--art">${Object.keys(ART_SPECS).map((kind) => `<div>${renderArtPlaceholder(kind, subjects[kind])}</div>`).join('')}</div>
-    <p class="kit__note">Never filled with stock or AI images. Drop real art into the folder shown and it replaces the frame.</p>`;
+    <p class="kit__note">Never filled with stock or AI images. Until your drawings exist, frames show a hand-coded pixel stand-in or this dashed frame.</p>
+    ${renderArtKeys()}`;
+}
+
+// Every art key in assets/art/manifest.js: what it shows now and where its file goes.
+function renderArtKeys() {
+  const sourceLabels = { file: 'Your file', pixel: 'Pixel stand-in', placeholder: 'Placeholder' };
+  const rows = listArt().map((art) => {
+    const spec = ART_SPECS[art.kind];
+    const folder = spec.folder.replace('assets/art/', '');
+    return `
+      <tr>
+        <td class="art-keys__thumb">${renderArtPlaceholder(art.kind, art.subject, art.key)}</td>
+        <td><code>${escapeHtml(art.key)}</code><br><span class="label">${escapeHtml(art.subject)}</span></td>
+        <td><span class="chip${art.source === 'file' ? ' chip--picked' : ''}">${sourceLabels[art.source]}</span></td>
+        <td class="label">${art.file ? escapeHtml(art.file) : `${folder}… · ${spec.width} × ${spec.height} · ${spec.format}`}</td>
+      </tr>`;
+  }).join('');
+  return `
+    <h3 class="kit__label">Every art key (${listArt().length})</h3>
+    <p class="kit__note">To add a drawing: put the file in its folder, then fill in <code>file:</code> on its line in <code>assets/art/manifest.js</code>, e.g. <code>'cover:ear-intervals': { …, file: 'covers/ear-intervals.png' }</code>.</p>
+    <div class="art-keys__scroll"><table class="art-keys">
+      <thead><tr><th>Now</th><th>Key</th><th>Shows</th><th>File</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
 }
 
 // A character stands in where there's no data yet.

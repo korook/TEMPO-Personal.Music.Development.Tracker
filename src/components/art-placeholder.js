@@ -1,10 +1,12 @@
 // Clearly marked frames that hold the place of Baranay's artwork until it exists
 // (TEMPO_PLAN.md section 3, "Art asset spec"). Never filled with stock or AI images.
-// Where a hand-coded pixel sprite exists (src/art/sprites.js) it stands in for the art.
+// What a frame shows: Baranay's file from assets/art/manifest.js, else a hand-coded pixel
+// stand-in (src/art/sprites.js), else the dashed placeholder.
 
 import { escapeHtml } from '../utils/html.js';
 import { getSprite } from '../art/sprites.js';
 import { renderSprite } from '../art/pixel.js';
+import { artFileUrl } from '../art/resolve.js';
 
 // ─── Asset spec ───
 
@@ -20,11 +22,13 @@ export const ART_SPECS = {
 
 // ─── Rendering ───
 
-// Returns the stand-in pixel art for `artKey` (e.g. "cover:intervals") if it is drawn,
-// otherwise a dashed frame such as "HERO — Practice · 1600 × 1200 · assets/art/heroes/".
+// Returns the art for `artKey` (e.g. "cover:ear-intervals"): the file, the pixel stand-in,
+// or a dashed frame such as "HERO — Practice · 1600 × 1200 · assets/art/heroes/".
 export function renderArtPlaceholder(kind, subject, artKey = null) {
   const spec = ART_SPECS[kind];
   if (!spec) throw new Error(`Unknown art kind "${kind}".`);
+  const url = artKey ? artFileUrl(artKey) : null;
+  if (url) return renderArtFile(kind, url);
   const sprite = artKey ? getSprite(artKey) : null;
   if (sprite) return renderSprite(sprite, subject);
   const label = `${spec.name} — ${subject}`;
@@ -34,5 +38,15 @@ export function renderArtPlaceholder(kind, subject, artKey = null) {
       <span class="art-placeholder__label">${escapeHtml(label)}</span>
       <span class="art-placeholder__spec">${spec.width} × ${spec.height} · ${spec.format}</span>
       <span class="art-placeholder__spec">${spec.folder}</span>
+    </figure>`;
+}
+
+// Shows one of Baranay's drawings in its frame. Art sits beside its title, so the image is
+// decorative (empty alt) and doesn't repeat the title to screen readers.
+function renderArtFile(kind, url) {
+  const spec = ART_SPECS[kind];
+  return `
+    <figure class="art-file art-file--${kind}" style="aspect-ratio:${spec.width} / ${spec.height}">
+      <img src="${escapeHtml(url)}" alt="" loading="lazy" decoding="async">
     </figure>`;
 }
