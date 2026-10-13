@@ -510,6 +510,7 @@ tempo/
 ---
 
 ## 16. Change log
+- **2.4 (13 Oct 2026):** Hand-coded pixel-art stand-ins (not stock, not AI) fill every art frame until Baranay's own art exists: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps, gently animated (off with Reduced motion). Practice page: the metronome is the hero at the top.
 - **2.3 (13 Oct 2026):** Phase 6 (theory scaffold) marked done: ten topic folders, lesson / exercise / quiz renderers, topic 1 written, theory progress in the data model.
 - **2.2 (13 Oct 2026):** Phase 5 (ear training) marked done: eight games, four sounds, stars and levels, ear map, confusion duels, daily workout, ear blocks inside practice sessions. After Baranay's review: Ear gets its own menu listing each game (Theory its own tab), the phone menu folds categories out, the current page has its own colour, and links work inside the Claude app viewer.
 - **2.1 (12 Oct 2026):** Phases 0–3 marked done with results. Design direction rewritten after Baranay's feedback: Teenage Engineering / Nothing analog-modern language, sans-serif only (Archivo, Doto, Martian Mono; Caveat as handwriting stand-in), guitar-materials colours instead of coral/mint/mustard/pink, day theme default plus night, abstract disc metronome, receipts and label-maker strips, sticky categorized menu with ⚙ settings. Review flow added (preview file → approval → push). Audit items marked fixed. Architecture tree updated. Open question added about the chord chart and 6/m6 chords.
