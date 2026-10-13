@@ -1803,3 +1803,13 @@ a.theory-topic:hover {
     grid-template-columns: auto minmax(0, 1fr);
   }
 }
+
+/* On the Practice page the metronome is the hero: first thing on the page, a little more room. */
+.practice-metronome--hero {
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-7);
+}
+
+.practice-metronome--hero .metro-controls {
+  align-content: center;
+}

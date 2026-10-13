@@ -26,17 +26,17 @@ onPulseHeard(showPulse);
 
 // Returns the Practice page's metronome: the disc metronome as the hero, with the tempo
 // slider and the metronome settings in a panel beside it.
-export function renderMetronomePanel() {
+export function renderMetronomePanel({ hero = false } = {}) {
   const settings = getMetronome().getSettings();
   const trainer = settings.speedTrainer;
 
   return `
-    <section class="practice-metronome" aria-label="Metronome">
+    <section class="practice-metronome${hero ? ' practice-metronome--hero' : ''}" aria-label="Metronome">
       ${renderVinylMetronome()}
       <div class="panel metro-controls">
         <div class="section-head">
-          <span class="section-head__kicker">Metronome</span>
-          <h2 class="section-head__title">Tempo &amp; feel</h2>
+          <span class="section-head__kicker">${hero ? 'Practice · metronome' : 'Metronome'}</span>
+          ${hero ? '<h1 class="section-head__title section-head__title--hero">Tempo</h1>' : '<h2 class="section-head__title">Tempo &amp; feel</h2>'}
         </div>
         <label class="metro-slider">
           <span class="label">Tempo · <span id="bN">${settings.bpm}</span> BPM</span>

@@ -37,13 +37,13 @@ document.addEventListener('keydown', (event) => {
 
 // ─── Rendering ───
 
-// Draws the page for the current step.
+// Draws the page for the current step, under the metronome (the page's hero).
 export function renderPracticePage() {
   const page = document.getElementById('pg-practice');
   if (session.phase === 'plan' && session.blocks.length === 0) proposeSetlist();
 
   const body = { plan: renderPlan, play: renderPlay, done: renderDone }[session.phase]();
-  page.innerHTML = `${body}${renderMetronomePanel()}`;
+  page.innerHTML = `${renderMetronomePanel({ hero: true })}${body}`;
   bindEvents(page);
 }
 
@@ -66,7 +66,7 @@ function renderPlan() {
     <header class="page-head">
       <div class="section-head">
         <span class="section-head__kicker">Practice · tonight's setlist</span>
-        <h1 class="section-head__title section-head__title--hero">Setlist</h1>
+        <h2 class="section-head__title">Setlist</h2>
         <p class="section-head__lead">Built from what your playing needs next. Reorder or remove blocks, then start. About ${total} minutes, plus free play.</p>
       </div>
       <div class="measure__row">
@@ -94,7 +94,7 @@ function renderPlay() {
       <div class="play-head">
         <div class="section-head">
           <span class="section-head__kicker">Block ${session.current + 1} of ${session.blocks.length} · ${blockLabel(block)}</span>
-          <h1 class="section-head__title">${escapeHtml(block.title)}</h1>
+          <h2 class="section-head__title">${escapeHtml(block.title)}</h2>
           <p class="section-head__lead">${escapeHtml(block.note)}</p>
         </div>
         <div class="readout play-clock">
@@ -118,7 +118,7 @@ function renderDone() {
     <header class="page-head">
       <div class="section-head">
         <span class="section-head__kicker">Practice · session saved</span>
-        <h1 class="section-head__title section-head__title--hero">Session saved</h1>
+        <h2 class="section-head__title">Session saved</h2>
         <p class="section-head__lead">Here's your receipt. It also goes into your session log on the Progress page.</p>
       </div>
     </header>
