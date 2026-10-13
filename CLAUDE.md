@@ -158,6 +158,11 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
   tests/art.test.js fails if a frame has no manifest line or a named file is missing. components.html lists every key.
 - Today (Phase 7.2, Baranay chose the ticker): one hero (art + setlist, the only CTA), ticker with the top 3 openings,
   one dot-matrix stats strip, "Your shapes" (practised voicings only, clean rate + status label from `src/practice/status.js`, plan 6.7).
-  The v1 chord grid, KPI tiles and Next steps are gone. Colours are theme tokens; animation stops with Reduced motion.
+  The v1 chord grid, KPI tiles and Next steps are gone.
+- Phase 7.4–7.8: finger-aware tips in `src/practice/finger-tips.js` (wording in TIP_WORDING, Baranay reviews); Progress
+  "Where it buzzes" neck map + which finger. Receipts: blocks actually played, seconds under a minute, minute/minutes,
+  `firstResults` ("first clean pass") separate from `newBests`. Minutes are shown only on Progress (groove disc + 28-day
+  heatmap); Chart.js and charts.js were removed. Phones: ear covers 2 per row; `fitNecks()` (watched from main.js)
+  scrolls a neck to its shape and fades the edges. `a.button` never underlines. Colours are theme tokens; animation stops with Reduced motion.
 - 19 sprites: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps (locked ones show grey).
 - Next: write topics 2–10 (content), then the "Later" list in plan §12.

@@ -28,12 +28,50 @@ export function renderNeck(root, quality, { voicing = null, leftHanded = false }
     renderFretNumbers(layout),
   ];
   const label = describe(root, quality, voicing, leftHanded);
+  // Where the highlighted shape sits (0–1 across the neck), so phones can scroll to it.
+  const focus = voicing ? shapeCentre(layout, voicing) : null;
   return `
-    <div class="neck">
+    <div class="neck"${focus !== null ? ` data-focus="${focus.toFixed(3)}"` : ''}>
       <svg viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="${escapeHtml(label)}" xmlns="http://www.w3.org/2000/svg">
         ${parts.join('')}
       </svg>
-    </div>`;
+    </div>
+    <p class="neck-hint label">Frets 0–${LAST_FRET} · swipe the neck for more</p>`;
+}
+
+// The middle of a shape across the neck, from 0 (nut end) to 1 (fret 15 end).
+function shapeCentre(layout, voicing) {
+  const frets = voicing.frets.filter((fret) => fret !== null && fret > 0);
+  const middle = frets.length ? (Math.min(...frets) + Math.max(...frets)) / 2 : 0;
+  return noteX(layout, Math.round(middle)) / layout.width;
+}
+
+// ─── Scrolling on phones ───
+
+// For necks wider than their frame: scrolls each one so its highlighted shape is in the
+// middle (once), and fades the edge that has more neck behind it. Safe to call often.
+export function fitNecks(root = document) {
+  root.querySelectorAll('.neck').forEach((neck) => {
+    const scrolls = neck.scrollWidth > neck.clientWidth + 1;
+    neck.classList.toggle('neck--scrolls', scrolls);
+    if (!scrolls) return;
+    if (neck.dataset.focus && !neck.dataset.fitted) {
+      neck.scrollLeft = Number(neck.dataset.focus) * neck.scrollWidth - neck.clientWidth / 2;
+    }
+    if (!neck.dataset.fitted) {
+      neck.dataset.fitted = 'true';
+      neck.addEventListener('scroll', () => markNeckEdges(neck), { passive: true });
+    }
+    markNeckEdges(neck);
+  });
+}
+
+// Marks whether there is more neck to the left or right, for the edge fades.
+function markNeckEdges(neck) {
+  neck.dataset.more = [
+    neck.scrollLeft > 4 ? 'left' : '',
+    neck.scrollLeft + neck.clientWidth < neck.scrollWidth - 4 ? 'right' : '',
+  ].join(' ').trim();
 }
 
 // Returns the neck with specific notes marked wherever they can be played on frets 0–15

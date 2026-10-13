@@ -349,6 +349,25 @@ function hourglassStamp() {
   return { width: 24, height: 24, layers: [{ frames: [sand(4, 1), sand(3, 2), sand(2, 3), sand(1, 4), sand(0, 4)], fps: 1.5 }] };
 }
 
+// ─── Character: empty receipt pile ───
+
+// A little receipt printer, waiting: a blank strip of paper peeks out and the LED blinks.
+function emptyReceiptsCharacter() {
+  const base = createCanvas(32, 32);
+  base.rect(5, 16, 22, 11, 'n').frame(5, 16, 22, 11, 'b').rect(8, 18, 16, 2, 'i');
+  base.rect(8, 23, 3, 2, 'l').rect(12, 23, 3, 2, 'l');
+  base.rect(4, 27, 24, 1, 'l');
+  const paper = (top) => {
+    const canvas = base.copy().rect(10, top, 12, 18 - top, 'b');
+    for (let x = 10; x < 22; x += 2) canvas.dot(x, top, 'i');
+    for (let y = top + 3; y < 17; y += 3) canvas.rect(12, y, 8, 1, 'm');
+    return canvas;
+  };
+  const on = paper(8).rect(22, 23, 2, 2, 'g');
+  const off = paper(8).rect(22, 23, 2, 2, 'k');
+  return { width: 32, height: 32, layers: [{ frames: [on, off], fps: 1 }] };
+}
+
 // ─── Lookup ───
 
 const BUILDERS = {
@@ -362,6 +381,7 @@ const BUILDERS = {
   'cover:ear-rhythm': rhythmCover,
   'cover:ear-producer': producerCover,
   'cover:theory-01-fretboard-notes': fretboardNotesCover,
+  'character:empty-receipts': emptyReceiptsCharacter,
   'stamp:first-session': firstSessionStamp,
   'stamp:first-clean-shape': cleanShapeStamp,
   'stamp:first-clean-barre': cleanBarreStamp,

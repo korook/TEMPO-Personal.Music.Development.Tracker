@@ -2,7 +2,7 @@
 // updating review intervals, finding new personal bests and printing the receipt.
 
 import { generateOpenings } from './openings.js';
-import { cleanRate, newBests, mistakeCounts } from './measures.js';
+import { cleanRate, newBests, firstResults, mistakeCounts } from './measures.js';
 import { applySessionResult } from './spacing.js';
 import { exerciseItem, ensureItem } from './items.js';
 import { FINGER_EXERCISES } from '../data/exercises.js';
@@ -92,13 +92,15 @@ export function blockLabel(block) {
 // ─── Finishing ───
 
 // Ends a session: saves it with its receipt, updates review intervals and returns the receipt.
-// `session` = { id, start, blocks }; reps logged during it carry its id.
+// `session` = { id, start, blocks, played }; `played` = how many blocks were reached (all if
+// missing). Reps logged during it carry its id.
 export function finishSession(state, session, now = new Date()) {
   const sessionReps = state.reps.filter((rep) => rep.sessionId === session.id);
   const repsBefore = state.reps.filter((rep) => rep.sessionId !== session.id);
   const practicedIds = [...new Set(session.blocks.map((block) => block.itemId).filter(Boolean))];
 
   const bests = [];
+  const firsts = [];
   for (const itemId of practicedIds) {
     const item = state.items[itemId];
     if (!item) continue;
@@ -107,17 +109,24 @@ export function finishSession(state, session, now = new Date()) {
     const rate = cleanRate(itemReps, itemId).rate;
     state.items[itemId] = applySessionResult(item, rate, now);
     bests.push(...newBests(repsBefore, state.reps, itemId, item.label));
+    firsts.push(...firstResults(repsBefore, state.reps, itemId, item.label));
   }
 
-  const minutes = Math.max(1, Math.round((now.getTime() - new Date(session.start).getTime()) / 60000));
+  // Exact seconds for the receipt; minutes round to the nearest minute (not up).
+  const seconds = Math.max(0, Math.round((now.getTime() - new Date(session.start).getTime()) / 1000));
+  const minutes = Math.round(seconds / 60);
+  const total = session.blocks.length;
+  const played = Math.min(total, session.played || total);
   const [next] = generateOpenings(state, now);
   const stub = {
     milestones: [],
     number: state.sessions.length + 1,
     date: now.toISOString(),
     minutes,
-    title: `Setlist: ${session.blocks.length} blocks`,
+    seconds,
+    title: `Setlist: ${played} of ${total} block${total === 1 ? '' : 's'}`,
     bests,
+    firsts,
     mistake: topMistakeOfSession(state, sessionReps),
     nextOpening: next ? next.short : null,
   };
@@ -127,7 +136,7 @@ export function finishSession(state, session, now = new Date()) {
     start: session.start,
     end: now.toISOString(),
     minutes,
-    blocks: session.blocks.map(({ kind, label, title, itemId, minutes: planned }) => ({ kind, label: label || BLOCK_LABELS[kind], title, itemId, minutes: planned })),
+    blocks: session.blocks.slice(0, played).map(({ kind, label, title, itemId, minutes: planned }) => ({ kind, label: label || BLOCK_LABELS[kind], title, itemId, minutes: planned })),
     stub,
   });
   stub.milestones = checkMilestones(state, now).map((milestone) => milestone.title);

@@ -7,6 +7,7 @@ import './styles/components.css';
 import './styles/pages.css';
 
 import { registerRoute, startRouter, refreshRoute } from './router.js';
+import { fitNecks } from './components/neck.js';
 import { renderTopBar, bindTopBar, setTopBarCurrent } from './components/top-bar.js';
 import { getSettings, updateSettings } from './state/settings.js';
 import { isUsingMemoryStorage } from './state/storage.js';
@@ -99,7 +100,23 @@ function showStorageNotice() {
 // ─── Start ───
 
 // Applies settings, draws the top bar, connects every route and shows the current page.
+// Keeps necks scrolled to their shape on small screens whenever pages or quizzes redraw.
+function watchNecks() {
+  let queued = false;
+  new MutationObserver(() => {
+    if (queued) return;
+    queued = true;
+    setTimeout(() => {
+      queued = false;
+      fitNecks();
+    }, 30);
+  }).observe(document.body, { childList: true, subtree: true });
+  window.addEventListener('resize', () => fitNecks());
+}
+
+// Starts the app: settings, the top bar, the routes and the first page.
 function startApp() {
+  watchNecks();
   document.getElementById('no-app')?.remove();
   applySettings();
   const topBar = document.getElementById('top-bar');

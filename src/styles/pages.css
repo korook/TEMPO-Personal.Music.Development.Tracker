@@ -1045,12 +1045,6 @@ a.chip[aria-current='page'] {
   margin-bottom: var(--space-4);
 }
 
-.chart-frame {
-  position: relative;
-  height: 220px;
-  margin-bottom: var(--space-2);
-}
-
 .greeting {
   margin: var(--space-2) 0 var(--space-5);
   text-align: right;
@@ -1886,4 +1880,42 @@ a.theory-topic:hover {
 .practice-metronome--hero .section-head__title--hero {
   font-size: clamp(2.25rem, 4.6vw, 4.25rem);
   overflow-wrap: anywhere;
+}
+
+/* Progress: where buzzes and mutes happen on the neck. */
+.buzz-map .neck {
+  margin-bottom: var(--space-4);
+}
+
+.buzz-map__subtitle {
+  margin: 0 0 var(--space-2);
+  color: var(--text-muted);
+}
+
+/* The empty receipt pile: a small illustration beside a line of text. */
+.empty-state--receipts {
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+}
+
+/* Phones: the eight ear covers sit two to a row (17.4, item 7). */
+@media (max-width: 640px) {
+  .ear-games {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .ear-game {
+    padding: var(--space-2);
+  }
+
+  .ear-game__title {
+    font-size: var(--size-base);
+  }
+
+  .ear-game__blurb {
+    display: none;
+  }
 }

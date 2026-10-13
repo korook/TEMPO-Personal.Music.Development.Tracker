@@ -1,7 +1,7 @@
 // The Today page: what to practice now and why (TEMPO_PLAN.md 17.4, item 2). One hero (the
 // artwork beside tonight's setlist, with the only call to action); a ticker with the top three
-// openings; one slim strip of numbers; the week's minutes; and the chord shapes you have
-// actually practised, with their clean rate and status.
+// openings; one slim strip of numbers; and the chord shapes you have actually practised,
+// with their clean rate and status. Minutes over time live on Progress.
 
 import { getState, updateState, needsExportReminder } from '../state/storage.js';
 import { getSettings } from '../state/settings.js';
@@ -13,7 +13,6 @@ import { cleanRate } from '../practice/measures.js';
 import { itemStatus } from '../practice/status.js';
 import { renderGreeting } from '../components/header.js';
 import { renderTicker } from '../components/ticker.js';
-import { renderWeeklyChart } from '../components/charts.js';
 import { navigate, chordLink } from '../router.js';
 import { escapeHtml } from '../utils/html.js';
 
@@ -35,12 +34,10 @@ export function renderTodayPage() {
     ${renderHero(state)}
     ${renderStatsStrip(state)}
     ${renderYourShapes(state)}
-    <section class="panel"><h2 class="panel__title">Last 7 days</h2><div class="chart-frame"><canvas id="chW"></canvas></div><p class="label">Minutes per day</p></section>
 `;
 
   renderGreeting();
   bindEvents(page);
-  renderWeeklyChart(state.sessions);
 }
 
 // One slim line of numbers on a screen: total time, streak, this week and clean shapes.

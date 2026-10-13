@@ -107,20 +107,33 @@ export function bestsFor(reps, itemId) {
   };
 }
 
-// Compares bests before and after a session's reps and describes what improved,
-// e.g. ["C ↔ G: 36 changes/min (was 34)"].
+// Compares bests before and after a session's reps and describes what improved on an
+// earlier best, e.g. ["C ↔ G: 36 changes/min (was 34)"]. A first result is not a "new best"
+// (see firstResults).
 export function newBests(repsBefore, repsAfter, itemId, label) {
   const before = bestsFor(repsBefore, itemId);
   const after = bestsFor(repsAfter, itemId);
   const lines = [];
-  if (after.changesPerMin !== null && after.changesPerMin > (before.changesPerMin ?? -1)) {
-    lines.push(`${label}: ${after.changesPerMin} changes/min${before.changesPerMin !== null ? ` (was ${before.changesPerMin})` : ''}`);
+  if (before.changesPerMin !== null && after.changesPerMin > before.changesPerMin) {
+    lines.push(`${label}: ${after.changesPerMin} changes/min (was ${before.changesPerMin})`);
   }
-  if (after.cleanBpm !== null && after.cleanBpm > (before.cleanBpm ?? -1)) {
-    lines.push(`${label}: clean at ${after.cleanBpm} BPM${before.cleanBpm !== null ? ` (was ${before.cleanBpm})` : ''}`);
+  if (before.cleanBpm !== null && after.cleanBpm > before.cleanBpm) {
+    lines.push(`${label}: clean at ${after.cleanBpm} BPM (was ${before.cleanBpm})`);
   }
-  if (after.formSeconds !== null && (before.formSeconds === null || after.formSeconds < before.formSeconds)) {
-    lines.push(`${label}: formed in ${after.formSeconds}s${before.formSeconds !== null ? ` (was ${before.formSeconds}s)` : ''}`);
+  if (before.formSeconds !== null && after.formSeconds < before.formSeconds) {
+    lines.push(`${label}: formed in ${after.formSeconds}s (was ${before.formSeconds}s)`);
   }
+  return lines;
+}
+
+// Describes measurements made for the first time this session, e.g.
+// ["String skipping: first clean pass at 80 BPM"]. They start the record that bests beat later.
+export function firstResults(repsBefore, repsAfter, itemId, label) {
+  const before = bestsFor(repsBefore, itemId);
+  const after = bestsFor(repsAfter, itemId);
+  const lines = [];
+  if (before.changesPerMin === null && after.changesPerMin !== null) lines.push(`${label}: first one-minute test, ${after.changesPerMin} changes`);
+  if (before.cleanBpm === null && after.cleanBpm !== null) lines.push(`${label}: first clean pass at ${after.cleanBpm} BPM`);
+  if (before.formSeconds === null && after.formSeconds !== null) lines.push(`${label}: first timed form, ${after.formSeconds}s`);
   return lines;
 }

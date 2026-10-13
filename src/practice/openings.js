@@ -9,7 +9,8 @@
 import { cleanRate, mistakeCounts, changesSummary, cleanBpmBest, recallSummary } from './measures.js';
 import { isRusty, daysSincePractice } from './spacing.js';
 import { voicingForItem, voicingItem, progressionItem, progressionItemId, pairItem } from './items.js';
-import { describeMistake, tipForMistake } from '../data/mistake-tips.js';
+import { describeMistake } from '../data/mistake-tips.js';
+import { fingerTip } from './finger-tips.js';
 import { TRANSITION_DRILLS } from '../data/progressions.js';
 import { getVoicingsForSymbol } from '../chords/voicings.js';
 import { parseChordSymbol, chordSymbol } from '../theory/chords.js';
@@ -58,7 +59,7 @@ function fixOpenings(state, item) {
   return [{
     type: 'fix',
     itemId: item.id,
-    text: `${item.label}: ${describeMistake(top.tag)} ${top.count}/${top.of} times. ${tipForMistake(top.tag)}`,
+    text: `${item.label}: ${describeMistake(top.tag)} ${top.count}/${top.of} times. ${fingerTip(top.tag, voicingForItem(item))}`,
     short: `${item.label}: ${describeMistake(top.tag)} ${top.count}/${top.of}`,
     priority: 100 + top.count * 5,
   }];

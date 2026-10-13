@@ -137,7 +137,7 @@ describe('openings', () => {
     }
     const [first] = generateOpenings(state, NOW);
     expect(first.type).toBe('fix');
-    expect(first.text).toBe('Am open: B string buzzed 4/10 times. Press just behind the fret, not on top of it, and come down on your fingertip.');
+    expect(first.text).toBe('Am open: B string buzzed 4/10 times. Index finger on the B string, fret 1, is buzzing: press just behind the fret on the very tip, and roll it slightly toward the headstock.');
   });
 
   it('pushes a change pair just past its best', () => {
@@ -222,7 +222,9 @@ describe('sessions', () => {
 
     const stub = finishSession(state, session, NOW);
     expect(stub.minutes).toBe(25);
-    expect(stub.bests).toContain('C ↔ G: 28 changes/min');
+    expect(stub.title).toBe(`Setlist: ${session.blocks.length} of ${session.blocks.length} blocks`);
+    expect(stub.bests).toEqual([]);
+    expect(stub.firsts).toContain('C ↔ G: first one-minute test, 28 changes');
     expect(stub.mistake).toMatch(/^G string buzzed in .+ \(3×\)$/);
     expect(stub.nextOpening).toBeTruthy();
     expect(state.sessions).toHaveLength(1);
@@ -264,5 +266,33 @@ describe('milestones', () => {
       state.reps.push(rep(item.id, 'clean-check', { clean: true, mistakes: [] }));
     }
     expect(checkMilestones(state, NOW).map((milestone) => milestone.id)).toContain('all-caged');
+  });
+});
+
+// ─── Receipt wording (TEMPO_PLAN.md 17.4, item 5) ───
+
+describe('receipt wording', () => {
+  it('counts only the blocks played, keeps seconds under a minute, and calls a first pass a first', async () => {
+    const { playedValue } = await import('../src/components/stub.js');
+    const state = createEmptyState(NOW);
+    const start = new Date(NOW.getTime() - 42 * 1000);
+    const session = { id: 's9', start: start.toISOString(), blocks: buildSetlist(state, start), played: 2 };
+    const warmUp = session.blocks[0];
+    for (let index = 0; index < 3; index++) state.reps.push(rep(warmUp.itemId, 'bpm-pass', { bpm: 80, clean: true, mistakes: [] }, 's9'));
+    const stub = finishSession(state, session, NOW);
+    expect(stub.title).toBe(`Setlist: 2 of ${session.blocks.length} blocks`);
+    expect(stub.seconds).toBe(42);
+    expect(stub.minutes).toBe(1);
+    expect(playedValue(stub)).toEqual({ value: 42, unit: 'seconds' });
+    expect(playedValue({ minutes: 1, seconds: 75 })).toEqual({ value: 1, unit: 'minute' });
+    expect(stub.bests).toEqual([]);
+    expect(stub.firsts).toEqual([`${warmUp.title}: first clean pass at 80 BPM`]);
+    expect(state.sessions[0].blocks).toHaveLength(2);
+  });
+
+  it('a better result next time is a new best', () => {
+    const before = [rep('x', 'bpm-pass', { bpm: 80, clean: true }), rep('x', 'bpm-pass', { bpm: 80, clean: true }), rep('x', 'bpm-pass', { bpm: 80, clean: true })];
+    const after = [...before, rep('x', 'bpm-pass', { bpm: 84, clean: true }), rep('x', 'bpm-pass', { bpm: 84, clean: true }), rep('x', 'bpm-pass', { bpm: 84, clean: true })];
+    expect(newBests(before, after, 'x', 'Spider walk')).toEqual(['Spider walk: clean at 84 BPM (was 80)']);
   });
 });

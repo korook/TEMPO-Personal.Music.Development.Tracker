@@ -1,19 +1,24 @@
 // The Progress page (TEMPO_PLAN.md 6.9). Hero: the groove disc of weekly minutes next to
 // the latest receipts. Then personal bests over time, milestones, mistake patterns (this
-// week vs last week), clean rate per chord shape, the 28-day heatmap, total minutes and
-// the session log. Always compared against your own past, never an "ideal".
+// week vs last week), the 28-day heatmap, where buzzes and mutes happen on the neck (and
+// which finger causes most), clean rate per chord shape and the session log. Minutes are
+// shown once: the groove disc by week and the heatmap by day (17.4, item 6). Always
+// compared against your own past, never an "ideal".
 
 import { getState, updateState } from '../state/storage.js';
 import { minutesOnDay } from '../practice/history.js';
 import { cleanRate, repsFor, cleanBpmBest } from '../practice/measures.js';
 import { milestoneBoard } from '../practice/milestones.js';
-import { describeMistake } from '../data/mistake-tips.js';
+import { describeMistake, parseMistake, TAG_STRINGS } from '../data/mistake-tips.js';
+import { voicingForItem } from '../practice/items.js';
+import { fingerForMistake, FINGER_NAMES } from '../practice/finger-tips.js';
+import { renderNeckMarks } from '../components/neck.js';
+import { getSettings } from '../state/settings.js';
 import { renderGreeting } from '../components/header.js';
 import { renderStubStack } from '../components/stub.js';
 import { renderGrooveDisc, renderSparkline } from '../components/groove-disc.js';
 import { renderPolaroid } from '../components/taped-card.js';
 import { renderArtPlaceholder } from '../components/art-placeholder.js';
-import { renderCumulativeChart } from '../components/charts.js';
 import { daysBefore } from '../utils/time.js';
 import { escapeHtml } from '../utils/html.js';
 
@@ -41,7 +46,7 @@ export function renderProgressPage() {
     <section class="progress-hero">
       ${renderGrooveDisc(sessions)}
       <div class="progress-hero__receipts">
-        ${receipts.length ? renderStubStack(receipts) : '<p class="progress-empty">Your session receipts pile up here.</p>'}
+        ${receipts.length ? renderStubStack(receipts) : renderNoReceipts()}
       </div>
     </section>
     ${renderBestsCard(state)}
@@ -50,12 +55,64 @@ export function renderProgressPage() {
       <section class="panel"><h2 class="panel__title">Mistake patterns</h2>${renderMistakePatterns(state)}</section>
       ${renderHeatmapCard(sessions)}
     </div>
+    ${renderBuzzMap(state)}
     ${renderCleanRateCard(state)}
-    <section class="panel"><h2 class="panel__title">Total minutes, last 14 days</h2><div class="chart-frame"><canvas id="chCu"></canvas></div></section>
     ${renderSessionLogCard(sessions)}`;
 
   bindEvents(page);
-  renderCumulativeChart(sessions);
+}
+
+// The empty receipt pile: an illustration (pixel stand-in until the art exists) and a line.
+function renderNoReceipts() {
+  return `
+    <div class="empty-state empty-state--receipts">
+      ${renderArtPlaceholder('character', 'No receipts yet', 'character:empty-receipts')}
+      <div>
+        <h2 class="empty-state__title">No receipts yet</h2>
+        <p class="empty-state__text">Finish a practice session and its receipt prints here, with your minutes, bests and the next thing to try.</p>
+      </div>
+    </div>`;
+}
+
+// Where buzzes and mutes happen on the neck over the last 28 days, and which finger
+// causes most of them (17.4, item 4). Worked out from each shape's fingering.
+function renderBuzzMap(state) {
+  const since = Date.now() - 28 * DAY_MS;
+  const spots = new Map();
+  const fingers = new Map();
+  let total = 0;
+  for (const rep of state.reps) {
+    if (!Array.isArray(rep.mistakes) || new Date(rep.at).getTime() < since) continue;
+    const item = state.items[rep.itemId];
+    const voicing = item && item.type === 'voicing' ? voicingForItem(item) : null;
+    if (!voicing) continue;
+    for (const tag of rep.mistakes) {
+      const { kind, string } = parseMistake(tag);
+      const index = TAG_STRINGS.indexOf(string);
+      if ((kind !== 'buzz' && kind !== 'mute') || index < 0 || voicing.frets[index] === null) continue;
+      const key = `${index}:${voicing.frets[index]}`;
+      spots.set(key, (spots.get(key) || 0) + 1);
+      const finger = fingerForMistake(tag, voicing);
+      if (finger) fingers.set(finger, (fingers.get(finger) || 0) + 1);
+      total++;
+    }
+  }
+  const title = '<h2 class="panel__title">Where it buzzes · last 28 days</h2>';
+  if (total === 0) {
+    return `<section class="panel">${title}<p class="progress-empty">Tag a buzzing or muted string after a rep and the spot shows up on the neck here, with the finger that causes it.</p></section>`;
+  }
+  const most = Math.max(...spots.values());
+  const marks = [...spots.entries()].map(([key, count]) => {
+    const [string, fret] = key.split(':').map(Number);
+    return { string, fret, label: String(count), kind: count >= most / 2 ? 'wrong' : 'active' };
+  });
+  const fingerRows = [...fingers.entries()].sort((a, b) => b[1] - a[1])
+    .map(([finger, count]) => `<li><span>${FINGER_NAMES[finger]} finger</span><span class="mono">${count}×</span></li>`).join('');
+  return `
+    <section class="panel buzz-map">${title}
+      ${renderNeckMarks(marks, { leftHanded: getSettings().leftHanded, description: `Buzzes and mutes on the neck: ${total} in the last 28 days` })}
+      ${fingerRows ? `<h3 class="buzz-map__subtitle label">Which finger causes most</h3><ul class="pattern-list">${fingerRows}</ul>` : ''}
+    </section>`;
 }
 
 // Personal bests with their trend: change counts, clean tempos and form times.

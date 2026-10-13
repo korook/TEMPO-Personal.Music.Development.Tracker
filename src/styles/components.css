@@ -1131,3 +1131,24 @@ a.chip[aria-current='page'] {
 .art-file--character img {
   object-fit: contain;
 }
+
+/* Links styled as keys never show a text underline (e.g. "Read the lesson"). */
+a.button {
+  text-decoration: none;
+}
+
+/* A neck wider than its frame fades out on the side with more neck behind it (17.4, item 7). */
+.neck--scrolls[data-more~='right'] {
+  -webkit-mask-image: linear-gradient(to right, #000 85%, transparent);
+  mask-image: linear-gradient(to right, #000 85%, transparent);
+}
+
+.neck--scrolls[data-more~='left'] {
+  -webkit-mask-image: linear-gradient(to left, #000 85%, transparent);
+  mask-image: linear-gradient(to left, #000 85%, transparent);
+}
+
+.neck--scrolls[data-more='left right'] {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}

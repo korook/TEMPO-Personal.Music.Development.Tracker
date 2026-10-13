@@ -6,24 +6,25 @@ import { escapeHtml } from '../utils/html.js';
 
 // ─── Rendering ───
 
-// Returns one receipt. `stub` = { number, date (Date or ISO), minutes, title, bests: [text],
-// mistake: text | null, milestones: [text], nextOpening: text | null }.
+// Returns one receipt. `stub` = { number, date (Date or ISO), minutes, seconds?, title,
+// bests: [text], firsts?: [text], mistake: text | null, milestones: [text], nextOpening: text | null }.
 export function renderStub(stub) {
   const date = new Date(stub.date);
   const dateText = date.toLocaleDateString('en', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeText = date.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit', hour12: false });
   const rows = [];
   if (stub.bests && stub.bests.length) rows.push(['New bests', stub.bests.join(' · ')]);
+  if (stub.firsts && stub.firsts.length) rows.push(['Firsts', stub.firsts.join(' · ')]);
   if (stub.mistake) rows.push(['Watch', stub.mistake]);
   if (stub.milestones && stub.milestones.length) rows.push(['Milestone', stub.milestones.join(' · ')]);
   if (rows.length === 0) rows.push(['Played', 'No new bests or mistakes logged. The minutes still count.']);
 
   return `
-    <article class="stub" aria-label="Session ${escapeHtml(stub.number)} on ${escapeHtml(dateText)}, ${stub.minutes} minutes">
+    <article class="stub" aria-label="Session ${escapeHtml(stub.number)} on ${escapeHtml(dateText)}, ${playedText(stub)}">
       <div class="stub__header"><span>Tempo · No. ${String(stub.number).padStart(4, '0')}</span><span>${escapeHtml(dateText)} ${timeText}</span></div>
       <h3 class="stub__title">${escapeHtml(stub.title || 'Practice session')}</h3>
       <hr class="stub__rule">
-      <div class="stub__minutes"><span class="stub__minutes-value">${stub.minutes}</span><span class="stub__unit">minutes played</span></div>
+      <div class="stub__minutes"><span class="stub__minutes-value">${playedValue(stub).value}</span><span class="stub__unit">${playedValue(stub).unit} played</span></div>
       <hr class="stub__rule">
       <dl class="stub__rows">
         ${rows.map(([label, value]) => `<div class="stub__row"><dt>${label}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}
@@ -31,6 +32,19 @@ export function renderStub(stub) {
       ${stub.nextOpening ? `<hr class="stub__rule"><p class="stub__next">Next → ${escapeHtml(stub.nextOpening)}</p>` : ''}
       ${renderBarcode(stub.number)}
     </article>`;
+}
+
+// The played time as a number and unit: seconds under a minute, else whole minutes,
+// with "minute" or "minutes" to match.
+export function playedValue(stub) {
+  if (typeof stub.seconds === 'number' && stub.seconds < 60) return { value: stub.seconds, unit: stub.seconds === 1 ? 'second' : 'seconds' };
+  return { value: stub.minutes, unit: stub.minutes === 1 ? 'minute' : 'minutes' };
+}
+
+// The played time in words, e.g. "1 minute" or "42 seconds".
+function playedText(stub) {
+  const { value, unit } = playedValue(stub);
+  return `${value} ${unit}`;
 }
 
 // Returns a stack of receipts, newest first.

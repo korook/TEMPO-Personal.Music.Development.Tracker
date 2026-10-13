@@ -53,7 +53,7 @@ Status: ✅ = fixed, ⏳ = fixed in Phase 4.
 - ✅ **No backup.** Export/import functions exist (Phase 1); the buttons arrive with the Settings page in Phase 4.
 
 ### Keep
-- The general tab idea, Chart.js, the 28-day heatmap concept, the finger exercises list, and the transition drill progressions.
+- The general tab idea, the 28-day heatmap concept, the finger exercises list, and the transition drill progressions.
 
 ---
 
@@ -475,7 +475,7 @@ tempo/
 | **4. Pages** | Top bar + ⚙ menu, then Chords → Practice (section 6) → Today → Progress → Settings, built from the component page parts only. Remove the v1 styles, tokens, chord list and +10% ratings. | A full session runs: setlist → measured reps → receipt, and openings change with the data. | ✅ |
 | **5. Ear training** | Section 8, linked to the practice model. | All 8 exercises play; confusion duels appear after repeated mix-ups. | ✅ |
 | **6. Theory scaffold** | Section 9 folders, renderers for lecture / exercise / quiz, topic 1 as a sample. | Topic 1 lecture, exercise and quiz work end to end. | ✅ |
-| **7. Review fixes** | Updates and fixes only, no redesign. Section 17: art drop-in pipeline, Today restructure, session-first Practice, finger-aware fix tips, receipt and copy fixes, phone layout pass. Work in the order of 17.4. | Every item in 17.4 is ticked, and a full session on a phone at 390 px wide needs no scrolling to reach the current block. | |
+| **7. Review fixes** | Updates and fixes only, no redesign. Section 17: art drop-in pipeline, Today restructure, session-first Practice, finger-aware fix tips, receipt and copy fixes, phone layout pass. Work in the order of 17.4. | Every item in 17.4 is ticked, and a full session on a phone at 390 px wide needs no scrolling to reach the current block. | ✅ |
 | **Later** | Microphone (tuner, buzz detection, weekly recordings), Production tab, Baranay's own palette and handwriting font. | — | |
 
 ### Review flow (Baranay's rule, 12 Oct 2026)
@@ -511,6 +511,7 @@ tempo/
 ---
 
 ## 16. Change log
+- **2.6 (13 Oct 2026):** Phase 7 done (all of 17.4). Baranay chose the ticker for Today. Chart.js removed: minutes now show only as the groove disc and the 28-day heatmap. Status labels (6.7) built in `src/practice/status.js`.
 - **2.5 (13 Oct 2026):** Review of v2.4 added as section 17 (what works, 10 problems, what's missing). New Phase 7 (review fixes) with an ordered work list: art drop-in manifest, Today restructure, session-first Practice, finger-aware fix tips, receipt fixes, merged minutes views, phone layout pass. Starter prompt updated.
 - **2.4 (13 Oct 2026):** Hand-coded pixel-art stand-ins (not stock, not AI) fill every art frame until Baranay's own art exists: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps, gently animated (off with Reduced motion). Practice page: the metronome is the hero at the top.
 - **2.3 (13 Oct 2026):** Phase 6 (theory scaffold) marked done: ten topic folders, lesson / exercise / quiz renderers, topic 1 written, theory progress in the data model.
@@ -552,11 +553,11 @@ Reviewed from commit `6764847`, run headless at 1440 px and 390 px wide, with on
 ### 17.4 Phase 7 work list (in order)
 Phase 7 is updates and fixes, not a redesign. The design direction in section 3 stays as it is: same colours, fonts, components and motifs. Layout changes only rearrange or remove existing parts from the component page; no new visual style.
 
-1. **Art drop-in pipeline.** `assets/art/manifest.js` maps art keys (e.g. `hero:today`, `cover:ear-intervals`, `stamp:first-session`) to files. If the file exists it is shown; otherwise the pixel sprite, otherwise the dashed placeholder. Adding a drawing = drop the file in its folder + one manifest line. Show the full list of keys on the component page.
-2. **Today restructure.** One hero (setlist + art). One openings list (keep the ticker for the top 3, remove Next steps or vice versa; decide with Baranay). Replace the four KPI tiles with one slim stats strip (e.g. a single line in dot-matrix type on a screen). Remove the v1 "Your chords" grid; if a chord block stays, show only chords that have been practised, with clean rate and status label. One CTA.
-3. **Session-first Practice.** While a session runs, the current block is the hero and the metronome folds into a compact bar (BPM, start/stop, LED) that can be expanded. After finishing, the receipt is the hero. Rename the H1 from "Tempo" to "Metronome" (or similar).
-4. **Finger-aware fix tips.** The voicing data knows which finger frets each string. A buzz or mute tag names the finger and position, e.g. "Index finger on B fret 1 is buzzing: roll it slightly toward the headstock and press just behind the fret." Mutes name the neighbouring finger that likely touches the string. Progress adds "which finger causes most buzzes" next to the fretboard heatmap. Baranay reviews the wording.
-5. **Receipt and copy fixes.** Singular/plural ("1 minute"); round to the nearest minute and show seconds under 1 minute; list only the blocks actually played ("2 of 6 blocks"); a first pass is "first clean pass", not a "new best".
-6. **Merge the minutes views.** Keep the groove disc and the 28-day heatmap on Progress; remove "Last 7 days" from Today and "Total minutes, last 14 days" from Progress, or merge them into one chart.
-7. **Phone layout pass.** Ear covers in a 2-column grid on phones; neck view shows a scroll hint (fade at the edge plus fret range label) and centres on the selected voicing.
-8. **Small fixes.** Theory "Read the lesson" uses the standard button style; Progress empty receipt pile gets an illustrated empty state (placeholder until the art exists).
+1. ✅ **Art drop-in pipeline.** `assets/art/manifest.js` maps art keys (e.g. `hero:today`, `cover:ear-intervals`, `stamp:first-session`) to files. If the file exists it is shown; otherwise the pixel sprite, otherwise the dashed placeholder. Adding a drawing = drop the file in its folder + one manifest line. Show the full list of keys on the component page.
+2. ✅ **Today restructure.** One hero (setlist + art). One openings list (keep the ticker for the top 3, remove Next steps or vice versa; decide with Baranay). Replace the four KPI tiles with one slim stats strip (e.g. a single line in dot-matrix type on a screen). Remove the v1 "Your chords" grid; if a chord block stays, show only chords that have been practised, with clean rate and status label. One CTA.
+3. ✅ **Session-first Practice.** While a session runs, the current block is the hero and the metronome folds into a compact bar (BPM, start/stop, LED) that can be expanded. After finishing, the receipt is the hero. Rename the H1 from "Tempo" to "Metronome" (or similar).
+4. ✅ **Finger-aware fix tips.** The voicing data knows which finger frets each string. A buzz or mute tag names the finger and position, e.g. "Index finger on B fret 1 is buzzing: roll it slightly toward the headstock and press just behind the fret." Mutes name the neighbouring finger that likely touches the string. Progress adds "which finger causes most buzzes" next to the fretboard heatmap. Baranay reviews the wording.
+5. ✅ **Receipt and copy fixes.** Singular/plural ("1 minute"); round to the nearest minute and show seconds under 1 minute; list only the blocks actually played ("2 of 6 blocks"); a first pass is "first clean pass", not a "new best".
+6. ✅ **Merge the minutes views.** Keep the groove disc and the 28-day heatmap on Progress; remove "Last 7 days" from Today and "Total minutes, last 14 days" from Progress, or merge them into one chart.
+7. ✅ **Phone layout pass.** Ear covers in a 2-column grid on phones; neck view shows a scroll hint (fade at the edge plus fret range label) and centres on the selected voicing.
+8. ✅ **Small fixes.** Theory "Read the lesson" uses the standard button style; Progress empty receipt pile gets an illustrated empty state (placeholder until the art exists).

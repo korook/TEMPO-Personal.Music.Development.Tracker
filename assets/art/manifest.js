@@ -33,6 +33,9 @@ export const ART_MANIFEST = {
   'cover:theory-09-modes': { kind: 'cover', subject: 'Modes', file: null },
   'cover:theory-10-caged-system': { kind: 'cover', subject: 'CAGED system', file: null },
 
+  // ─── Characters for empty states (800 × 800, PNG transparent, assets/art/characters/) ───
+  'character:empty-receipts': { kind: 'character', subject: 'No receipts yet', file: null },
+
   // ─── Milestone stamps (400 × 400, SVG, assets/art/stamps/) ───
   'stamp:first-session': { kind: 'stamp', subject: 'First session', file: null },
   'stamp:first-clean-shape': { kind: 'stamp', subject: 'First clean chord', file: null },

@@ -229,7 +229,7 @@ function endSession() {
   stopClock();
   resetMeasureTool();
   updateState((state) => {
-    session.stub = finishSession(state, { id: session.id, start: session.start, blocks: session.blocks });
+    session.stub = finishSession(state, { id: session.id, start: session.start, blocks: session.blocks, played: session.current + 1 });
   });
   session.phase = 'done';
   renderPracticePage();
