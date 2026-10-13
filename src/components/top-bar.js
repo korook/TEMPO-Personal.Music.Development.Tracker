@@ -85,7 +85,7 @@ export function bindTopBar(container) {
     menu.addEventListener('toggle', (event) => {
       if (event.newState === 'open') placeUnderButton(bar, menu);
     });
-    menu.querySelectorAll('.top-bar__link').forEach((link) => {
+    menu.querySelectorAll('a.top-bar__link').forEach((link) => {
       link.addEventListener('click', () => menu.hidePopover());
     });
   });
