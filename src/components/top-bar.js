@@ -1,7 +1,8 @@
 // The top bar: a sticky main menu with the page's sections grouped into categories, and a
 // ⚙ button in the right corner that opens the settings. A category either opens a small
 // menu of its items or, with no items, links straight to its page. On phone width all
-// categories sit in one "Menu" list instead. setTopBarCurrent() marks where you are.
+// categories sit in one "Menu": plain pages as links, each category as a fold-out list.
+// setTopBarCurrent() marks where you are (and opens that category in the phone menu).
 // Menus use the browser's popover feature, so Esc and clicking outside close them.
 
 import { escapeHtml } from '../utils/html.js';
@@ -14,8 +15,7 @@ export function renderTopBar({ brand, brandHref = '#top', groups, settingsHtml =
   const categoryMenus = groups.map((group, index) => (
     group.items ? renderMenu(`top-bar-group-${index}`, group.label, [group], group.key) : renderLink(group)
   )).join('');
-  const phoneGroups = groups.map((group) => (group.items ? group : { label: group.label, items: [{ label: group.label, href: group.href }] }));
-  const phoneMenu = renderMenu('top-bar-all', 'Menu', mergeSingleLinks(phoneGroups));
+  const phoneMenu = renderPhoneMenu(groups);
   const settings = settingsHtml ? renderSettings(settingsHtml) : '';
 
   return `
@@ -32,12 +32,21 @@ function renderLink(group) {
   return `<a class="top-bar__button" href="${escapeHtml(group.href)}" data-top-key="${escapeHtml(group.key || '')}">${escapeHtml(group.label)}</a>`;
 }
 
-// For the phone menu: puts single-link categories together under one "Pages" heading.
-function mergeSingleLinks(groups) {
-  const singles = groups.filter((group) => group.items.length === 1 && group.items[0].label === group.label);
-  if (singles.length < 2) return groups;
-  const pages = { label: 'Pages', items: singles.map((group) => group.items[0]) };
-  return [pages, ...groups.filter((group) => !singles.includes(group))];
+// The phone menu: pages in menu order, categories as fold-outs that show their items when tapped.
+function renderPhoneMenu(groups) {
+  const entries = groups.map((group) => (group.items ? `
+    <details class="top-bar__fold" data-top-key="${escapeHtml(group.key || '')}">
+      <summary class="top-bar__link top-bar__fold-title">${escapeHtml(group.label)}</summary>
+      ${renderLinkList(group.items)}
+    </details>` : `<a class="top-bar__link" href="${escapeHtml(group.href)}">${escapeHtml(group.label)}</a>`)).join('');
+  return `
+    <button class="top-bar__button" popovertarget="top-bar-all" aria-haspopup="true">Menu <span aria-hidden="true">▾</span></button>
+    <div class="top-bar__menu top-bar__menu--phone" id="top-bar-all" popover>${entries}</div>`;
+}
+
+// Returns a list of links.
+function renderLinkList(items) {
+  return `<ul class="top-bar__list">${items.map((item) => `<li><a class="top-bar__link" href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join('')}</ul>`;
 }
 
 // Returns one menu button and the list it opens.
@@ -45,9 +54,7 @@ function renderMenu(id, label, groups, key = '') {
   const showHeadings = groups.length > 1;
   const lists = groups.map((group) => `
     ${showHeadings ? `<span class="top-bar__heading">${escapeHtml(group.label)}</span>` : ''}
-    <ul class="top-bar__list">
-      ${group.items.map((item) => `<li><a class="top-bar__link" href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join('')}
-    </ul>`).join('');
+    ${renderLinkList(group.items)}`).join('');
   return `
     <button class="top-bar__button" popovertarget="${id}" aria-haspopup="true" data-top-key="${escapeHtml(key)}">${escapeHtml(label)} <span aria-hidden="true">▾</span></button>
     <div class="top-bar__menu" id="${id}" popover>${lists}</div>`;
@@ -87,7 +94,9 @@ export function bindTopBar(container) {
 // Marks the current category and link (aria-current) so the bar shows where you are.
 export function setTopBarCurrent(container, { key, href }) {
   container.querySelectorAll('[data-top-key]').forEach((element) => {
-    if (element.dataset.topKey && element.dataset.topKey === key) element.setAttribute('aria-current', 'page');
+    const isCurrent = Boolean(element.dataset.topKey) && element.dataset.topKey === key;
+    if (element.matches('details')) element.open = isCurrent;
+    else if (isCurrent) element.setAttribute('aria-current', 'page');
     else element.removeAttribute('aria-current');
   });
   container.querySelectorAll('.top-bar__link').forEach((link) => {

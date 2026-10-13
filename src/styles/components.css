@@ -975,3 +975,34 @@ button.chip[aria-pressed='true'] {
 .neck-note--active text { fill: var(--ink); }
 .neck-note--active.neck-note--root circle { fill: var(--accent-now); stroke: var(--screen-text); stroke-width: 2.5; }
 .neck-note--dim { opacity: 0.3; }
+
+/* Phone menu: categories fold out in place. */
+.top-bar__menu--phone {
+  min-width: 260px;
+}
+
+.top-bar__fold-title {
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none;
+}
+
+.top-bar__fold-title::-webkit-details-marker {
+  display: none;
+}
+
+.top-bar__fold-title::after {
+  content: '▸';
+  color: var(--text-faint);
+  transition: transform var(--fast) var(--ease);
+}
+
+.top-bar__fold[open] > .top-bar__fold-title::after {
+  transform: rotate(90deg);
+}
+
+.top-bar__fold .top-bar__list {
+  margin: 0 0 var(--space-2) var(--space-3);
+  padding-left: var(--space-2);
+  border-left: 1px solid var(--line);
+}
