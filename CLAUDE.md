@@ -107,6 +107,10 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - App shell: sticky top bar (`src/components/top-bar.js`) with Today, Practice, Chords (A–G), Ear (overview + each game), Theory, Progress, and ⚙
   quick settings (day/night, left-handed, reduced motion; saved in `settings`). Production is hidden.
 - Routing is hash-based (`src/router.js`): `#/today`, `#/chords/C`, `#/chord/Cmaj7` (use `chordLink()`), `#/practice`, `#/progress`, `#/ear`, `#/theory`.
+  The router keeps the current page itself and handles `#/` link clicks, because the Claude app viewer blocks address changes.
+  Use `navigate()` / `currentRoute()` / `refreshRoute()`, never `location.hash` directly.
+- Phone menu: plain pages as links, categories (Chords, Ear) fold out in place; the current category opens by itself.
+  The current page is tinted in its section colour with an LED dot; hover stays grey.
 - Chords page ✅: A–G categories (`src/chords/library.js`: sharps/flats under their letter), thumbnails show the most common
   shape (open → E/A-form barre → E/A-string root → any full shape), chord view with tones, type switcher, neck, focus panel, strip.
 - 6 and m6 chords added (12 roots × 14 types).

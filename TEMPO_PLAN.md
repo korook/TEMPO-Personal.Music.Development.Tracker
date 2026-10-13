@@ -72,7 +72,7 @@ Status: ✅ = fixed, ⏳ = fixed in Phase 4.
 - **Body and screens:** light device-body panels (day theme, the default) or ebony (night theme). Live data sits on dark inset **screens**: the neck, readouts, the ticker.
 - **Hardware details:** keycap buttons that press down; LED dots for state (a green phosphor LED only while something is running: metronome, timer, recording); mono spec labels; a fine dot-grid texture like perforated speaker metal.
 - **Paper for the human side:** session **receipts** (thermal paper, torn edges, barcode), **label-maker strips** on setlist cards, **polaroids** for milestones and artwork, handwritten notes.
-- **Main menu:** a sticky top bar with sections grouped into categories (each opens a small menu; one "Menu" on phones) and a **⚙ settings menu** in the right corner.
+- **Main menu:** a sticky top bar: Today, Practice, Chords ▾ (A–G), Ear ▾ (workout + each of the 8 games), Theory, Progress, and a **⚙ settings menu** in the right corner. On phones one "Menu" with the categories folding out in place. The current page shows in its section colour with an LED dot; hover is grey.
 
 ### Colour (guitar colour-material-finish palette; a placeholder until Baranay sets his own)
 | Token | Source | Role |
@@ -507,6 +507,6 @@ tempo/
 ---
 
 ## 16. Change log
-- **2.2 (12 Oct 2026):** Phase 5 (ear training) marked done: eight games, four sounds, stars and levels, ear map, confusion duels, daily workout, ear blocks inside practice sessions.
+- **2.2 (13 Oct 2026):** Phase 5 (ear training) marked done: eight games, four sounds, stars and levels, ear map, confusion duels, daily workout, ear blocks inside practice sessions. After Baranay's review: Ear gets its own menu listing each game (Theory its own tab), the phone menu folds categories out, the current page has its own colour, and links work inside the Claude app viewer.
 - **2.1 (12 Oct 2026):** Phases 0–3 marked done with results. Design direction rewritten after Baranay's feedback: Teenage Engineering / Nothing analog-modern language, sans-serif only (Archivo, Doto, Martian Mono; Caveat as handwriting stand-in), guitar-materials colours instead of coral/mint/mustard/pink, day theme default plus night, abstract disc metronome, receipts and label-maker strips, sticky categorized menu with ⚙ settings. Review flow added (preview file → approval → push). Audit items marked fixed. Architecture tree updated. Open question added about the chord chart and 6/m6 chords.
 - **2.0 (12 Oct 2026):** rewrite of v1 (audit, chord engine, practice model, ear training, phases).
