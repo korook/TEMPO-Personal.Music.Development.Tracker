@@ -106,9 +106,22 @@ a.top-bar__button {
   color: var(--body);
 }
 
-.top-bar__link[aria-current='page'] {
-  background: var(--body-3);
+/* The page you're on: a tint of the section colour and an LED dot (hover stays grey). */
+.top-bar__link[aria-current='page'],
+.top-bar__link[aria-current='page']:hover {
+  gap: var(--space-2);
+  background: color-mix(in srgb, var(--accent-now) 24%, var(--body-2));
   font-weight: 650;
+}
+
+.top-bar__link[aria-current='page']::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-now);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-now) 30%, transparent);
 }
 
 .top-bar__cog {
