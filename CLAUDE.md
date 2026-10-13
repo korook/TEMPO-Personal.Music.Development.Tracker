@@ -153,6 +153,9 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
   `hero:today`, `cover:ear-<game>`, `cover:theory-<topic>`, `stamp:<milestone id>`.
 - Art drop-in (Phase 7.1): `assets/art/manifest.js` lists every art key; filling in `file:` shows Baranay's file
   (bundled via `import.meta.glob`, works in previews). Order: file → pixel sprite → dashed frame (`src/art/resolve.js`).
-  tests/art.test.js fails if a frame has no manifest line or a named file is missing. components.html lists every key. Colours are theme tokens; animation stops with Reduced motion.
+  tests/art.test.js fails if a frame has no manifest line or a named file is missing. components.html lists every key.
+- Today (Phase 7.2, Baranay chose the ticker): one hero (art + setlist, the only CTA), ticker with the top 3 openings,
+  one dot-matrix stats strip, "Your shapes" (practised voicings only, clean rate + status label from `src/practice/status.js`, plan 6.7).
+  The v1 chord grid, KPI tiles and Next steps are gone. Colours are theme tokens; animation stops with Reduced motion.
 - 19 sprites: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps (locked ones show grey).
 - Next: write topics 2–10 (content), then the "Later" list in plan §12.

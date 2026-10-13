@@ -1070,47 +1070,7 @@ a.chip[aria-current='page'] {
   margin-bottom: var(--space-4);
 }
 
-/* ─── Stat tiles ─── */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-
-.stat {
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--body-2);
-  box-shadow: var(--shadow-panel);
-}
-
-.stat__label {
-  font: 500 var(--size-xs) / 1.3 var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.stat__value {
-  font: 800 2.4rem / 1 var(--font-dots);
-}
-
-.stat__unit {
-  margin-left: 4px;
-  font: 500 var(--size-sm) / 1 var(--font-mono);
-  color: var(--text-faint);
-}
-
-.stat__note {
-  font-size: var(--size-xs);
-  color: var(--text-muted);
-}
-
-/* ─── Today: notices, next steps, chord clean rates ─── */
+/* ─── Today: notices, stats strip, your shapes ─── */
 .ratings-notice {
   display: flex;
   align-items: center;
@@ -1118,79 +1078,67 @@ a.chip[aria-current='page'] {
   gap: var(--space-4);
 }
 
-.next-steps {
-  display: grid;
-  align-content: start;
+/* One slim line of numbers in dot-matrix type on a screen strip (replaces the four tiles). */
+.stats-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--screen);
+  color: var(--screen-text);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
+  font: 800 var(--size-lg) / 1.3 var(--font-dots);
+  letter-spacing: 0.02em;
 }
 
-.next-steps__list {
-  display: grid;
-  gap: var(--space-3);
-  margin: 0 0 var(--space-4);
-  padding: 0;
-  list-style: none;
-  font-size: var(--size-sm);
+.stats-strip__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-now);
 }
 
-.next-steps__list li {
-  display: grid;
-  grid-template-columns: 4.5em 1fr;
-  gap: var(--space-3);
-  align-items: baseline;
-}
-
-.next-steps .button {
-  justify-self: start;
-}
-
-.chord-rates {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
-  gap: var(--space-2);
+.your-shapes {
   margin-bottom: var(--space-6);
 }
 
-.chord-rate {
+.your-shapes__list {
   display: grid;
-  gap: var(--space-1);
-  justify-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.your-shape {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) auto auto minmax(0, 2fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.your-shape__name {
   color: var(--text);
-  text-decoration: none;
+  font-weight: 600;
 }
 
-.chord-rate__key {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  aspect-ratio: 1;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--body-2);
-  box-shadow: 0 2px 0 var(--key-shadow);
-}
-
-.chord-rate:hover .chord-rate__key {
-  border-color: var(--text);
-}
-
-.chord-rate__fill {
-  position: absolute;
-  inset: auto 0 0;
-  background: var(--verdigris);
-  opacity: 0.35;
-}
-
-.chord-rate__name {
-  position: relative;
-  font: 650 var(--size-lg) / 1 var(--font-ui);
-  font-stretch: 112%;
-}
-
-.chord-rate__value {
-  font: 500 var(--size-xs) / 1 var(--font-mono);
+.your-shape__next {
+  font-size: var(--size-sm);
   color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .your-shape {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .your-shape__next {
+    grid-column: 1 / -1;
+  }
 }
 
 /* ─── Progress: heatmap, mistakes, clean-rate bars, session log ─── */

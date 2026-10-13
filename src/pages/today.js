@@ -1,8 +1,8 @@
-// The Today page: what to practice now and why. A ticker of today's openings; the hero
-// (an artwork frame next to tonight's setlist); four numbers from real practice data; the
-// week's minutes; the next steps; and the first chords with their clean rate.
+// The Today page: what to practice now and why (TEMPO_PLAN.md 17.4, item 2). One hero (the
+// artwork beside tonight's setlist, with the only call to action); a ticker with the top three
+// openings; one slim strip of numbers; the week's minutes; and the chord shapes you have
+// actually practised, with their clean rate and status.
 
-import { CHORDS_V1 } from '../data/chords-v1.js';
 import { getState, updateState, needsExportReminder } from '../state/storage.js';
 import { getSettings } from '../state/settings.js';
 import { totalMinutes, weeklyMinutes, countStreak } from '../practice/history.js';
@@ -10,13 +10,14 @@ import { generateOpenings } from '../practice/openings.js';
 import { buildSetlist, blockLabel } from '../practice/session.js';
 import { renderArtPlaceholder } from '../components/art-placeholder.js';
 import { cleanRate } from '../practice/measures.js';
+import { itemStatus } from '../practice/status.js';
 import { renderGreeting } from '../components/header.js';
 import { renderTicker } from '../components/ticker.js';
 import { renderWeeklyChart } from '../components/charts.js';
 import { navigate, chordLink } from '../router.js';
 import { escapeHtml } from '../utils/html.js';
 
-const NEXT_STEPS_SHOWN = 4;
+const TICKER_OPENINGS = 3;
 
 // ─── Rendering ───
 
@@ -27,18 +28,14 @@ export function renderTodayPage() {
 
   const page = document.getElementById('pg-dashboard');
   page.innerHTML = `
-    ${renderTicker(openings.slice(0, 8).map((opening) => opening.short))}
+    ${renderTicker(openings.slice(0, TICKER_OPENINGS).map((opening) => opening.short))}
     <div class="greeting" id="greetBox"></div>
     ${renderRatingsNotice(state)}
     ${needsExportReminder(state) ? '<p class="storage-notice" role="status">It\'s been over 30 days since your last backup. <a href="#/settings">Export one in Settings</a> so your practice history is safe.</p>' : ''}
     ${renderHero(state)}
-    ${renderMetricTiles(state)}
-    <div class="split">
-      <section class="panel"><h2 class="panel__title">Last 7 days</h2><div class="chart-frame"><canvas id="chW"></canvas></div><p class="label">Minutes per day</p></section>
-      <section class="panel next-steps"><h2 class="panel__title">Next steps</h2>${renderNextSteps(openings)}</section>
-    </div>
-    <h2 class="section-label">Your chords · clean rate</h2>
-    <div class="chord-rates">${renderChordGrid(state)}</div>
+    ${renderStatsStrip(state)}
+    ${renderYourShapes(state)}
+    <section class="panel"><h2 class="panel__title">Last 7 days</h2><div class="chart-frame"><canvas id="chW"></canvas></div><p class="label">Minutes per day</p></section>
 `;
 
   renderGreeting();
@@ -46,54 +43,46 @@ export function renderTodayPage() {
   renderWeeklyChart(state.sessions);
 }
 
-// Returns the four numbers: total time, streak, shapes practiced and this week's minutes.
-function renderMetricTiles(state) {
+// One slim line of numbers on a screen: total time, streak, this week and clean shapes.
+function renderStatsStrip(state) {
   const total = totalMinutes(state.sessions);
   const streak = countStreak(state.sessions, new Date(), getSettings().restDaysPerWeek);
   const shapes = practicedShapes(state);
-  const cleanShapes = shapes.filter((shape) => shape.rate !== null && shape.rate >= 0.8).length;
+  const clean = shapes.filter((shape) => shape.rate >= 0.8).length;
   const thisWeek = weeklyMinutes(state.sessions);
-  const streakNote = streak.practicedToday ? 'Played today' : streak.days > 0 ? 'Play today to keep it' : 'Start today';
-
+  const streakText = streak.days === 0 ? 'no streak yet' : `${streak.days}-day streak${streak.practicedToday ? '' : ', play today to keep it'}`;
+  const parts = [
+    total >= 60 ? `${(total / 60).toFixed(1)} h played` : `${total} min played`,
+    streakText,
+    `${thisWeek} / 60 min this week`,
+    shapes.length ? `${clean} of ${shapes.length} shape${shapes.length === 1 ? '' : 's'} clean` : 'no shapes measured yet',
+  ];
   return `
-    <div class="stat-grid">
-      ${tile('Total practice', total, 'm', total >= 60 ? `${(total / 60).toFixed(1)} hours` : 'minutes so far')}
-      ${tile('Streak', streak.days, 'd', streakNote)}
-      ${tile('Shapes practiced', shapes.length, '', shapesNote(shapes.length, cleanShapes))}
-      ${tile('This week', thisWeek, 'm', thisWeek >= 60 ? 'Weekly 60 minutes reached' : `${60 - thisWeek}m to go for 60`)}
-    </div>`;
+    <p class="stats-strip" aria-label="Your numbers">
+      ${parts.map((part) => `<span class="stats-strip__item">${escapeHtml(part)}</span>`).join('<span class="stats-strip__dot" aria-hidden="true"></span>')}
+    </p>`;
 }
 
-// The line under "Shapes practiced".
-function shapesNote(total, clean) {
-  if (total === 0) return 'Add one from Chords';
-  if (clean === 0) return 'None clean 8/10 yet';
-  return `${clean} of ${total} clean 8/10 or better`;
-}
-
-// One number tile.
-function tile(label, value, unit, note) {
-  return `<div class="stat"><span class="stat__label">${label}</span><span class="stat__value">${value}<span class="stat__unit">${unit}</span></span><span class="stat__note">${note}</span></div>`;
-}
-
-// The top openings as a short list with a link to plan a session.
-function renderNextSteps(openings) {
-  const steps = openings.slice(0, NEXT_STEPS_SHOWN)
-    .map((opening) => `<li><span class="label">${escapeHtml(opening.type)}</span><span>${escapeHtml(opening.text)}</span></li>`)
-    .join('');
-  return `<ol class="next-steps__list">${steps}</ol><button class="button button--primary" data-go="practice">Plan a session</button>`;
-}
-
-// One square per first chord, filled by the clean rate of its most-practiced shape.
-function renderChordGrid(state) {
-  const shapes = practicedShapes(state);
-  return Object.keys(CHORDS_V1).map((chord) => {
-    const shape = shapes.filter((candidate) => candidate.item.chord === chord).sort((a, b) => b.total - a.total)[0];
-    const rate = shape ? shape.rate : null;
-    const fill = rate === null ? 0 : Math.round(rate * 100);
-    const label = rate === null ? '–' : `${shape.clean}/${shape.total}`;
-    return `<a class="chord-rate" href="${chordLink(chord)}" aria-label="${chord}: ${rate === null ? 'not practiced yet' : `${label} clean`}"><span class="chord-rate__key"><span class="chord-rate__fill" style="height:${fill}%"></span><span class="chord-rate__name">${chord}</span></span><span class="chord-rate__value">${label}</span></a>`;
+// The chord shapes you have practised: clean rate, status and what the next status needs.
+// Nothing shows until you have practised one.
+function renderYourShapes(state) {
+  const shapes = practicedShapes(state).sort((a, b) => b.total - a.total);
+  if (!shapes.length) return '';
+  const rows = shapes.map(({ item, clean, total }) => {
+    const status = itemStatus(item, state.reps);
+    return `
+      <li class="your-shape">
+        <a class="your-shape__name" href="${chordLink(item.chord)}">${escapeHtml(item.label)}</a>
+        <span class="mono">${clean}/${total} clean</span>
+        <span class="chip chip--picked">${status.label}</span>
+        <span class="your-shape__next">${escapeHtml(status.next)}</span>
+      </li>`;
   }).join('');
+  return `
+    <section class="panel your-shapes">
+      <h2 class="panel__title">Your shapes</h2>
+      <ul class="your-shapes__list">${rows}</ul>
+    </section>`;
 }
 
 // The hero: a frame for Baranay's artwork beside tonight's proposed setlist.
