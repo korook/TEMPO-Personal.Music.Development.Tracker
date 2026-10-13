@@ -22,7 +22,7 @@ import { getSettings } from '../state/settings.js';
 import { getState, updateState } from '../state/storage.js';
 import { voicingItem, voicingItemId, ensureItem } from '../practice/items.js';
 import { CHORDS_V1 } from '../data/chords-v1.js';
-import { chordLink } from '../router.js';
+import { chordLink, currentRoute } from '../router.js';
 import { escapeHtml } from '../utils/html.js';
 
 // Which voicing is shown large on the chord view, per chord symbol.
@@ -257,7 +257,7 @@ function stepVoicing(symbol, total, step) {
 function handleArrowKeys(event) {
   if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
   if (event.target.closest && event.target.closest('input, select, textarea')) return;
-  const match = /^#\/chord\/(.+)$/.exec(location.hash);
+  const match = /^#\/chord\/(.+)$/.exec(currentRoute());
   if (!match) return;
   event.preventDefault();
   const symbol = decodeURIComponent(match[1]);

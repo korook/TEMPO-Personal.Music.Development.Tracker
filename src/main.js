@@ -6,7 +6,7 @@ import './styles/base.css';
 import './styles/components.css';
 import './styles/pages.css';
 
-import { registerRoute, startRouter } from './router.js';
+import { registerRoute, startRouter, refreshRoute } from './router.js';
 import { renderTopBar, bindTopBar, setTopBarCurrent } from './components/top-bar.js';
 import { getSettings, updateSettings } from './state/settings.js';
 import { isUsingMemoryStorage } from './state/storage.js';
@@ -61,7 +61,7 @@ function bindQuickSettings(container) {
       updateSettings({ [name]: value });
       applySettings();
       refreshQuickSettings(container);
-      window.dispatchEvent(new HashChangeEvent('hashchange'));
+      refreshRoute();
     });
   });
   window.addEventListener('tempo-settings-changed', () => refreshQuickSettings(container));
