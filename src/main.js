@@ -11,6 +11,7 @@ import { renderTopBar, bindTopBar, setTopBarCurrent } from './components/top-bar
 import { getSettings, updateSettings } from './state/settings.js';
 import { isUsingMemoryStorage } from './state/storage.js';
 import { CATEGORY_LETTERS } from './chords/library.js';
+import { EAR_EXERCISES } from './ear/index.js';
 import { renderTodayPage } from './pages/today.js';
 import { renderChordsPage, renderChordPage } from './pages/chords.js';
 import { renderPracticePage } from './pages/practice.js';
@@ -26,7 +27,8 @@ const MENU_GROUPS = [
   { key: 'today', label: 'Today', href: '#/today' },
   { key: 'practice', label: 'Practice', href: '#/practice' },
   { key: 'chords', label: 'Chords', items: CATEGORY_LETTERS.map((letter) => ({ label: `${letter} chords`, href: `#/chords/${letter}` })) },
-  { key: 'learn', label: 'Ear & theory', items: [{ label: 'Ear training', href: '#/ear' }, { label: 'Theory', href: '#/theory' }] },
+  { key: 'ear', label: 'Ear', items: [{ label: 'Workout and duels', href: '#/ear' }, ...EAR_EXERCISES.map((exercise, index) => ({ label: `${index + 1}. ${exercise.title}`, href: `#/ear/${exercise.id}` }))] },
+  { key: 'theory', label: 'Theory', href: '#/theory' },
   { key: 'progress', label: 'Progress', href: '#/progress' },
 ];
 
@@ -111,8 +113,8 @@ function startApp() {
   registerRoute({ pattern: /^#\/chord\/(.+)$/, pageId: 'chords', render: renderChordPage, menuKey: 'chords' });
   registerRoute({ pattern: /^#\/practice$/, pageId: 'practice', render: renderPracticePage, menuKey: 'practice' });
   registerRoute({ pattern: /^#\/progress$/, pageId: 'progress', render: renderProgressPage, menuKey: 'progress', accent: 'shell' });
-  registerRoute({ pattern: /^#\/ear(?:\/(.+))?$/, pageId: 'ear', render: renderEarPage, menuKey: 'learn', accent: 'verdigris' });
-  registerRoute({ pattern: /^#\/theory$/, pageId: 'theory', render: renderTheoryPage, menuKey: 'learn', accent: 'sonic' });
+  registerRoute({ pattern: /^#\/ear(?:\/(.+))?$/, pageId: 'ear', render: renderEarPage, menuKey: 'ear', accent: 'verdigris' });
+  registerRoute({ pattern: /^#\/theory$/, pageId: 'theory', render: renderTheoryPage, menuKey: 'theory', accent: 'sonic' });
   registerRoute({ pattern: /^#\/settings$/, pageId: 'settings', render: renderSettingsPage, menuKey: 'settings' });
 
   startRouter(({ menuKey, hash }) => setTopBarCurrent(topBar, { key: menuKey, href: hash }));

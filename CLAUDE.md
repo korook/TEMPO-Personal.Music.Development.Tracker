@@ -104,7 +104,7 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
 - Disc metronome: the playhead is steered by the audio clock (lands exactly on each beat); grooves turn via CSS.
 
 ## Notes from Phase 4
-- App shell: sticky top bar (`src/components/top-bar.js`) with Today, Practice, Chords (A–G), Ear & theory, Progress, and ⚙
+- App shell: sticky top bar (`src/components/top-bar.js`) with Today, Practice, Chords (A–G), Ear (overview + each game), Theory, Progress, and ⚙
   quick settings (day/night, left-handed, reduced motion; saved in `settings`). Production is hidden.
 - Routing is hash-based (`src/router.js`): `#/today`, `#/chords/C`, `#/chord/Cmaj7` (use `chordLink()`), `#/practice`, `#/progress`, `#/ear`, `#/theory`.
 - Chords page ✅: A–G categories (`src/chords/library.js`: sharps/flats under their letter), thumbnails show the most common
