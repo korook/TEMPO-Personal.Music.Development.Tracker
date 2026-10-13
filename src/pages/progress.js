@@ -97,7 +97,7 @@ function renderMilestones(state) {
   const polaroids = board.map((milestone, index) => `
     <div class="milestone${milestone.at ? '' : ' milestone--locked'}">
       ${renderPolaroid({
-        pictureHtml: renderArtPlaceholder('stamp', milestone.title),
+        pictureHtml: renderArtPlaceholder('stamp', milestone.title, `stamp:${milestone.id}`),
         caption: milestone.title,
         date: milestone.at ? new Date(milestone.at).toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' }) : milestone.needs,
         index,

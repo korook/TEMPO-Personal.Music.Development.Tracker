@@ -104,7 +104,7 @@ function renderHero(state) {
     <li><span class="label">${String(index + 1).padStart(2, '0')}</span><span class="today-setlist__kind">${escapeHtml(blockLabel(block))}</span><span>${escapeHtml(block.title)}</span><span class="label">${block.minutes ? `${block.minutes} min` : '–'}</span></li>`).join('');
   return `
     <section class="today-hero">
-      <div class="today-hero__art">${renderArtPlaceholder('hero', 'Today')}</div>
+      <div class="today-hero__art">${renderArtPlaceholder('hero', 'Today', 'hero:today')}</div>
       <div class="panel today-setlist">
         <div class="section-head">
           <span class="section-head__kicker">Tonight's setlist</span>

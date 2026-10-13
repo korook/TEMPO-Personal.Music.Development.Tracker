@@ -72,7 +72,7 @@ function renderGameTile(state, exercise, index) {
   const stars = levelStats(state.ear.results, exercise.id, level).stars;
   return `
     <a class="ear-game" href="#/ear/${exercise.id}">
-      ${renderArtPlaceholder('cover', exercise.title)}
+      ${renderArtPlaceholder('cover', exercise.title, `cover:${exercise.id}`)}
       <span class="ear-game__number label">${String(index + 1).padStart(2, '0')}</span>
       <span class="ear-game__title">${escapeHtml(exercise.title)}</span>
       <span class="ear-game__blurb">${escapeHtml(exercise.blurb)}</span>

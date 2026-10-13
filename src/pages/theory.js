@@ -72,7 +72,7 @@ function renderContinue(topic, results) {
   const action = !progress.lectureRead ? 'Read the lesson' : nextPart === 'exercises' ? 'Do the exercises' : 'Take the quiz';
   return `
     <section class="panel theory-continue">
-      ${renderArtPlaceholder('cover', topic.title)}
+      ${renderArtPlaceholder('cover', topic.title, `cover:theory-${topic.id}`)}
       <div class="theory-continue__text">
         <span class="label">${progress.stepsDone ? 'Continue' : 'Start here'} · topic ${topic.number}</span>
         <h2 class="theory-continue__title">${escapeHtml(topic.title)}</h2>

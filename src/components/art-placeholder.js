@@ -1,7 +1,10 @@
 // Clearly marked frames that hold the place of Baranay's artwork until it exists
 // (TEMPO_PLAN.md section 3, "Art asset spec"). Never filled with stock or AI images.
+// Where a hand-coded pixel sprite exists (src/art/sprites.js) it stands in for the art.
 
 import { escapeHtml } from '../utils/html.js';
+import { getSprite } from '../art/sprites.js';
+import { renderSprite } from '../art/pixel.js';
 
 // ─── Asset spec ───
 
@@ -17,10 +20,13 @@ export const ART_SPECS = {
 
 // ─── Rendering ───
 
-// Returns a dashed frame such as "HERO — Practice · 1600 × 1200 · assets/art/heroes/".
-export function renderArtPlaceholder(kind, subject) {
+// Returns the stand-in pixel art for `artKey` (e.g. "cover:intervals") if it is drawn,
+// otherwise a dashed frame such as "HERO — Practice · 1600 × 1200 · assets/art/heroes/".
+export function renderArtPlaceholder(kind, subject, artKey = null) {
   const spec = ART_SPECS[kind];
   if (!spec) throw new Error(`Unknown art kind "${kind}".`);
+  const sprite = artKey ? getSprite(artKey) : null;
+  if (sprite) return renderSprite(sprite, subject);
   const label = `${spec.name} — ${subject}`;
   return `
     <figure class="art-placeholder" style="aspect-ratio:${spec.width} / ${spec.height}" role="img"
