@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview:file": "node scripts/build-preview.mjs"
+    "preview:file": "node scripts/build-preview.mjs",
+    "covers": "node scripts/fetch-covers.mjs"
   },
   "devDependencies": {
     "vite": "^8.3.4",

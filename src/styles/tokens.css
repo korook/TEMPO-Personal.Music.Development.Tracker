@@ -45,6 +45,9 @@
   --sonic-text: #a6c9da;
   --shell: #d89aa6;          /* "shell pink" finish: Progress, milestones */
   --shell-text: #e2afb9;
+  --oxblood: #c9746d;        /* "oxblood" finish: Repertoire */
+  --oxblood-text: #e59d96;
+  --amber: #e2a33a;          /* LED for "learning" (Repertoire song cases) */
   --phosphor: #9af0a8;       /* LED for "live" only: metronome running, timer on, recording */
   --phosphor-glow: rgba(154, 240, 168, 0.35);
 
@@ -108,6 +111,7 @@
   --verdigris-text: #2c6655;
   --sonic-text: #336680;
   --shell-text: #8c4757;
+  --oxblood-text: #8e3a33;
   --accent-text: var(--bronze-text);
   --dot-grid: radial-gradient(circle at 1px 1px, rgba(26, 24, 22, 0.07) 1px, transparent 1.4px) 0 0 / 14px 14px;
 }

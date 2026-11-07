@@ -51,6 +51,7 @@ const BODY_PAIRS = [
   ['verdigris-text', ['body', 'body-2']],
   ['sonic-text', ['body', 'body-2']],
   ['shell-text', ['body', 'body-2']],
+  ['oxblood-text', ['body', 'body-2']],
 ];
 
 // Pairs that look the same in both themes (screens, paper, accent fills).
@@ -62,7 +63,8 @@ const FIXED_PAIRS = [
   ['sonic', ['screen', 'screen-2']],
   ['shell', ['screen', 'screen-2']],
   ['phosphor', ['screen', 'screen-2']],
-  ['ink', ['paper', 'bronze', 'verdigris', 'sonic', 'shell', 'phosphor']],
+  ['oxblood', ['screen', 'screen-2']],
+  ['ink', ['paper', 'bronze', 'verdigris', 'sonic', 'shell', 'phosphor', 'oxblood', 'amber']],
   ['ink-muted', ['paper']],
 ];
 
