@@ -25,6 +25,9 @@ export const CHORD_QUALITIES = {
   'diminished': { suffix: 'dim', name: 'diminished', tones: ['1', 'b3', 'b5'], required: ['1', 'b3', 'b5'], minorFamily: true },
   'augmented': { suffix: 'aug', name: 'augmented', tones: ['1', '3', '#5'], required: ['1', '3', '#5'], minorFamily: false },
   'half-diminished': { suffix: 'm7b5', name: 'half-diminished', tones: ['1', 'b3', 'b5', 'b7'], required: ['1', 'b3', 'b5', 'b7'], minorFamily: true },
+  // Added for the Repertoire songs (A7sus4 in Wonderwall, D6add9 in A Horse with No Name).
+  'dominant7sus4': { suffix: '7sus4', name: '7th suspended 4th', tones: ['1', '4', '5', 'b7'], required: ['1', '4', 'b7'], minorFamily: false },
+  'major6add9': { suffix: '6add9', name: '6 add 9', tones: ['1', '3', '5', '6', '9'], required: ['1', '3', '6', '9'], minorFamily: false },
 };
 
 // Quality ids in the order they appear in pickers.

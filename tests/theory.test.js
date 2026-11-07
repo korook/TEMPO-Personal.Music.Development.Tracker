@@ -137,6 +137,7 @@ describe('chord formulas', () => {
       'major7': [0, 4, 7, 11], 'minor7': [0, 3, 7, 10], 'sus2': [0, 2, 7], 'sus4': [0, 5, 7],
       'major6': [0, 4, 7, 9], 'minor6': [0, 3, 7, 9],
       'add9': [0, 4, 7, 2], 'diminished': [0, 3, 6], 'augmented': [0, 4, 8], 'half-diminished': [0, 3, 6, 10],
+      'dominant7sus4': [0, 5, 7, 10], 'major6add9': [0, 4, 7, 9, 2],
     };
     for (const chord of allChords()) {
       const tones = chordTones(chord.root, chord.quality);

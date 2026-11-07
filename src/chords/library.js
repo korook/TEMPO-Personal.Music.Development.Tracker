@@ -78,7 +78,8 @@ export function thumbnailVoicing(root, quality) {
     const match = standard.find(isFamily);
     if (match) return match;
   }
-  return standard[0];
+  // Chord types without curated templates (7sus4, 6add9) fall back to the best found shape.
+  return standard[0] || getVoicings(root, quality)[0];
 }
 
 // True if every one of the 12 roots appears in exactly one category (used by tests).

@@ -32,10 +32,10 @@ describe('categories', () => {
     expect(categoryOfRoot('Bb')).toBe('B');
   });
 
-  it('lists all 14 chord types for every root, natural row first', () => {
+  it('lists all 16 chord types for every root, natural row first', () => {
     const rows = getCategory('C');
     expect(rows.map((row) => row.label)).toEqual(['C', 'C♯ / D♭']);
-    expect(rows[0].chords).toHaveLength(14);
+    expect(rows[0].chords).toHaveLength(16);
     expect(rows[0].chords.map((chord) => chord.symbol)).toContain('Cm6');
     expect(rows[1].chords.map((chord) => chord.symbol)).toEqual(expect.arrayContaining(['Db', 'C#m', 'Db7', 'C#m7']));
   });
