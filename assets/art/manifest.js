@@ -68,6 +68,7 @@ export const ART_MANIFEST = {
 
   // ─── Characters for empty states (800 × 800, PNG transparent, assets/art/characters/) ───
   'character:empty-receipts': { kind: 'character', subject: 'No receipts yet', file: null },
+  'character:empty-repertoire': { kind: 'character', subject: 'Empty CD rack', file: null },
 
   // ─── Milestone stamps (400 × 400, SVG, assets/art/stamps/) ───
   'stamp:first-session': { kind: 'stamp', subject: 'First session', file: null },

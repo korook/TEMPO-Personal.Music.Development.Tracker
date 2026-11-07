@@ -19,6 +19,7 @@ import { renderPracticePage } from './pages/practice.js';
 import { renderProgressPage } from './pages/progress.js';
 import { renderEarPage } from './pages/ear.js';
 import { renderTheoryPage } from './pages/theory.js';
+import { renderRepertoirePage, renderSongPage } from './pages/repertoire.js';
 import { renderSettingsPage } from './pages/settings.js';
 
 // ─── Main menu ───
@@ -27,6 +28,7 @@ import { renderSettingsPage } from './pages/settings.js';
 const MENU_GROUPS = [
   { key: 'today', label: 'Today', href: '#/today' },
   { key: 'practice', label: 'Practice', href: '#/practice' },
+  { key: 'repertoire', label: 'Repertoire', href: '#/repertoire' },
   { key: 'chords', label: 'Chords', items: CATEGORY_LETTERS.map((letter) => ({ label: `${letter} chords`, href: `#/chords/${letter}` })) },
   { key: 'ear', label: 'Ear', items: [{ label: 'Workout and duels', href: '#/ear' }, ...EAR_EXERCISES.map((exercise, index) => ({ label: `${index + 1}. ${exercise.title}`, href: `#/ear/${exercise.id}` }))] },
   { key: 'theory', label: 'Theory', href: '#/theory' },
@@ -129,6 +131,8 @@ function startApp() {
   registerRoute({ pattern: /^#\/chords(?:\/([A-G]))?$/, pageId: 'chords', render: renderChordsPage, menuKey: 'chords' });
   registerRoute({ pattern: /^#\/chord\/(.+)$/, pageId: 'chords', render: renderChordPage, menuKey: 'chords' });
   registerRoute({ pattern: /^#\/practice$/, pageId: 'practice', render: renderPracticePage, menuKey: 'practice' });
+  registerRoute({ pattern: /^#\/repertoire(?:\/(.+))?$/, pageId: 'repertoire', render: renderRepertoirePage, menuKey: 'repertoire', accent: 'oxblood' });
+  registerRoute({ pattern: /^#\/song\/(.+)$/, pageId: 'repertoire', render: renderSongPage, menuKey: 'repertoire', accent: 'oxblood' });
   registerRoute({ pattern: /^#\/progress$/, pageId: 'progress', render: renderProgressPage, menuKey: 'progress', accent: 'shell' });
   registerRoute({ pattern: /^#\/ear(?:\/(.+))?$/, pageId: 'ear', render: renderEarPage, menuKey: 'ear', accent: 'verdigris' });
   registerRoute({ pattern: /^#\/theory(?:\/(.+))?$/, pageId: 'theory', render: renderTheoryPage, menuKey: 'theory', accent: 'sonic' });
