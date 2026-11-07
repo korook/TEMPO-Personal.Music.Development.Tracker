@@ -6,7 +6,7 @@
 //   next-song  nothing in Learning                         "Try Zombie: you already play every chord."
 // Each opening says which song (and part) it is about, so the setlist can make a Songs block.
 
-import { repertoireSongs, isEncoreDue, daysSincePlayed, bestCleanTempo, nextLadderStep, partState } from './state.js';
+import { repertoireSongs, isEncoreDue, daysSincePlayed, bestCleanTempo, nextLadderStep, partState, songState } from './state.js';
 import { rankSuggestions, unlockLines } from './suggestions.js';
 import { songItem, songPartItem, songItemId } from '../practice/items.js';
 import { mistakeCounts } from '../practice/measures.js';
@@ -68,9 +68,20 @@ function learnPart(song, entry) {
   }];
 }
 
-// Song push: clean at a ladder step below 100%, so try the next one.
+// Song push: clean at a ladder step below 100%, so try the next one. A song with every part
+// down but no clean run yet starts the ladder at 70%.
 function runPush(song, entry) {
   const best = bestCleanTempo(entry);
+  if (best === null && songState(song, entry) === 'played-through') {
+    return {
+      type: 'song-push',
+      song: song.id,
+      create: songItem(song),
+      text: `${song.title}: every part down. Try a run-through at 70%.`,
+      short: `${song.title}: first run-through`,
+      priority: 60,
+    };
+  }
   if (best === null || best >= 100) return null;
   const next = nextLadderStep(entry);
   return {

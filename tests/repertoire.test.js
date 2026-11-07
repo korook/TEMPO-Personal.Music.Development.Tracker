@@ -206,3 +206,48 @@ describe('storage v3', () => {
     expect(normalizeState(JSON.parse(JSON.stringify(v3))).repertoire).toEqual(v3.repertoire);
   });
 });
+
+// ─── Practice link ───
+
+describe('songs in practice', () => {
+  it('puts one Songs block in the setlist, two when the focus is Songs', async () => {
+    const { buildSetlist } = await import('../src/practice/session.js');
+    const state = createEmptyState(NOW);
+    addSong(state, SONG, { now: NOW });
+    state.repertoire.custom[SONG.id] = SONG;
+    expect(buildSetlist(state, NOW).filter((block) => block.kind === 'song')).toHaveLength(1);
+    state.settings.practiceFocus = 'songs';
+    const blocks = buildSetlist(state, NOW).filter((block) => block.kind === 'song');
+    expect(blocks).toHaveLength(2);
+    expect(blocks[0].measure).toBe('part-loop');
+  });
+
+  it('turns a repeated part mistake into a song fix, a clean 85% run into a push, and a rested Stage-ready song into an encore', async () => {
+    const { songOpenings } = await import('../src/repertoire/openings.js');
+    const state = emptyRepertoireState();
+    state.repertoire.custom[SONG.id] = SONG;
+    addSong(state, SONG, { now: NOW });
+    for (let index = 0; index < 4; index++) {
+      state.reps.push({ id: `r${index}`, itemId: 'song:test-song:chorus', kind: 'clean-check', clean: false, mistakes: ['late-change'], at: NOW.toISOString() });
+    }
+    const fix = songOpenings(state, NOW).find((opening) => opening.type === 'song-fix');
+    expect(fix.text).toBe('Test Song · chorus: change was late 4/4. Part loop at 70%.');
+
+    setPartState(state, SONG.id, 'verse', 'got-it', NOW);
+    setPartState(state, SONG.id, 'chorus', 'got-it', NOW);
+    recordRun(state, SONG.id, { tempoPct: 85, stops: 0 }, NOW);
+    expect(songOpenings(state, NOW).find((opening) => opening.type === 'song-push').text).toBe('Test Song: clean at 85%. Try 100%.');
+
+    recordRun(state, SONG.id, { tempoPct: 100, stops: 0 }, NOW);
+    recordRun(state, SONG.id, { tempoPct: 100, stops: 0 }, new Date(NOW.getTime() + DAY_MS));
+    const later = new Date(NOW.getTime() + 12 * DAY_MS);
+    expect(songOpenings(state, later).find((opening) => opening.type === 'encore').text).toBe('Encore: 11 days since Test Song. One full run at 100%.');
+  });
+
+  it('suggests a next song you can already play when nothing is being learned', async () => {
+    const { songOpenings } = await import('../src/repertoire/openings.js');
+    const state = createEmptyState(NOW);
+    const next = songOpenings(state, NOW).find((opening) => opening.type === 'next-song');
+    expect(next.text).toMatch(/^Try .+: you already play every chord\.$/);
+  });
+});

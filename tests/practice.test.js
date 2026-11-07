@@ -201,9 +201,11 @@ describe('sessions', () => {
   it('proposes a full setlist even with no data', () => {
     const state = createEmptyState(NOW);
     const blocks = buildSetlist(state, NOW);
-    expect(blocks.map((block) => block.kind)).toEqual(['warmup', 'fix', 'push', 'review', 'ear', 'free']);
+    // Baranay's seeded songs (Played through, no run yet) give a Songs block: a first run-through.
+    expect(blocks.map((block) => block.kind)).toEqual(['warmup', 'fix', 'push', 'review', 'song', 'ear', 'free']);
+    expect(blocks.find((block) => block.kind === 'song').measure).toBe('run');
     expect(blocks.filter((block) => block.itemId).every((block) => state.items[block.itemId])).toBe(true);
-    expect(new Set(blocks.filter((block) => block.itemId).map((block) => block.itemId)).size).toBe(4);
+    expect(new Set(blocks.filter((block) => block.itemId).map((block) => block.itemId)).size).toBe(5);
     expect(blocks.find((block) => block.kind === 'fix').label).toBe('Learn');
   });
 
