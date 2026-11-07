@@ -33,14 +33,13 @@ export function sleeveColour(songId) {
 
 // ─── Rendering ───
 
-// Returns the art inside a case: the image in a fixed 1:1 frame (so nothing jumps while it
-// loads), or the generated sleeve.
+// Returns the art inside a case, in a fixed 1:1 frame so nothing jumps while it loads. The
+// generated sleeve always sits underneath: if the cover can't load (offline, or a viewer that
+// blocks outside images), the image hides itself and the sleeve shows instead of an empty frame.
 export function renderCoverArt(song) {
   const cover = coverFor(song);
-  if (cover.kind === 'image') {
-    return `<img class="cd__img" src="${escapeHtml(cover.url)}" alt="${escapeHtml(cover.alt)}" width="600" height="600" loading="lazy" decoding="async" referrerpolicy="no-referrer">`;
-  }
-  return renderSleeve(song);
+  if (cover.kind !== 'image') return renderSleeve(song);
+  return `${renderSleeve(song)}<img class="cd__img" src="${escapeHtml(cover.url)}" alt="${escapeHtml(cover.alt)}" width="600" height="600" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.hidden=true">`;
 }
 
 // A generated inlay: title in wide type, artist in mono, a dot grid on a palette colour.
