@@ -10,10 +10,11 @@ import { renderStub } from '../components/stub.js';
 import { renderMeasureTool, bindMeasureTool, resetMeasureTool, handleMeasureKey } from '../components/measure-tools.js';
 import { renderMetronomePanel, renderMetronomeBar, bindMetronomePanel, handleMetronomeKey } from '../components/metronome-panel.js';
 import { formatClock } from '../utils/time.js';
+import { getSettings, updateSettings } from '../state/settings.js';
 import { escapeHtml } from '../utils/html.js';
 
 // Label-strip colours per block kind.
-const BLOCK_COLOURS = { warmup: 'screen', fix: 'bronze', push: 'shell', review: 'sonic', ear: 'verdigris', free: 'screen' };
+const BLOCK_COLOURS = { warmup: 'screen', fix: 'bronze', push: 'shell', review: 'sonic', song: 'oxblood', ear: 'verdigris', free: 'screen' };
 
 // The session in progress. phase: 'plan' | 'play' | 'done'.
 const session = {
@@ -86,6 +87,11 @@ function renderPlan() {
       <div class="measure__row">
         <button class="button button--primary" data-start>Start session</button>
         <button class="button" data-new-setlist>Suggest a new setlist</button>
+      </div>
+      <div class="chip-row" role="group" aria-label="Focus">
+        <span class="label">Focus</span>
+        <button class="chip" data-focus="balanced" aria-pressed="${getSettings().practiceFocus !== 'songs'}">Balanced</button>
+        <button class="chip" data-focus="songs" aria-pressed="${getSettings().practiceFocus === 'songs'}">Songs</button>
       </div>
     </header>
     <section class="setlist" aria-label="Setlist">${cards}</section>`;
@@ -160,6 +166,11 @@ function bindEvents(page) {
   });
   onClick(page, '[data-start]', startSession);
   onClick(page, '[data-new-setlist]', () => { proposeSetlist(); renderPracticePage(); });
+  page.querySelectorAll('[data-focus]').forEach((chip) => chip.addEventListener('click', () => {
+    updateSettings({ practiceFocus: chip.dataset.focus });
+    proposeSetlist();
+    renderPracticePage();
+  }));
   onClick(page, '[data-next]', nextBlock);
   onClick(page, '[data-finish]', endSession);
   onClick(page, '[data-again]', () => { session.phase = 'plan'; session.blocks = []; renderPracticePage(); });

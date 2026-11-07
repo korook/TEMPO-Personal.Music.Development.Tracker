@@ -14,12 +14,13 @@ import { checkMilestones } from './milestones.js';
 
 // Which tool a block uses, from the item type.
 export function measureFor(itemType) {
-  return { voicing: 'clean-check', pair: 'changes', progression: 'bpm-pass', exercise: 'bpm-pass' }[itemType] || 'none';
+  return { voicing: 'clean-check', pair: 'changes', progression: 'bpm-pass', exercise: 'bpm-pass', 'song-part': 'part-loop', song: 'run' }[itemType] || 'none';
 }
 
 // ─── Setlist ───
 
-// Proposes a session: warm-up, fix, push, review, ear and free play (TEMPO_PLAN.md 6.8).
+// Proposes a session: warm-up, fix, push, review, songs, ear and free play (TEMPO_PLAN.md 6.8).
+// One Songs block (two when settings.practiceFocus is 'songs', TEMPO_UPDATE_REPERTOIRE.md 8.1).
 // Each block picks the top opening of its type; missing ones fall back to the next best
 // opening, so the setlist is always full. Items for new openings are added to the state.
 export function buildSetlist(state, now = new Date()) {
@@ -43,6 +44,11 @@ export function buildSetlist(state, now = new Date()) {
   if (push) blocks.push(practiceBlock('push', push, 3));
   const review = take(['review']) || take(['recall', 'new', 'context', 'expand']);
   if (review) blocks.push(practiceBlock('review', review, 5));
+  const songBlocks = state.settings.practiceFocus === 'songs' ? 2 : 1;
+  for (let count = 0; count < songBlocks; count++) {
+    const song = take(['song-fix', 'encore', 'song-push', 'song-learn']);
+    if (song) blocks.push(practiceBlock('song', song, 5));
+  }
   blocks.push(earBlock(openings));
   blocks.push({ id: makeId(), kind: 'free', title: 'Free play', note: 'No timer. Play what you like.', minutes: null, measure: 'none', itemId: null });
   return blocks;
@@ -73,16 +79,19 @@ function warmUpBlock(state, now) {
 }
 
 // What each opening type is called on a block's label strip.
-const OPENING_LABELS = { fix: 'Fix', push: 'Push', review: 'Review', new: 'Learn', expand: 'Next shape', context: 'In context', recall: 'From memory', ear: 'Ear' };
+const OPENING_LABELS = {
+  fix: 'Fix', push: 'Push', review: 'Review', new: 'Learn', expand: 'Next shape', context: 'In context', recall: 'From memory', ear: 'Ear',
+  'song-fix': 'SG · Part loop', 'song-learn': 'SG · Part loop', 'song-push': 'SG · Run-through', encore: 'SG · Encore',
+};
 
 // A block built from an opening. `kind` is its slot in the setlist; `label` says what it really
 // is (a beginner's "fix" slot holds a "Learn" block, for example).
 function practiceBlock(kind, { opening, item }, minutes) {
-  return { id: makeId(), kind, label: OPENING_LABELS[opening.type], title: item.label, note: opening.text, minutes, measure: measureFor(item.type), itemId: item.id };
+  return { id: makeId(), kind, label: OPENING_LABELS[opening.type], title: item.label, note: opening.text, minutes, measure: measureFor(item.type), itemId: item.id, songId: item.songId || null, partId: item.partId || null };
 }
 
 // Labels for each block kind, as shown on the label-maker strips.
-export const BLOCK_LABELS = { warmup: 'Warm-up', fix: 'Fix', push: 'Push', review: 'Review', ear: 'Ear', free: 'Free play' };
+export const BLOCK_LABELS = { warmup: 'Warm-up', fix: 'Fix', push: 'Push', review: 'Review', song: 'SG · Songs', ear: 'Ear', free: 'Free play' };
 
 // Returns the label to show for a block.
 export function blockLabel(block) {

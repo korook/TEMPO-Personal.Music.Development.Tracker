@@ -15,6 +15,7 @@ import { TRANSITION_DRILLS } from '../data/progressions.js';
 import { getVoicingsForSymbol } from '../chords/voicings.js';
 import { parseChordSymbol, chordSymbol } from '../theory/chords.js';
 import { confusionPairs } from '../ear/scoring.js';
+import { songOpenings } from '../repertoire/openings.js';
 
 const FIX_MIN_COUNT = 3;
 const PUSH_STEP_CHANGES = 2;
@@ -49,6 +50,7 @@ export function generateOpenings(state, now = new Date()) {
   if (items.length === 0 || !items.some((item) => item.type === 'voicing')) openings.push(...starterOpenings(state));
   if (!items.some((item) => item.type === 'pair')) openings.push(starterPairOpening());
   openings.push(...earOpenings(state));
+  openings.push(...songOpenings(state, now));
   return dedupe(openings).sort((a, b) => b.priority - a.priority);
 }
 

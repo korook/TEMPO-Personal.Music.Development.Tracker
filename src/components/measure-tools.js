@@ -4,6 +4,8 @@
 //                also a form timer and a "from memory" check with the diagram hidden
 //   changes      chord changes: a 60-second test, tap for every clean change
 //   bpm-pass     progressions and exercises: mark each pass at the metronome tempo clean or not
+//   part-loop    song parts: loop with the metronome, mark passes (see song-tools.js)
+//   run          whole songs: a run-through at a ladder tempo, counting stops (see song-tools.js)
 //   none         ear and free-play blocks: just the block timer
 // Every tool reports reps through `logRep(fields)`; the page saves them.
 
@@ -19,6 +21,7 @@ import { playChord } from '../audio/guitar-synth.js';
 import { getSettings } from '../state/settings.js';
 import { escapeHtml } from '../utils/html.js';
 import { mountEarQuiz } from './ear-quiz.js';
+import { renderPartLoop, renderRunTool, bindSongTools, resetSongTool } from './song-tools.js';
 import { getExercise } from '../ear/index.js';
 import { unlockedLevel } from '../ear/scoring.js';
 import { getState } from '../state/storage.js';
@@ -45,11 +48,14 @@ export function renderMeasureTool(context) {
   if (block.measure === 'changes') return renderChanges(context);
   if (block.measure === 'bpm-pass') return renderBpmPass(context);
   if (block.measure === 'ear') return '<div class="measure measure--ear"><div data-ear-drill></div></div>';
+  if (block.measure === 'part-loop') return renderPartLoop(context);
+  if (block.measure === 'run') return renderRunTool(context.item.songId);
   return renderNoMeasure(block);
 }
 
 // Clears picks between blocks.
 export function resetMeasureTool() {
+  resetSongTool();
   tool.strings = {};
   tool.extras = new Set();
   tool.hidden = false;
@@ -184,6 +190,7 @@ function readout(value, label) {
 export function bindMeasureTool(container, { block, item }, logRep, redraw) {
   const earDrill = container.querySelector('[data-ear-drill]');
   if (earDrill) mountEarDrill(earDrill, block);
+  if (block.measure === 'part-loop' || block.measure === 'run') bindSongTools(container, { item, songId: item && item.songId }, logRep, redraw);
   container.querySelectorAll('[data-string]').forEach((key) => {
     key.addEventListener('click', () => {
       const name = key.dataset.string;
@@ -230,7 +237,7 @@ export function bindMeasureTool(container, { block, item }, logRep, redraw) {
 // Handles ⏎ for the current tool: all clean, a tap, or a clean pass.
 export function handleMeasureKey(event, container, logRep, redraw) {
   if (event.key !== 'Enter' || event.target.closest('input, select, textarea, button, a')) return false;
-  const target = container.querySelector('[data-log="clean"], [data-tap], [data-pass="clean"]');
+  const target = container.querySelector('[data-log="clean"], [data-tap], [data-pass="clean"], [data-loop-pass="clean"]');
   if (!target) return false;
   event.preventDefault();
   target.click();

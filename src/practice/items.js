@@ -3,6 +3,8 @@
 //   pair         changing between 2 chords  "pair:C-G"
 //   progression  a chord progression        "progression:Am-F-C-G"
 //   exercise     a finger exercise          "exercise:spider-walk"
+//   song-part    one part of a song         "song:rhcp-californication:chorus"   (part loop, part change)
+//   song         a whole song               "song:rhcp-californication"         (run-through, encore)
 // Items live in state.items, keyed by id.
 
 import { getVoicingsForSymbol } from '../chords/voicings.js';
@@ -30,6 +32,11 @@ export function exerciseItemId(name) {
   return `exercise:${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 }
 
+// Returns the id for a song, or for one part of it.
+export function songItemId(songId, partId = null) {
+  return partId ? `song:${songId}:${partId}` : `song:${songId}`;
+}
+
 // ─── Creating ───
 
 // Builds a new item record.
@@ -51,6 +58,16 @@ export function voicingItem(voicing, now) {
     frets: fretKey(voicing.frets),
     label: voicing.shape === 'open' ? `${voicing.symbol} open` : `${voicing.symbol} ${voicing.shape}, fret ${voicing.position}`,
   }, now);
+}
+
+// Returns the item for one part of a song (looped with the metronome, clean-checked per pass).
+export function songPartItem(song, part, now) {
+  return makeItem(songItemId(song.id, part.id), 'song-part', { songId: song.id, partId: part.id, label: `${song.title} · ${part.name}` }, now);
+}
+
+// Returns the item for a whole song (run-throughs and encores).
+export function songItem(song, now) {
+  return makeItem(songItemId(song.id), 'song', { songId: song.id, label: song.title }, now);
 }
 
 // Returns the item for changing between two chords.

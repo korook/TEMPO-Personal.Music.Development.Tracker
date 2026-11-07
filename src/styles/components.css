@@ -525,6 +525,7 @@ a.chip[aria-current='page'] {
 .taped-card--verdigris { --card-colour: var(--verdigris); --card-ink: var(--ink); }
 .taped-card--sonic { --card-colour: var(--sonic); --card-ink: var(--ink); }
 .taped-card--shell { --card-colour: var(--shell); --card-ink: var(--ink); }
+.taped-card--oxblood { --card-colour: var(--oxblood); --card-ink: var(--ink); }
 
 .taped-card__title {
   font-family: var(--font-ui);
