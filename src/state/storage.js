@@ -2,9 +2,13 @@
 // (TEMPO_PLAN.md section 10). Also moves v1 data across, and exports / imports backups.
 //
 // The v1 keys ("tempo_sess", "tempo_cprog") are read once and left in place as a safety copy.
+// Version 3 (Repertoire update) adds `repertoire` and two settings; v2 data is kept as it is.
+
+import { BARANAY_SONGS } from '../data/songs/baranay.js';
+import { addSong } from '../repertoire/state.js';
 
 export const STORAGE_KEY = 'tempo';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 export const EXPORT_REMINDER_DAYS = 30;
 
 const V1_SESSIONS_KEY = 'tempo_sess';
@@ -16,11 +20,11 @@ let cachedState = null;
 
 // ─── Empty state ───
 
-// Returns a fresh, empty v2 state object.
+// Returns a fresh state object: empty, except Baranay's own songs in the repertoire.
 export function createEmptyState(now = new Date()) {
   return {
     schemaVersion: SCHEMA_VERSION,
-    settings: { name: 'Baranay', leftHanded: false, sound: 'clean', restDaysPerWeek: 1, theme: 'day', reduceMotion: false, earTimbres: ['guitar', 'distorted', 'piano', 'synth'] },
+    settings: { name: 'Baranay', leftHanded: false, sound: 'clean', restDaysPerWeek: 1, theme: 'day', reduceMotion: false, earTimbres: ['guitar', 'distorted', 'piano', 'synth'], capoFinder: false, practiceFocus: 'balanced' },
     items: {},
     reps: [],
     bests: {},
@@ -28,6 +32,7 @@ export function createEmptyState(now = new Date()) {
     milestones: [],
     ear: { results: [] },
     theory: { results: [] },
+    repertoire: seedRepertoire(now),
     meta: { createdAt: now.toISOString(), lastExportAt: null, notices: {} },
   };
 }
@@ -162,8 +167,19 @@ export function normalizeState(raw) {
     milestones: arrayOr(raw.milestones),
     ear: { results: arrayOr(raw.ear && raw.ear.results) },
     theory: { results: arrayOr(raw.theory && raw.theory.results) },
+    // v2 data has no repertoire yet: it gets Baranay's songs, like a fresh start (migration to v3).
+    repertoire: raw.repertoire
+      ? { songs: objectOr(raw.repertoire.songs), custom: objectOr(raw.repertoire.custom) }
+      : empty.repertoire,
     meta: { ...empty.meta, ...objectOr(raw.meta), notices: objectOr(raw.meta && raw.meta.notices) },
   };
+}
+
+// The starting repertoire: Baranay's own songs as "I already know this" (Played through).
+function seedRepertoire(now) {
+  const holder = { repertoire: { songs: {}, custom: {} } };
+  for (const song of BARANAY_SONGS) addSong(holder, song, { known: true, now });
+  return holder.repertoire;
 }
 
 // Returns `value` if it is a plain object, otherwise an empty object.

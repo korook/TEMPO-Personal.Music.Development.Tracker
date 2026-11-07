@@ -43,8 +43,8 @@ const V1_RATINGS = { C: 60, Am: 90, F: 20 };
 describe('empty state', () => {
   it('matches the plan section 10 shape', () => {
     const state = createEmptyState(NOW);
-    expect(state.schemaVersion).toBe(2);
-    expect(state.settings).toEqual({ name: 'Baranay', leftHanded: false, sound: 'clean', restDaysPerWeek: 1, theme: 'day', reduceMotion: false, earTimbres: ['guitar', 'distorted', 'piano', 'synth'] });
+    expect(state.schemaVersion).toBe(SCHEMA_VERSION);
+    expect(state.settings).toEqual({ name: 'Baranay', leftHanded: false, sound: 'clean', restDaysPerWeek: 1, theme: 'day', reduceMotion: false, earTimbres: ['guitar', 'distorted', 'piano', 'synth'], capoFinder: false, practiceFocus: 'balanced' });
     expect(state.items).toEqual({});
     expect(state.reps).toEqual([]);
     expect(state.bests).toEqual({});
@@ -131,7 +131,7 @@ describe('reading saved data', () => {
   });
 
   it('refuses data from a newer version or that is not Tempo data', () => {
-    expect(() => normalizeState({ schemaVersion: 3 })).toThrow(/newer version/);
+    expect(() => normalizeState({ schemaVersion: SCHEMA_VERSION + 1 })).toThrow(/newer version/);
     expect(() => normalizeState([])).toThrow(/not Tempo data/);
     expect(() => normalizeState({ hello: 1 })).toThrow(/no version/);
   });
