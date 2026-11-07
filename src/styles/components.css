@@ -1372,3 +1372,12 @@ a.button {
 .motion-off .cd:focus-visible .cd__disc { transform: translateX(14%); transition: none; }
 .motion-off .cd .cd__disc svg { animation: none !important; }
 .motion-off .cd .cd__case { transition: none; transform: none !important; }
+
+/* The hero case keeps its disc out (its part ring is the progress), still, with reduced motion too. */
+@media (prefers-reduced-motion: reduce) {
+  .cd--hero .cd__disc,
+  .cd--hero:hover .cd__disc { transform: translateX(40%); }
+}
+
+.motion-off .cd--hero .cd__disc,
+.motion-off .cd--hero:hover .cd__disc { transform: translateX(40%); }

@@ -511,6 +511,7 @@ tempo/
 ---
 
 ## 16. Change log
+- **2.7 (7 Nov 2026):** Repertoire update built from `TEMPO_UPDATE_REPERTOIRE.md`: a Repertoire section (CD cases with original cover art, part-by-part song states, run-throughs and encores, suggestions with unlock line and capo finder), SG song blocks in practice, storage v3, oxblood accent, 7sus4 and 6add9 chords. Phase 7 marked done.
 - **2.6 (13 Oct 2026):** Phase 7 done (all of 17.4). Baranay chose the ticker for Today. Chart.js removed: minutes now show only as the groove disc and the 28-day heatmap. Status labels (6.7) built in `src/practice/status.js`.
 - **2.5 (13 Oct 2026):** Review of v2.4 added as section 17 (what works, 10 problems, what's missing). New Phase 7 (review fixes) with an ordered work list: art drop-in manifest, Today restructure, session-first Practice, finger-aware fix tips, receipt fixes, merged minutes views, phone layout pass. Starter prompt updated.
 - **2.4 (13 Oct 2026):** Hand-coded pixel-art stand-ins (not stock, not AI) fill every art frame until Baranay's own art exists: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps, gently animated (off with Reduced motion). Practice page: the metronome is the hero at the top.

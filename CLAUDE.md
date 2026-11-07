@@ -63,7 +63,8 @@ Commands: `npm run dev`, `npm test`, `npm run build`.
 | 4. Pages ✅ | Chords → Practice → Today → Progress → Settings | A full session runs: setlist → measured reps → stub; openings change with data |
 | 5. Ear training ✅ | §8, linked to the practice model | All 8 exercises play; confusion duels appear |
 | 6. Theory scaffold ✅ | §9 folders, renderers, topic 1 sample | Topic 1 works end to end |
-| 7. Review fixes | §17.4 items 1–8 in order, updates and fixes only (no redesign); stop after each item | Every 17.4 item ticked; a phone session at 390 px reaches the current block without scrolling |
+| 7. Review fixes ✅ | §17.4 items 1–8 in order, updates and fixes only (no redesign) | Every 17.4 item ticked; a phone session at 390 px reaches the current block without scrolling |
+| Repertoire (update brief, 7 Nov 2026) | `TEMPO_UPDATE_REPERTOIRE.md` in the TEMPO Website folder, built in one pass | Preview approved |
 
 ## Known v1 issues still in the code (fixed in later phases)
 Unverified song lists, self-rated mastery
@@ -165,4 +166,21 @@ Fixed in Phase 2: wrong C and F shapes, G tip/fingering mismatch (shapes now com
   heatmap); Chart.js and charts.js were removed. Phones: ear covers 2 per row; `fitNecks()` (watched from main.js)
   scrolls a neck to its shape and fades the edges. `a.button` never underlines. Colours are theme tokens; animation stops with Reduced motion.
 - 19 sprites: Today hero, 8 ear covers, theory topic 1 cover, 9 milestone stamps (locked ones show grey).
-- Next: write topics 2–10 (content), then the "Later" list in plan §12.
+
+## Notes from the Repertoire update (7 Nov 2026, brief: TEMPO_UPDATE_REPERTOIRE.md)
+- Song data in `src/data/songs/`: `baranay.js` (his songs, seeded as "I already know this"), `rock-essentials.js`,
+  `turkish-rock.js` (one file per genre). Only chord names per part (`bars`: "Am | F G"), never lyrics or tabs; every pool
+  song has a checked `source` link and `verified: true` (tests/repertoire.test.js). `bpm: null` = tempo not checked yet.
+- Logic in `src/repertoire/`: `songs.js` (bars, chord set, chordKey by sound, transpose/capo), `state.js` (part states,
+  Learning / Played through / Stage-ready, runs, ladder 70/85/100, encore), `suggestions.js` (ready now, one chord away,
+  unlock lines, capo finder), `covers.js`, `openings.js` (song-fix, song-learn, song-push, encore, unlock, next-song).
+- Storage v3: `state.repertoire = { songs, custom }`, settings `capoFinder`, `practiceFocus` ('balanced' | 'songs').
+- Covers: `npm run covers` (iTunes → MusicBrainz/Cover Art Archive) writes artwork URLs to `src/data/songs/covers.json`
+  (no images in the repo). Override: `assets/art/covers/songs/<id>.jpg` + manifest key `cover:song:<id>`. No match →
+  generated sleeve (title + artist on a palette colour).
+- UI: `src/components/cd-case.js` (jewel case, spine LED: off/amber/white/green, disc with part ring, hover/focus slide-out,
+  two-tap on touch), `src/components/song-tools.js` (part-loop and run measures), `src/pages/repertoire.js`
+  (`#/repertoire`, `#/repertoire/add`, `#/song/<id>[/loop/<part>|/run|/edit]`). Accent: oxblood (+ amber LED token).
+- Practice: item types `song-part` (measure part-loop) and `song` (measure run); one SG block per setlist, two with Focus = Songs.
+- Chord engine gained 7sus4 and 6add9 (16 types); thumbnails fall back to the best found shape.
+- Next: theory topics 2–10, then the "Later" list in plan §12.
