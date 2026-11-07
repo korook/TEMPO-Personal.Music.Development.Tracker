@@ -73,6 +73,7 @@
 .kit__grid--two { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 .kit__grid--diagrams { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
 .kit__grid--art { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); align-items: start; }
+.kit__grid--cd { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-6) var(--space-5); align-items: start; }
 
 .kit__swatches {
   display: grid;

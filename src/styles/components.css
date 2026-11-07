@@ -1152,3 +1152,222 @@ a.button {
   -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
 }
+
+/* ─── CD case (Repertoire) ─── a clear jewel case, a label-maker spine and a printed disc */
+.cd {
+  --case: 100%;
+  position: relative;
+  display: grid;
+  gap: var(--space-2);
+  color: var(--text);
+  text-decoration: none;
+  outline: none;
+}
+
+.cd__stage {
+  position: relative;
+  display: block;
+  width: 78%;
+  aspect-ratio: 1;
+  perspective: 900px;
+}
+
+.cd__case {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--screen);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 8px 18px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.25);
+  transform-origin: left center;
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cd__art,
+.cd__art .cd__img,
+.cd__art .sleeve {
+  position: absolute;
+  inset: 0 0 0 7%;
+  display: block;
+  width: 93%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The hinge strip on the left with the case's ridges. */
+.cd__hinge {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7%;
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.35) 0 2px, rgba(0, 0, 0, 0.18) 2px 4px),
+    linear-gradient(to right, #2b2926, #46423d);
+}
+
+/* The clear plastic front: a soft diagonal highlight over the art. */
+.cd__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 32%, transparent 33%, transparent 70%, rgba(255, 255, 255, 0.08) 100%);
+  pointer-events: none;
+}
+
+.cd__disc {
+  position: absolute;
+  inset: 3%;
+  z-index: 1;
+  display: block;
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cd__disc svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cd-disc__face { fill: var(--paper); stroke: rgba(0, 0, 0, 0.18); stroke-width: 0.6; }
+.cd-disc__print { fill: var(--body-3); opacity: 0.55; }
+.cd-disc__part { fill: none; stroke: var(--line); stroke-width: 5; stroke-linecap: butt; }
+.cd-disc__part[data-part='learning'] { stroke: var(--accent-now); opacity: 0.5; }
+.cd-disc__part[data-part='got-it'] { stroke: var(--accent-now); }
+.cd-disc__hole-ring { fill: var(--paper); stroke: rgba(0, 0, 0, 0.15); stroke-width: 0.6; }
+.cd-disc__hole { fill: var(--body); stroke: rgba(0, 0, 0, 0.2); stroke-width: 0.5; }
+.cd-disc__title { fill: var(--ink); font: 700 6px var(--font-ui); font-stretch: 115%; }
+.cd-disc__bpm { fill: var(--ink-muted); font: 600 6px var(--font-dots); letter-spacing: 0.04em; }
+
+/* Hover, keyboard focus or a first tap: the disc slides out to the right and turns. */
+.cd:hover .cd__disc,
+.cd:focus-visible .cd__disc,
+.cd--peek .cd__disc,
+.cd--hero .cd__disc {
+  transform: translateX(40%) rotate(var(--disc-turn, 0deg));
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cd:hover .cd__disc svg,
+.cd:focus-visible .cd__disc svg,
+.cd--peek .cd__disc svg {
+  animation: cd-turn 9s linear infinite;
+}
+
+.cd:hover .cd__case,
+.cd:focus-visible .cd__case,
+.cd--peek .cd__case {
+  transform: rotateY(-8deg);
+}
+
+.cd:not(:hover):not(:focus-visible) .cd__disc {
+  transition-duration: 480ms;
+  transition-timing-function: cubic-bezier(0.5, 0, 0.75, 0.3);
+}
+
+.cd:focus-visible .cd__case {
+  box-shadow: 0 0 0 3px var(--accent-now), 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+@keyframes cd-turn {
+  to { transform: rotate(360deg); }
+}
+
+/* The spine: a label-maker strip with the state LED, title, artist and level. */
+.cd__spine {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px var(--space-2);
+  align-items: center;
+  width: 78%;
+  padding: 6px 10px;
+  border-radius: 3px;
+  background: var(--screen);
+  color: var(--screen-text);
+  box-shadow: 0 0 0 1px var(--line), 0 1px 2px rgba(0, 0, 0, 0.25);
+  transform: rotate(-0.6deg);
+}
+
+.cd__led {
+  grid-row: span 2;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #3a3632;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.cd[data-cd-state='learning'] .cd__led { background: var(--amber); box-shadow: 0 0 6px rgba(226, 163, 58, 0.55); }
+.cd[data-cd-state='played-through'] .cd__led,
+.cd[data-cd-state='stage-ready'] .cd__led { background: var(--screen-text); box-shadow: 0 0 6px rgba(236, 228, 212, 0.5); }
+.cd[data-cd-state='stage-ready'] .cd__led { outline: 2px solid var(--oxblood); outline-offset: 1px; }
+.cd[data-cd-state='running'] .cd__led { background: var(--phosphor); box-shadow: 0 0 8px var(--phosphor-glow); }
+
+.cd__title {
+  overflow: hidden;
+  font: 650 var(--size-sm) / 1.2 var(--font-ui);
+  font-stretch: 112%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cd__artist,
+.cd__level,
+.cd__note {
+  overflow: hidden;
+  font: 500 var(--size-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--screen-muted);
+}
+
+.cd__level,
+.cd__note {
+  grid-column: 2;
+}
+
+.cd__note {
+  color: var(--oxblood);
+}
+
+.cd--hero .cd__stage,
+.cd--hero .cd__spine {
+  width: 66%;
+}
+
+/* The generated sleeve: the title in big wide type, the artist in mono, a dot grid. */
+.sleeve {
+  display: grid !important;
+  align-content: space-between;
+  padding: 10%;
+  background: var(--dot-grid-dark, radial-gradient(circle at 1px 1px, rgba(26, 24, 22, 0.18) 1px, transparent 1.4px) 0 0 / 10px 10px), var(--sleeve);
+  color: var(--ink);
+}
+
+.sleeve__title {
+  font: 800 clamp(0.95rem, 2.4vw, 1.6rem) / 1 var(--font-ui);
+  font-stretch: 125%;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.sleeve__artist {
+  font: 600 var(--size-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Reduced motion: the disc peeks out a little and stays still. */
+@media (prefers-reduced-motion: reduce) {
+  .cd .cd__disc,
+  .cd:hover .cd__disc,
+  .cd:focus-visible .cd__disc { transform: translateX(14%); transition: none; }
+  .cd .cd__disc svg { animation: none !important; }
+  .cd .cd__case { transition: none; transform: none !important; }
+}
+
+.motion-off .cd .cd__disc,
+.motion-off .cd:hover .cd__disc,
+.motion-off .cd:focus-visible .cd__disc { transform: translateX(14%); transition: none; }
+.motion-off .cd .cd__disc svg { animation: none !important; }
+.motion-off .cd .cd__case { transition: none; transform: none !important; }

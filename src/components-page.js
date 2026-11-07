@@ -11,6 +11,8 @@ import { getVoicings } from './chords/voicings.js';
 import { renderChordDiagram } from './components/chord-diagram.js';
 import { renderNeck } from './components/neck.js';
 import { renderVinylMetronome, bindVinylMetronome } from './components/vinyl-metronome.js';
+import { renderCdCase, bindCdCases } from './components/cd-case.js';
+import { BARANAY_SONGS } from './data/songs/baranay.js';
 import { renderStub, renderStubStack } from './components/stub.js';
 import { renderTicker } from './components/ticker.js';
 import { renderTapedCard, renderPolaroid } from './components/taped-card.js';
@@ -33,7 +35,7 @@ const MENU_GROUPS = [
   { label: 'Foundations', items: [{ label: 'Colour', href: '#colour' }, { label: 'Type', href: '#type' }] },
   { label: 'Controls', items: [{ label: 'Buttons & chips', href: '#controls' }, { label: 'Ticker', href: '#ticker' }] },
   { label: 'Paper', items: [{ label: 'Setlist cards', href: '#setlist' }, { label: 'Polaroids', href: '#polaroids' }, { label: 'Session receipts', href: '#stubs' }] },
-  { label: 'Music', items: [{ label: 'Chord diagrams', href: '#diagrams' }, { label: 'Fretboard', href: '#neck' }, { label: 'Disc metronome', href: '#vinyl' }] },
+  { label: 'Music', items: [{ label: 'Chord diagrams', href: '#diagrams' }, { label: 'Fretboard', href: '#neck' }, { label: 'Disc metronome', href: '#vinyl' }, { label: 'CD cases', href: '#cd' }] },
   { label: 'Placeholders', items: [{ label: 'Art placeholders', href: '#art' }, { label: 'Empty state', href: '#empty' }] },
 ];
 
@@ -116,12 +118,14 @@ function renderPage() {
     renderSection('diagrams', 'Every shape, drawn the same way', 'Chord diagrams', renderDiagrams()),
     renderSection('neck', 'The chord lives all over the neck', 'Fretboard', renderNecks()),
     renderSection('vinyl', 'The playhead sweeps once per bar', 'Disc metronome', renderVinylMetronome()),
+    renderSection('cd', 'Repertoire: hover or Tab to slide the disc out', 'CD cases', renderCdCases()),
     renderSection('art', 'Until your artwork exists', 'Art placeholders', renderArtFrames()),
     renderSection('empty', 'Where data is missing', 'Empty state', renderEmptyState()),
   ].join('');
 
   bindControls(kit);
   bindVinylMetronome(kit);
+  bindCdCases(kit);
 }
 
 // The page header: kicker, title and a short description.
@@ -277,6 +281,26 @@ function renderSetlist() {
   }));
   return `<div class="kit__grid kit__grid--cards">${cards.join('')}</div>
     <p class="kit__note">States: done (crossed out, LED off), current (outlined, green LED, "Now playing" for screen readers), coming up. The block type sits on a label-maker strip.</p>`;
+}
+
+// CD cases in every state: suggestion, learning, played through, stage-ready, playing, and
+// the generated sleeve for a song without cover art.
+function renderCdCases() {
+  const song = BARANAY_SONGS[0];
+  const learning = { parts: { intro: 'got-it', verse: 'got-it', 'pre-chorus': 'learning', chorus: 'learning', bridge: 'not-yet' }, runs: [] };
+  const played = { parts: Object.fromEntries(song.parts.map((part) => [part.id, 'got-it'])), runs: [] };
+  const ready = { ...played, runs: [{ at: '2026-11-01T18:00:00Z', tempoPct: 100, stops: 0 }, { at: '2026-11-03T18:00:00Z', tempoPct: 100, stops: 0 }] };
+  const noCover = { ...song, id: 'sample-no-cover', title: 'Song without a cover', artist: 'Any artist' };
+  const states = [
+    ['Suggestion · LED off', renderCdCase(song, { href: '#cd', note: 'Missing: Bm' })],
+    ['Learning · amber', renderCdCase(song, { entry: learning, href: '#cd' })],
+    ['Played through · white', renderCdCase(song, { entry: played, href: '#cd' })],
+    ['Stage-ready · white, oxblood ring', renderCdCase(song, { entry: ready, href: '#cd' })],
+    ['Run-through playing · green', renderCdCase(song, { entry: played, href: '#cd', running: true })],
+    ['No cover found · generated sleeve', renderCdCase(noCover, { href: '#cd' })],
+  ];
+  return `<div class="kit__grid kit__grid--cd">${states.map(([label, html]) => `<div><h3 class="kit__label">${label}</h3>${html}</div>`).join('')}</div>
+    <p class="kit__note">The disc's outer ring has one segment per part: lit = got it, half-lit = learning. Reduced motion: the disc peeks out and stays still.</p>`;
 }
 
 // Milestone polaroids holding art placeholders.
